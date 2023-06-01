@@ -36,24 +36,30 @@ class _TaskCardState extends State<TaskCard> {
             children: <Widget>[
               Expanded(
                 flex: 6,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      widget.title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: 20.0,
-                      ),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          widget.title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        Text(
+                          widget.tag,
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      widget.tag,
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
               Container(
