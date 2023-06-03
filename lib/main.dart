@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/TaskCard.dart';
+import 'package:taskzoo/widgets/DailyTaskCard.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,9 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
       body: GridView.count(
         crossAxisCount: 2,
         children: List.generate(_counter, (index) {
-          return TaskCard(
+          return DailyTaskCard(
             title: 'Task $index',
             tag: 'Tag $index',
+            daysOfWeek: List.generate(
+                7,
+                (index) =>
+                    false), // assuming task needs to be completed everyday
           );
         }),
       ),
