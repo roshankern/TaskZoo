@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:taskzoo/widgets/DailyTaskCard.dart';
 
+const maxCharLimit = 20;
+
 void main() {
   runApp(const MyApp());
 }
@@ -32,12 +34,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final List<DailyTaskCard> _tasks = [];
 
-  void _createTaskButton() {
-    setState(() {
-      _counter++;
-    });
+  void _createTaskButton() async {
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      builder: (context) {
+        return AddTaskSheet();
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        _tasks.add(DailyTaskCard(
+          title: result['title'],
+          tag: result['tag'],
+          daysOfWeek: result['daysOfWeek'],
+        ));
+      });
+    }
   }
 
   @override
@@ -49,22 +64,109 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.lightBlue,
       ),
       body: GridView.count(
+        key: ValueKey(_tasks.length),
         crossAxisCount: 2,
-        children: List.generate(_counter, (index) {
-          return DailyTaskCard(
-            title: 'Task $index',
-            tag: 'Tag $index',
-            daysOfWeek: List.generate(
-                7,
-                (index) =>
-                    false), // assuming task needs to be completed everyday
-          );
-        }),
+        children: _tasks,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _createTaskButton,
         tooltip: 'Create Task',
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class AddTaskSheet extends StatefulWidget {
+  const AddTaskSheet({super.key});
+
+  @override
+  _AddTaskSheetState createState() => _AddTaskSheetState();
+}
+
+class _AddTaskSheetState extends State<AddTaskSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _tagController = TextEditingController();
+  final List<bool> _daysOfWeek = List.filled(7, false);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).canvasColor,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+      ),
+      padding: EdgeInsets.all(16),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            TextFormField(
+              maxLength: maxCharLimit,
+              controller: _titleController,
+              decoration: InputDecoration(labelText: 'Task Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a task name';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              maxLength: maxCharLimit,
+              controller: _tagController,
+              decoration: InputDecoration(labelText: 'Tag Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a tag name';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 16),
+            Text('Select days of the week for the task:'),
+            SizedBox(height: 8),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 4.0,
+              alignment: WrapAlignment.spaceEvenly,
+              children: [
+                for (int i = 0; i < 7; i++)
+                  FloatingActionButton(
+                    onPressed: () {
+                      setState(() {
+                        _daysOfWeek[i] = !_daysOfWeek[i];
+                      });
+                    },
+                    child: Text(
+                      ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i],
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    backgroundColor:
+                        _daysOfWeek[i] ? Colors.green : Colors.grey,
+                  )
+              ],
+            ),
+            ElevatedButton(
+              child: Text('Add Task'),
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  final taskData = {
+                    'title': _titleController.text,
+                    'tag': _tagController.text,
+                    'daysOfWeek': _daysOfWeek,
+                  };
+                  Navigator.pop(context, taskData);
+                }
+              },
+            )
+          ],
+        ),
       ),
     );
   }
