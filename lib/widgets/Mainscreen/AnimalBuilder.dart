@@ -1,64 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class AnimalBuilder extends StatefulWidget {
+  const AnimalBuilder({super.key, required this.originalSvgString});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  final String originalSvgString;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<AnimalBuilder> createState() => _AnimalBuilderState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _AnimalBuilderState extends State<AnimalBuilder> {
   int _counter = 0;
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
   String getBuilderSvg(String originalSvg, int numShapes) {
-  // Define a regular expression that matches the SVG root element
-  final rootRegex = RegExp(r'<svg[^>]*>', multiLine: true);
+    // get svg string that will result in an svg with the desired number of shapes
 
-  // Find the SVG root element
-  final rootMatch = rootRegex.firstMatch(originalSvg);
-  if (rootMatch == null) {
-    throw Exception('No SVG root element found');
+    // Define a regular expression that matches the SVG root element
+    final rootRegex = RegExp(r'<svg[^>]*>', multiLine: true);
+
+    // Find the SVG root element
+    final rootMatch = rootRegex.firstMatch(originalSvg);
+    if (rootMatch == null) {
+      throw Exception('No SVG root element found');
+    }
+    final rootElement = originalSvg.substring(rootMatch.start, rootMatch.end);
+
+    // Define a regular expression that matches the shape elements
+    final shapeRegex = RegExp(r'<path[^>]*?>', multiLine: true);
+
+    // Find the shape elements
+    final shapeMatches = shapeRegex.allMatches(originalSvg).toList();
+
+    // Include only the required number of shapes
+    final includedShapes = shapeMatches
+        .take(numShapes)
+        .map((match) => originalSvg.substring(match.start, match.end))
+        .join('\n');
+
+    // Return the new SVG string
+    return '$rootElement\n$includedShapes\n</svg>';
   }
-  final rootElement = originalSvg.substring(rootMatch.start, rootMatch.end);
-
-  // Define a regular expression that matches the shape elements
-  final shapeRegex = RegExp(r'<path[^>]*?>', multiLine: true);
-
-  // Find the shape elements
-  final shapeMatches = shapeRegex.allMatches(originalSvg).toList();
-
-  // Include only the required number of shapes
-  final includedShapes = shapeMatches
-      .take(numShapes)
-      .map((match) => originalSvg.substring(match.start, match.end))
-      .join('\n');
-
-  // Return the new SVG string
-  return '$rootElement\n$includedShapes\n</svg>';
-}
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text("Animal Builder"),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it

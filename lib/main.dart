@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskzoo/widgets/Mainscreen/Appbar.dart';
 import 'package:taskzoo/widgets/Mainscreen/DailyTaskCard.dart';
+import 'package:taskzoo/widgets/Mainscreen/AnimalBuilder.dart';
 
 const maxCharLimit = 20;
 const backgroundColor = Color.fromRGBO(141, 183, 182, 1);
@@ -37,6 +38,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<DailyTaskCard> _tasks = [];
+  final String originalSvgString = '''
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <path d="M 149.822 118.52 L 205.517 273.012 L 94.126 273.012 L 149.822 118.52 Z" style="" bx:shape="triangle 94.126 118.52 111.391 154.492 0.5 0 1@83216011"/>
+  <path d="M 250.744 264.674 L 306.439 419.166 L 195.048 419.166 L 250.744 264.674 Z" style="fill: rgb(4, 0, 255);" bx:shape="triangle 195.048 264.674 111.391 154.492 0.5 0 1@1a79f46a"/>
+  <path d="M 149.822 118.52 L 205.517 273.012 L 94.126 273.012 L 149.822 118.52 Z" style="fill: rgb(255, 0, 0);" transform="matrix(1, 0, 0, 1, 189.62174350698075, 6.294651852412102)" bx:shape="triangle 94.126 118.52 111.391 154.492 0.5 0 1@83216011"/>
+</svg>
+''';
 
   void _createTaskButton() async {
     final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -61,11 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
-      body: GridView.count(
-        key: ValueKey(_tasks.length),
-        crossAxisCount: 2,
-        children: _tasks,
-      ),
+      body: AnimalBuilder(originalSvgString: originalSvgString,),
     );
   }
 }
