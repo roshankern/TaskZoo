@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+const cardColor = Color.fromRGBO(175, 210, 210, 1);
+const lineColor = Color.fromRGBO(140, 146, 146, 1);
+
 class DailyTaskCard extends StatefulWidget {
   final String title;
   final String tag;
@@ -36,7 +39,7 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
           padding: const EdgeInsets.all(15.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
-            color: Colors.white,
+            color: cardColor,
           ),
           child: Opacity(
             opacity: isTodayInDaysOfWeek ? 1 : 0.5,
@@ -59,16 +62,15 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
                               fontWeight: FontWeight.bold,
                               color: isTodayInDaysOfWeek
                                   ? Colors.black
-                                  : Colors.grey,
+                                  : lineColor,
                               fontSize: 20.0,
                             ),
                           ),
                           Text(
                             widget.tag,
                             style: TextStyle(
-                              color: isTodayInDaysOfWeek
-                                  ? Colors.grey
-                                  : Colors.grey[300],
+                              color:
+                                  isTodayInDaysOfWeek ? Colors.grey : lineColor,
                             ),
                           ),
                         ],
@@ -78,7 +80,7 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
                 ),
                 Container(
                   height: 1.0,
-                  color: Colors.grey[300],
+                  color: lineColor,
                   margin: const EdgeInsets.symmetric(horizontal: 10.0),
                 ),
                 Expanded(

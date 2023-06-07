@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/DailyTaskCard.dart';
+import 'package:taskzoo/widgets/Mainscreen/Appbar.dart';
+import 'package:taskzoo/widgets/Mainscreen/DailyTaskCard.dart';
 
 const maxCharLimit = 20;
+const backgroundColor = Color.fromRGBO(141, 183, 182, 1);
 
 void main() {
   runApp(const MyApp());
@@ -16,8 +18,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TaskZoo',
       theme: ThemeData(
-        primaryColor: Colors.lightBlue,
-        scaffoldBackgroundColor: Colors.lightBlue,
+        primaryColor: backgroundColor,
+        scaffoldBackgroundColor: backgroundColor,
       ),
       home: const MyHomePage(title: 'TaskZoo Task Page'),
     );
@@ -58,20 +60,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        elevation: 0,
-        backgroundColor: Colors.lightBlue,
-      ),
+      appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
       body: GridView.count(
         key: ValueKey(_tasks.length),
         crossAxisCount: 2,
         children: _tasks,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createTaskButton,
-        tooltip: 'Create Task',
-        child: const Icon(Icons.add),
       ),
     );
   }
