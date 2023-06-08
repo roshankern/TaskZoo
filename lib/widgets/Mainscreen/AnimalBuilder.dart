@@ -16,6 +16,7 @@ class AnimalBuilder extends StatefulWidget {
 class AnimalBuilderState extends State<AnimalBuilder> {
   int _numShapes = 0;
   late Future<String> svgDataFuture;
+  int _totalNumShapes = 0;
 
   Future<String> loadSvgData(String assetName) async {
     return await rootBundle.loadString(assetName);
@@ -62,6 +63,16 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     return '$rootElement\n$includedShapes\n</svg>';
   }
 
+  int countPathsInSvg(String svgData) {
+    // Define a regular expression that matches the path elements
+    final pathRegex = RegExp(r'<path[^>]*>', multiLine: true);
+
+    // Count the path elements
+    final numPaths = pathRegex.allMatches(svgData).length;
+
+    return numPaths;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
@@ -74,6 +85,8 @@ class AnimalBuilderState extends State<AnimalBuilder> {
         if (snapshot.connectionState == ConnectionState.done) {
           // get svg string data based on svg file and number of desired shapes
           svgData = snapshot.data!;
+          // find total number of shapes so we can tell user how close they are to being complete with this shape
+          _totalNumShapes = countPathsInSvg(svgData);
           svgData = getBuilderSvg(svgData, _numShapes);
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
@@ -93,7 +106,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
                 svgData,
                 width: 200,
                 height: 200,
-              )
+              ),
             ])),
           ),
         );
