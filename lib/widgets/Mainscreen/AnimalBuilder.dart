@@ -27,8 +27,7 @@ class _AnimalBuilderState extends State<AnimalBuilder> {
     svgDataFuture = loadSvgData(widget.svgPath);
   }
 
-
-  void _incrementCounter() {
+  void _addShape() {
     setState(() {
       _numShapes++;
     });
@@ -65,39 +64,46 @@ class _AnimalBuilderState extends State<AnimalBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    const String originalSvgString = '''
-<?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
-  <path d="M 149.822 118.52 L 205.517 273.012 L 94.126 273.012 L 149.822 118.52 Z" style="" bx:shape="triangle 94.126 118.52 111.391 154.492 0.5 0 1@83216011"/>
-  <path d="M 250.744 264.674 L 306.439 419.166 L 195.048 419.166 L 250.744 264.674 Z" style="fill: rgb(4, 0, 255);" bx:shape="triangle 195.048 264.674 111.391 154.492 0.5 0 1@1a79f46a"/>
-  <path d="M 149.822 118.52 L 205.517 273.012 L 94.126 273.012 L 149.822 118.52 Z" style="fill: rgb(255, 0, 0);" transform="matrix(1, 0, 0, 1, 189.62174350698075, 6.294651852412102)" bx:shape="triangle 94.126 118.52 111.391 154.492 0.5 0 1@83216011"/>
-</svg>
-''';
-    var currentSvgString = getBuilderSvg(originalSvgString, _numShapes);
+    return FutureBuilder<String>(
+      future: svgDataFuture,
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        // svg data starts with empty image (this wont change if no data is loaded)
+        String svgData =
+            '''<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>''';
 
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Container(
-        padding: const EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: cardColor,
-        ),
-        child: Center(
-            child: Column(children: [
-          SvgPicture.string(
-            currentSvgString,
-            width: 200,
-            height: 200,
+        if (snapshot.connectionState == ConnectionState.done) {
+          // get svg string data based on svg file and number of desired shapes
+          svgData = snapshot.data!;
+          svgData = getBuilderSvg(svgData, _numShapes);
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Container(
+            padding: const EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              color: cardColor,
+            ),
+            child: Center(
+                child: Column(children: [
+              SvgPicture.string(
+                svgData,
+                width: 200,
+                height: 200,
+              ),
+              SizedBox(height: 15),
+              FloatingActionButton(
+                onPressed: _addShape,
+                tooltip: 'Increment',
+                child: const Icon(Icons.add),
+              ),
+            ])),
           ),
-          SizedBox(height: 15),
-          FloatingActionButton(
-            onPressed: _incrementCounter,
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
-          ),
-        ])),
-      ),
+        );
+      },
     );
   }
 }
