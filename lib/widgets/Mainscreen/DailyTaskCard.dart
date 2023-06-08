@@ -8,9 +8,14 @@ class DailyTaskCard extends StatefulWidget {
   final String title;
   final String tag;
   final List<bool> daysOfWeek;
+  final bool biDaily;
 
-  DailyTaskCard(
-      {required this.title, required this.tag, required this.daysOfWeek});
+  DailyTaskCard({
+    required this.title,
+    required this.tag,
+    required this.daysOfWeek,
+    required this.biDaily,
+  });
 
   @override
   _DailyTaskCardState createState() => _DailyTaskCardState();
@@ -18,12 +23,33 @@ class DailyTaskCard extends StatefulWidget {
 
 class _DailyTaskCardState extends State<DailyTaskCard> {
   bool isCompleted = false;
+  late DateTime previousDate;
+
+  @override
+  void initState() {
+    super.initState();
+    previousDate = DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
     // Determine if today is in daysOfWeek
     final now = DateTime.now();
-    final isTodayInDaysOfWeek = widget.daysOfWeek[now.weekday - 1];
+    bool isTodayInDaysOfWeek = widget.daysOfWeek[now.weekday - 1];
+
+    if (widget.biDaily) {
+      final dayDifference = now.difference(previousDate).inDays;
+      if (dayDifference > 1) {
+        if (dayDifference <= 3) {
+          previousDate = previousDate.add(const Duration(days: 2));
+        } else {
+          previousDate = now;
+        }
+      }
+      isTodayInDaysOfWeek = previousDate.year == now.year &&
+          previousDate.month == now.month &&
+          previousDate.day == now.day;
+    }
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
