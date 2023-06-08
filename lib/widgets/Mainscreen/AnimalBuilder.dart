@@ -66,9 +66,10 @@ class _AnimalBuilderState extends State<AnimalBuilder> {
             child: Column(children: [
           SvgPicture.string(
             currentSvgString,
-            width: 500,
-            height: 500,
+            width: 200,
+            height: 200,
           ),
+          SizedBox(height: 15),
           FloatingActionButton(
             onPressed: _incrementCounter,
             tooltip: 'Increment',
