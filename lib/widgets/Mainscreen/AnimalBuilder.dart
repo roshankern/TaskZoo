@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 const cardColor = Color.fromRGBO(175, 210, 210, 1);
 
 class AnimalBuilder extends StatefulWidget {
-  const AnimalBuilder({super.key, required this.originalSvgString});
+  const AnimalBuilder({super.key, required this.svgPath});
 
-  final String originalSvgString;
+  final String svgPath;
 
   @override
   State<AnimalBuilder> createState() => _AnimalBuilderState();
 }
 
 class _AnimalBuilderState extends State<AnimalBuilder> {
-  int _counter = 0;
+  int _numShapes = 0;
+  late Future<String> svgDataFuture;
+
+  Future<String> loadSvgData(String assetName) async {
+    return await rootBundle.loadString(assetName);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    svgDataFuture = loadSvgData(widget.svgPath);
+  }
+
 
   void _incrementCounter() {
     setState(() {
-      _counter++;
+      _numShapes++;
     });
   }
 
@@ -52,7 +65,15 @@ class _AnimalBuilderState extends State<AnimalBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    var currentSvgString = getBuilderSvg(widget.originalSvgString, _counter);
+    const String originalSvgString = '''
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <path d="M 149.822 118.52 L 205.517 273.012 L 94.126 273.012 L 149.822 118.52 Z" style="" bx:shape="triangle 94.126 118.52 111.391 154.492 0.5 0 1@83216011"/>
+  <path d="M 250.744 264.674 L 306.439 419.166 L 195.048 419.166 L 250.744 264.674 Z" style="fill: rgb(4, 0, 255);" bx:shape="triangle 195.048 264.674 111.391 154.492 0.5 0 1@1a79f46a"/>
+  <path d="M 149.822 118.52 L 205.517 273.012 L 94.126 273.012 L 149.822 118.52 Z" style="fill: rgb(255, 0, 0);" transform="matrix(1, 0, 0, 1, 189.62174350698075, 6.294651852412102)" bx:shape="triangle 94.126 118.52 111.391 154.492 0.5 0 1@83216011"/>
+</svg>
+''';
+    var currentSvgString = getBuilderSvg(originalSvgString, _numShapes);
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
