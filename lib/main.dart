@@ -38,6 +38,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<DailyTaskCard> _tasks = [];
+  final GlobalKey<AnimalBuilderState> _animalBuilderKey = GlobalKey();
 
   void _createTaskButton() async {
     final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -60,18 +61,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
-      body: ListView(children: [
-      const AnimalBuilder(svgPath: "assets/low_poly_curled_fox.svg"),
-      GridView.count(
-        key: ValueKey(_tasks.length),
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        children: _tasks,
-      ),
-    ])
-    );
+        appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
+        body: ListView(children: [
+          AnimalBuilder(
+            svgPath: "assets/low_poly_curled_fox.svg",
+            key: _animalBuilderKey,
+          ),
+          FloatingActionButton(
+            onPressed: () => _animalBuilderKey.currentState?.addShape(),
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+          GridView.count(
+            key: ValueKey(_tasks.length),
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            children: _tasks,
+          ),
+        ]));
   }
 }
 

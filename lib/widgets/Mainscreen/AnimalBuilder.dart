@@ -5,15 +5,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 const cardColor = Color.fromRGBO(175, 210, 210, 1);
 
 class AnimalBuilder extends StatefulWidget {
-  const AnimalBuilder({super.key, required this.svgPath});
+  AnimalBuilder({required this.svgPath, Key? key}) : super(key: key);
 
   final String svgPath;
 
   @override
-  State<AnimalBuilder> createState() => _AnimalBuilderState();
+  State<AnimalBuilder> createState() => AnimalBuilderState();
 }
 
-class _AnimalBuilderState extends State<AnimalBuilder> {
+class AnimalBuilderState extends State<AnimalBuilder> {
   int _numShapes = 0;
   late Future<String> svgDataFuture;
 
@@ -27,7 +27,7 @@ class _AnimalBuilderState extends State<AnimalBuilder> {
     svgDataFuture = loadSvgData(widget.svgPath);
   }
 
-  void _addShape() {
+  void addShape() {
     setState(() {
       _numShapes++;
     });
@@ -93,13 +93,7 @@ class _AnimalBuilderState extends State<AnimalBuilder> {
                 svgData,
                 width: 200,
                 height: 200,
-              ),
-              SizedBox(height: 15),
-              FloatingActionButton(
-                onPressed: _addShape,
-                tooltip: 'Increment',
-                child: const Icon(Icons.add),
-              ),
+              )
             ])),
           ),
         );
