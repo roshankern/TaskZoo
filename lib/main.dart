@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: result['title'],
           tag: result['tag'],
           daysOfWeek: result['daysOfWeek'],
+          biDaily: result['biDaily'],
         ));
       });
     }
@@ -85,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class AddTaskSheet extends StatefulWidget {
-  const AddTaskSheet({super.key});
+  const AddTaskSheet({Key? key}) : super(key: key);
 
   @override
   _AddTaskSheetState createState() => _AddTaskSheetState();
@@ -96,6 +97,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   final _titleController = TextEditingController();
   final _tagController = TextEditingController();
   final List<bool> _daysOfWeek = List.filled(7, false);
+  bool _biDaily = false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,71 +110,95 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         ),
       ),
       padding: EdgeInsets.all(16),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            TextFormField(
-              maxLength: maxCharLimit,
-              controller: _titleController,
-              decoration: InputDecoration(labelText: 'Task Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a task name';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              maxLength: maxCharLimit,
-              controller: _tagController,
-              decoration: InputDecoration(labelText: 'Tag Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a tag name';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16),
-            Text('Select days of the week for the task:'),
-            SizedBox(height: 8),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 4.0,
-              alignment: WrapAlignment.spaceEvenly,
-              children: [
-                for (int i = 0; i < 7; i++)
-                  FloatingActionButton(
-                    onPressed: () {
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextFormField(
+                maxLength: maxCharLimit,
+                controller: _titleController,
+                decoration: InputDecoration(labelText: 'Task Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a task name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                maxLength: maxCharLimit,
+                controller: _tagController,
+                decoration: InputDecoration(labelText: 'Tag Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a tag name';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              Text('Select days of the week for the task:'),
+              SizedBox(height: 8),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 4.0,
+                alignment: WrapAlignment.spaceEvenly,
+                children: [
+                  for (int i = 0; i < 7; i++)
+                    FloatingActionButton(
+                      onPressed: () {
+                        setState(() {
+                          _daysOfWeek[i] = !_daysOfWeek[i];
+                        });
+                      },
+                      child: Text(
+                        ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i],
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      backgroundColor:
+                          _daysOfWeek[i] ? Colors.green : Colors.grey,
+                    ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Text('BiDaily Option:'),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Off'),
+                  SizedBox(width: 8),
+                  Switch(
+                    value: _biDaily,
+                    onChanged: (value) {
                       setState(() {
-                        _daysOfWeek[i] = !_daysOfWeek[i];
+                        _biDaily = value;
                       });
                     },
-                    child: Text(
-                      ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i],
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    backgroundColor:
-                        _daysOfWeek[i] ? Colors.green : Colors.grey,
-                  )
-              ],
-            ),
-            ElevatedButton(
-              child: Text('Add Task'),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  final taskData = {
-                    'title': _titleController.text,
-                    'tag': _tagController.text,
-                    'daysOfWeek': _daysOfWeek,
-                  };
-                  Navigator.pop(context, taskData);
-                }
-              },
-            )
-          ],
+                  ),
+                  SizedBox(width: 8),
+                  Text('On'),
+                ],
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                child: Text('Add Task'),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    final taskData = {
+                      'title': _titleController.text,
+                      'tag': _tagController.text,
+                      'daysOfWeek': _daysOfWeek,
+                      'biDaily': _biDaily,
+                    };
+                    Navigator.pop(context, taskData);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
