@@ -70,7 +70,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
-      body: AnimalBuilder(originalSvgString: originalSvgString,),
+      body: ListView(children: [
+      AnimalBuilder(originalSvgString: originalSvgString),
+      GridView.count(
+        key: ValueKey(_tasks.length),
+        crossAxisCount: 2,
+        shrinkWrap: true,
+        children: _tasks,
+      ),
+    ])
     );
   }
 }

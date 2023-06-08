@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+const cardColor = Color.fromRGBO(175, 210, 210, 1);
+
 class AnimalBuilder extends StatefulWidget {
   const AnimalBuilder({super.key, required this.originalSvgString});
 
@@ -50,69 +52,30 @@ class _AnimalBuilderState extends State<AnimalBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    const String originalSvg = '''
-<?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
-  <path d="M 149.822 118.52 L 205.517 273.012 L 94.126 273.012 L 149.822 118.52 Z" style="" bx:shape="triangle 94.126 118.52 111.391 154.492 0.5 0 1@83216011"/>
-  <path d="M 250.744 264.674 L 306.439 419.166 L 195.048 419.166 L 250.744 264.674 Z" style="fill: rgb(4, 0, 255);" bx:shape="triangle 195.048 264.674 111.391 154.492 0.5 0 1@1a79f46a"/>
-  <path d="M 149.822 118.52 L 205.517 273.012 L 94.126 273.012 L 149.822 118.52 Z" style="fill: rgb(255, 0, 0);" transform="matrix(1, 0, 0, 1, 189.62174350698075, 6.294651852412102)" bx:shape="triangle 94.126 118.52 111.391 154.492 0.5 0 1@83216011"/>
-</svg>
-''';
+    var currentSvgString = getBuilderSvg(widget.originalSvgString, _counter);
 
-    var currentSvgString = getBuilderSvg(originalSvg, _counter);
-
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text("Animal Builder"),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SvgPicture.string(
-              currentSvgString,
-              width: 500,
-              height: 500,
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+        padding: const EdgeInsets.all(15.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: cardColor,
         ),
+        child: Center(
+            child: Column(children: [
+          SvgPicture.string(
+            currentSvgString,
+            width: 500,
+            height: 500,
+          ),
+          FloatingActionButton(
+            onPressed: _incrementCounter,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+        ])),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
