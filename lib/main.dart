@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskzoo/widgets/Mainscreen/Appbar.dart';
 import 'package:taskzoo/widgets/Mainscreen/DailyTaskCard.dart';
+import 'package:taskzoo/widgets/Mainscreen/AnimalBuilder.dart';
 
 const maxCharLimit = 20;
 const backgroundColor = Color.fromRGBO(141, 183, 182, 1);
@@ -37,6 +38,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<DailyTaskCard> _tasks = [];
+  final GlobalKey<AnimalBuilderState> _animalBuilderKey = GlobalKey();
 
   void _createTaskButton() async {
     final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -60,14 +62,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
-      body: GridView.count(
-        key: ValueKey(_tasks.length),
-        crossAxisCount: 2,
-        children: _tasks,
-      ),
-    );
+        appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
+        body: ListView(children: [
+          AnimalBuilder(
+            svgPath: "assets/low_poly_curled_fox.svg",
+            key: _animalBuilderKey,
+          ),
+          FloatingActionButton(
+            onPressed: () => _animalBuilderKey.currentState?.addShape(),
+            child: const Icon(Icons.add),
+          ),
+          GridView.count(
+            key: ValueKey(_tasks.length),
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            children: _tasks,
+          ),
+        ]));
   }
 }
 
