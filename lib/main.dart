@@ -68,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: ListView(children: [
           AnimalBuilder(
             svgPath: "assets/low_poly_curled_fox.svg",
+            biomeIcon: Icons.terrain_outlined,
             key: _animalBuilderKey,
           ),
           FloatingActionButton(

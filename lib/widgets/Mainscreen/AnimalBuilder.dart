@@ -5,9 +5,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 const cardColor = Color.fromRGBO(175, 210, 210, 1);
 
 class AnimalBuilder extends StatefulWidget {
-  AnimalBuilder({required this.svgPath, Key? key}) : super(key: key);
+  AnimalBuilder({required this.svgPath, required this.biomeIcon, Key? key})
+      : super(key: key);
 
   final String svgPath;
+  final IconData biomeIcon;
 
   @override
   State<AnimalBuilder> createState() => AnimalBuilderState();
@@ -17,6 +19,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   int _numShapes = 0;
   late Future<String> svgDataFuture;
   int _totalNumShapes = 0;
+  double _buildPercent = 0;
 
   Future<String> loadSvgData(String assetName) async {
     return await rootBundle.loadString(assetName);
@@ -30,7 +33,10 @@ class AnimalBuilderState extends State<AnimalBuilder> {
 
   void addShape() {
     setState(() {
-      _numShapes++;
+      if (_numShapes < _totalNumShapes) {
+        _numShapes++;
+        _buildPercent = _numShapes / _totalNumShapes;
+      }
     });
   }
 
@@ -78,19 +84,17 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     return FutureBuilder<String>(
       future: svgDataFuture,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        // svg data starts with empty image (this wont change if no data is loaded)
-        String svgData =
-            '''<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>''';
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          // get svg string data based on svg file and number of desired shapes
-          svgData = snapshot.data!;
-          // find total number of shapes so we can tell user how close they are to being complete with this shape
-          _totalNumShapes = countPathsInSvg(svgData);
-          svgData = getBuilderSvg(svgData, _numShapes);
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text('Loading...');
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         }
+
+        // get svg string data based on svg file and number of desired shapes
+        String svgData = snapshot.data!;
+        // find total number of shapes so we can tell user how close they are to being complete with this shape
+        _totalNumShapes = countPathsInSvg(svgData);
+        svgData = getBuilderSvg(svgData, _numShapes);
 
         return Padding(
           padding: const EdgeInsets.all(10.0),
@@ -100,14 +104,61 @@ class AnimalBuilderState extends State<AnimalBuilder> {
               borderRadius: BorderRadius.circular(10.0),
               color: cardColor,
             ),
-            child: Center(
-                child: Column(children: [
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: Icon(
+                  widget.biomeIcon,
+                  color: Colors.black,
+                  size: 30.0,
+                ),
+              ),
               SvgPicture.string(
                 svgData,
                 width: 200,
                 height: 200,
               ),
-            ])),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    '${(_buildPercent * 100).toStringAsFixed(0)}%',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 12,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey, width: 1),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
+                            ),
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            child: LinearProgressIndicator(
+                              value: _buildPercent,
+                              backgroundColor: Colors.transparent,
+                              color: Colors.black,
+                              minHeight: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '$_numShapes/$_totalNumShapes shapes',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            ]),
           ),
         );
       },
