@@ -102,6 +102,14 @@ class AnimalBuilderState extends State<AnimalBuilder> {
             ),
             child: Center(
                 child: Column(children: [
+              const Align(
+                alignment: Alignment.topRight,
+                child: Icon(
+                  Icons.terrain_outlined,
+                  color: Colors.black,
+                  size: 30.0,
+                ),
+              ),
               SvgPicture.string(
                 svgData,
                 width: 200,
