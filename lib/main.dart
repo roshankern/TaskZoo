@@ -4,7 +4,10 @@ import 'package:taskzoo/widgets/Mainscreen/DailyTaskCard.dart';
 import 'package:taskzoo/widgets/Mainscreen/AnimalBuilder.dart';
 
 const maxCharLimit = 20;
+const selectedColor = Colors.black;
 const backgroundColor = Color.fromRGBO(141, 183, 182, 1);
+const unselectedColor = Color.fromRGBO(175, 210, 210, 1);
+const lineColor = Color.fromRGBO(140, 146, 146, 1);
 
 void main() {
   runApp(const MyApp());
@@ -19,8 +22,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TaskZoo',
       theme: ThemeData(
-        primaryColor: backgroundColor,
+        //primaryColor is for items when selected
+        primaryColor: Colors.white,
+        //scaffoldBackgroundColor is for the background
         scaffoldBackgroundColor: backgroundColor,
+        //unslectedWidgetColor is for icons when unselected
+        unselectedWidgetColor: unselectedColor,
+        //dividerColor is for the lines
+        dividerColor: lineColor,
+        //IndicatorColor is for Icons
+        indicatorColor: Colors.black,
+        //dialogBackgroundColor is for extras, selections & containers
+        dialogBackgroundColor: Colors.black,
       ),
       home: const MyHomePage(title: 'TaskZoo Task Page'),
     );
@@ -62,7 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
         body: ListView(children: [

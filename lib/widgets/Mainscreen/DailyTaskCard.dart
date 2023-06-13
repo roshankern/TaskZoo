@@ -3,9 +3,6 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-const cardColor = Color.fromRGBO(175, 210, 210, 1);
-const lineColor = Color.fromRGBO(140, 146, 146, 1);
-
 //Problem add False to the queue when the task is not completed
 
 class DailyTaskCard extends StatefulWidget {
@@ -92,7 +89,7 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
           padding: const EdgeInsets.all(15.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
-            color: cardColor,
+            color: Theme.of(context).unselectedWidgetColor,
           ),
           child: Opacity(
             opacity: isTodayInDaysOfWeek ? 1 : 0.5,
@@ -116,7 +113,7 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
                                 fontWeight: FontWeight.bold,
                                 color: isTodayInDaysOfWeek
                                     ? Colors.black
-                                    : lineColor,
+                                    : Theme.of(context).dividerColor,
                                 fontSize: 20.0,
                               ),
                             ),
@@ -125,7 +122,7 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
                               style: TextStyle(
                                 color: isTodayInDaysOfWeek
                                     ? Colors.grey
-                                    : lineColor,
+                                    : Theme.of(context).dividerColor,
                               ),
                             ),
                           ],
@@ -136,7 +133,7 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
                 if (!_isTapped)
                   Container(
                     height: 1.0,
-                    color: lineColor,
+                    color: Theme.of(context).dividerColor,
                     margin: const EdgeInsets.symmetric(horizontal: 10.0),
                   ),
                 Expanded(
@@ -145,7 +142,7 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
                     child: _isTapped
                         ? Text(
                             'Completed ${completionCount.toString()} times in the last 30 days',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14.0,
                               color: Colors.grey,
                             ),
@@ -164,7 +161,7 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
                                     FontAwesomeIcons.check,
                                     color: Colors.black,
                                   )
-                            : Text('Relax, not for today'),
+                            : const Text('Relax, not for today'),
                   ),
                 ),
               ],

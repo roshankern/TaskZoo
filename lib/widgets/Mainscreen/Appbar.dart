@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-const selectedColor = Colors.black;
-const backgroundColor = Color.fromRGBO(141, 183, 182, 1);
-const unselectedColor = Color.fromRGBO(175, 210, 210, 1);
+// const selectedColor = Theme.of(context).indicatorColor;
 const appBarSize = 40.0;
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -34,7 +32,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       title: Row(
         children: [
@@ -63,7 +61,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           IconButton(
             iconSize: appBarSize / 1.5,
             icon: const Icon(Icons.keyboard_control),
-            color: Colors.black,
+            color: Theme.of(context).indicatorColor,
             onPressed: () {
               // Perform settings action
             },
@@ -71,13 +69,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
           Container(
             width: 1,
             height: appBarSize,
-            color: Colors.black,
+            color: Theme.of(context).indicatorColor,
             margin: EdgeInsets.symmetric(horizontal: 8),
           ),
           IconButton(
             iconSize: appBarSize / 1.5,
             icon: const Icon(Icons.add),
-            color: Colors.black,
+            color: Theme.of(context).indicatorColor,
             onPressed: onAddTaskPressed,
           ),
         ],
@@ -107,16 +105,20 @@ class CircleButton extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: Colors.black,
+            color: Theme.of(context).dialogBackgroundColor,
             width: 1,
           ),
-          color: isSelected ? Colors.black : unselectedColor,
+          color: isSelected
+              ? Theme.of(context).dialogBackgroundColor
+              : Theme.of(context).unselectedWidgetColor,
         ),
         child: Center(
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black,
+              color: isSelected
+                  ? Colors.white
+                  : Theme.of(context).dialogBackgroundColor,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
