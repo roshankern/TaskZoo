@@ -3,8 +3,6 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-//Problem add False to the queue when the task is not completed
-
 class DailyTaskCard extends StatefulWidget {
   final String title;
   final String tag;
@@ -25,20 +23,18 @@ class DailyTaskCard extends StatefulWidget {
 class _DailyTaskCardState extends State<DailyTaskCard> {
   bool isCompleted = false;
   late DateTime previousDate;
-  final Queue<bool> completionStatusQueue = Queue<bool>();
   bool _isTapped = false;
+  late Set<DateTime> completedDates;
 
   @override
   void initState() {
     super.initState();
     previousDate = DateTime.now();
-    completionStatusQueue
-        .add(false); // Initialize the queue with a default value
+    completedDates = HashSet<DateTime>();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Determine if today is in daysOfWeek
     final now = DateTime.now();
     bool isTodayInDaysOfWeek = widget.daysOfWeek[now.weekday - 1];
 
@@ -57,14 +53,11 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
     }
 
     if (isTodayInDaysOfWeek && isCompleted) {
-      completionStatusQueue.add(true);
-      if (completionStatusQueue.length > 30) {
-        completionStatusQueue.removeFirst();
-      }
+      completedDates.add(DateTime(now.year, now.month, now.day));
     }
 
-    final completionCount =
-        completionStatusQueue.where((completed) => completed == true).length;
+    final last30DaysDates = _getLast30DaysDates();
+    final completionCount = _getCompletionCount(last30DaysDates);
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -179,5 +172,25 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
     final hours = difference.inHours;
     final minutes = difference.inMinutes % 60;
     return hours > 0 ? "$hours hours left" : "$minutes minutes left";
+  }
+
+  List<DateTime> _getLast30DaysDates() {
+    final today = DateTime.now();
+    final last30DaysDates = <DateTime>[];
+    for (int i = 0; i < 30; i++) {
+      final date = today.subtract(Duration(days: i));
+      last30DaysDates.add(DateTime(date.year, date.month, date.day));
+    }
+    return last30DaysDates;
+  }
+
+  int _getCompletionCount(List<DateTime> last30DaysDates) {
+    int count = 0;
+    for (final date in last30DaysDates) {
+      if (completedDates.contains(date)) {
+        count++;
+      }
+    }
+    return count;
   }
 }
