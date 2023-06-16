@@ -25,6 +25,8 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
   late DateTime previousDate;
   bool _isTapped = false;
   late Set<DateTime> completedDates;
+  int streakCount = 0;
+  int longestStreak = 0;
 
   @override
   void initState() {
@@ -45,6 +47,10 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
           previousDate = previousDate.add(const Duration(days: 2));
         } else {
           previousDate = now;
+          if (streakCount > longestStreak) {
+            longestStreak = streakCount;
+          }
+          streakCount = 0;
         }
       }
       isTodayInDaysOfWeek = previousDate.year == now.year &&
@@ -54,6 +60,15 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
 
     if (isTodayInDaysOfWeek && isCompleted) {
       completedDates.add(DateTime(now.year, now.month, now.day));
+      streakCount++;
+      if (streakCount > longestStreak) {
+        longestStreak = streakCount;
+      }
+    } else if (!isTodayInDaysOfWeek || !isCompleted) {
+      if (streakCount > longestStreak) {
+        longestStreak = streakCount;
+      }
+      streakCount = 0;
     }
 
     final last30DaysDates = _getLast30DaysDates();
@@ -133,12 +148,63 @@ class _DailyTaskCardState extends State<DailyTaskCard> {
                   flex: 4,
                   child: Center(
                     child: _isTapped
-                        ? Text(
-                            'Completed ${completionCount.toString()} times in the last 30 days',
-                            style: const TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.grey,
-                            ),
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.local_fire_department,
+                                    color: Colors.orange,
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  Text(
+                                    '$streakCount',
+                                    style: const TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.star,
+                                    color: Colors.yellow,
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  Text(
+                                    '$longestStreak',
+                                    style: const TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_month,
+                                    color: Colors.green,
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  Text(
+                                    '$completionCount',
+                                    style: const TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
                           )
                         : isTodayInDaysOfWeek
                             ? !isCompleted
