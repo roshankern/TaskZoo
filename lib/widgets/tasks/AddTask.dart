@@ -23,6 +23,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   bool _weekly = false;
   bool _monthly = false;
   bool _isExpanded = false;
+  String _selectedOption = 'Daily';
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                     color: backgroundColor,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
+                _buildSelectedOptionTextBox(),
+                const SizedBox(height: 16),
                 _buildTextField('Task Name', _titleController),
                 const SizedBox(height: 16),
                 _buildTextField('Tag Name', _tagController),
@@ -89,6 +92,24 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectedOptionTextBox() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Text(
+        'Task Days: $_selectedOption',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -158,6 +179,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                             _biDaily = false;
                             _weekly = false;
                             _monthly = false;
+                            _selectedOption = 'Custom';
                           }
                         });
                       },
@@ -175,7 +197,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         opacity: _daysOfWeek.contains(true) || _weekly || _monthly ? 0.5 : 1.0,
         child: SwitchListTile(
           title: const Text(
-            'BiDaily Option:',
+            'Every 2 Days',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           value: _biDaily,
@@ -188,6 +210,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _daysOfWeek.fillRange(0, 7, false);
                       _weekly = false;
                       _monthly = false;
+                      _selectedOption = 'BiDaily';
                     }
                   });
                 },
@@ -204,7 +227,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         opacity: _daysOfWeek.contains(true) || _biDaily || _monthly ? 0.5 : 1.0,
         child: SwitchListTile(
           title: const Text(
-            'Weekly Option:',
+            'Weekly',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           value: _weekly,
@@ -217,6 +240,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _daysOfWeek.fillRange(0, 7, false);
                       _biDaily = false;
                       _monthly = false;
+                      _selectedOption = 'Weekly';
                     }
                   });
                 },
@@ -233,7 +257,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         opacity: _daysOfWeek.contains(true) || _biDaily || _weekly ? 0.5 : 1.0,
         child: SwitchListTile(
           title: const Text(
-            'Monthly Option:',
+            'Monthly',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           value: _monthly,
@@ -246,6 +270,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _daysOfWeek.fillRange(0, 7, false);
                       _biDaily = false;
                       _weekly = false;
+                      _selectedOption = 'Monthly';
                     }
                   });
                 },
