@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/home/Appbar.dart';
-import 'package:taskzoo/widgets/tasks/AddTask.dart';
-import 'package:taskzoo/widgets/tasks/TaskCard.dart';
-import 'package:taskzoo/widgets/home/AnimalBuilder.dart';
+import 'package:taskzoo/pages/HomePage.dart';
+import 'package:taskzoo/pages/ZooPage.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -51,52 +49,49 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<TaskCard> _tasks = [];
-  final GlobalKey<AnimalBuilderState> _animalBuilderKey = GlobalKey();
-
-  void _createTaskButton() async {
-    final result = await showModalBottomSheet<Map<String, dynamic>>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return const AddTaskSheet();
-      },
-    );
-
-    if (result != null) {
-      setState(() {
-        _tasks.add(TaskCard(
-          title: result['title'],
-          tag: result['tag'],
-          daysOfWeek: result['daysOfWeek'],
-          biDaily: result['biDaily'],
-          weekly: result['weekly'],
-          monthly: result['monthly'],
-        ));
-      });
-    }
-  }
+  int _navBarIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      HomePage(), // you need to define these widgets
+      HomePage(),
+      ZooPage(),
+      HomePage(),
+    ];
     return Scaffold(
-        appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
-        body: ListView(children: [
-          AnimalBuilder(
-            svgPath: "assets/low_poly_curled_fox.svg",
-            biomeIcon: Icons.terrain_outlined,
-            key: _animalBuilderKey,
+
+      body: pages[
+          _navBarIndex],
+
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Theme.of(context).unselectedWidgetColor,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _navBarIndex,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.show_chart),
+            label: 'Stats',
           ),
-          FloatingActionButton(
-            onPressed: () => _animalBuilderKey.currentState?.addShape(),
-            child: const Icon(Icons.add),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
-          GridView.count(
-            key: ValueKey(_tasks.length),
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            children: _tasks,
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pets),
+            label: 'Zoo',
           ),
-        ]));
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        onTap: (index) {
+          setState(() {
+            _navBarIndex = index;
+          });
+        },
+      ),
+    );
   }
 }
