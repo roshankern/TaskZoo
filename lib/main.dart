@@ -53,29 +53,46 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _navBarIndex = 1;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _navBarIndex - 1); // Adjust the initialPage
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final pages = [
-      StatsPage(),
       HomePage(),
       ZooPage(),
-      SettingsPage(),
     ];
     return Scaffold(
-      body: pages[_navBarIndex],
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _navBarIndex = index + 1;
+          });
+        },
+        children: pages,
+      ),
       bottomNavigationBar: CustomNavBar(
         currentIndex: _navBarIndex,
         onTap: (index) {
-          if (index==0 || index==3){
+          if (index == 0 || index == 3){
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => pages[index]),
+              MaterialPageRoute(builder: (context) => index == 0 ? StatsPage() : SettingsPage()),
             );
           }else{
-            setState(() {
-            _navBarIndex = index;
-          });
+            _pageController.jumpToPage(index - 1);
           }
         },
       ),
