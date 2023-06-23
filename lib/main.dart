@@ -58,7 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _navBarIndex - 1); // Adjust the initialPage
+    _pageController =
+        PageController(initialPage: _navBarIndex - 1); // Adjust the initialPage
   }
 
   @override
@@ -86,12 +87,14 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: CustomNavBar(
         currentIndex: _navBarIndex,
         onTap: (index) {
-          if (index == 0 || index == 3){
+          if (index == 0 || index == 3) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => index == 0 ? StatsPage() : SettingsPage()),
+              MaterialPageRoute(
+                  builder: (context) =>
+                      index == 0 ? StatsPage() : SettingsPage()),
             );
-          }else{
+          } else {
             _pageController.jumpToPage(index - 1);
           }
         },
