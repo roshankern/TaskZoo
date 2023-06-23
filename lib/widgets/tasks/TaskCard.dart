@@ -3,24 +3,28 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class DailyTaskCard extends StatefulWidget {
+class TaskCard extends StatefulWidget {
   final String title;
   final String tag;
   final List<bool> daysOfWeek;
   final bool biDaily;
+  final bool weekly;
+  final bool monthly;
 
-  DailyTaskCard({
+  TaskCard({
     required this.title,
     required this.tag,
     required this.daysOfWeek,
     required this.biDaily,
+    required this.weekly,
+    required this.monthly,
   });
 
   @override
-  _DailyTaskCardState createState() => _DailyTaskCardState();
+  _TaskCardState createState() => _TaskCardState();
 }
 
-class _DailyTaskCardState extends State<DailyTaskCard> {
+class _TaskCardState extends State<TaskCard> {
   bool isCompleted = false;
   late DateTime previousDate;
   bool _isTapped = false;
