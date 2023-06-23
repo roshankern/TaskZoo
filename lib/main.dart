@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:taskzoo/pages/HomePage.dart';
 import 'package:taskzoo/pages/ZooPage.dart';
+import 'package:taskzoo/pages/StatsPage.dart';
+import 'package:taskzoo/pages/SettingsPage.dart';
+import 'package:taskzoo/widgets/home/Navbar.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -49,47 +52,31 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _navBarIndex = 0;
+  int _navBarIndex = 1;
 
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomePage(), // you need to define these widgets
+      StatsPage(),
       HomePage(),
       ZooPage(),
-      HomePage(),
+      SettingsPage(),
     ];
     return Scaffold(
-
-      body: pages[
-          _navBarIndex],
-
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).unselectedWidgetColor,
-        type: BottomNavigationBarType.fixed,
+      body: pages[_navBarIndex],
+      bottomNavigationBar: CustomNavBar(
         currentIndex: _navBarIndex,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.show_chart),
-            label: 'Stats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.pets),
-            label: 'Zoo',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
         onTap: (index) {
-          setState(() {
+          if (index==0 || index==3){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => pages[index]),
+            );
+          }else{
+            setState(() {
             _navBarIndex = index;
           });
+          }
         },
       ),
     );
