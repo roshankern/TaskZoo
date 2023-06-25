@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/home/Appbar.dart';
-import 'package:taskzoo/widgets/tasks/AddTask.dart';
-import 'package:taskzoo/widgets/tasks/TaskCard.dart';
-import 'package:taskzoo/widgets/home/AnimalBuilder.dart';
+import 'package:taskzoo/pages/HomePage.dart';
+import 'package:taskzoo/pages/ZooPage.dart';
+import 'package:taskzoo/pages/StatsPage.dart';
+import 'package:taskzoo/pages/SettingsPage.dart';
+import 'package:taskzoo/widgets/home/Navbar.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -51,52 +52,53 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<TaskCard> _tasks = [];
-  final GlobalKey<AnimalBuilderState> _animalBuilderKey = GlobalKey();
+  int _navBarIndex = 1;
+  late PageController _pageController;
 
-  void _createTaskButton() async {
-    final result = await showModalBottomSheet<Map<String, dynamic>>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return const AddTaskSheet();
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    _pageController =
+        PageController(initialPage: _navBarIndex - 1); // Adjust the initialPage
+  }
 
-    if (result != null) {
-      setState(() {
-        _tasks.add(TaskCard(
-          title: result['title'],
-          tag: result['tag'],
-          daysOfWeek: result['daysOfWeek'],
-          biDaily: result['biDaily'],
-          weekly: result['weekly'],
-          monthly: result['monthly'],
-        ));
-      });
-    }
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      HomePage(),
+      ZooPage(),
+    ];
     return Scaffold(
-        appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
-        body: ListView(children: [
-          AnimalBuilder(
-            svgPath: "assets/low_poly_curled_fox.svg",
-            biomeIcon: Icons.terrain_outlined,
-            key: _animalBuilderKey,
-          ),
-          FloatingActionButton(
-            onPressed: () => _animalBuilderKey.currentState?.addShape(),
-            child: const Icon(Icons.add),
-          ),
-          GridView.count(
-            key: ValueKey(_tasks.length),
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            children: _tasks,
-          ),
-        ]));
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _navBarIndex = index + 1;
+          });
+        },
+        children: pages,
+      ),
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: _navBarIndex,
+        onTap: (index) {
+          if (index == 0 || index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      index == 0 ? StatsPage() : SettingsPage()),
+            );
+          } else {
+            _pageController.jumpToPage(index - 1);
+          }
+        },
+      ),
+    );
   }
 }

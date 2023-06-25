@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-const cardColor = Color.fromRGBO(175, 210, 210, 1);
-
 class AnimalBuilder extends StatefulWidget {
   AnimalBuilder({required this.svgPath, required this.biomeIcon, Key? key})
       : super(key: key);
@@ -102,7 +100,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
             padding: const EdgeInsets.all(15.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
-              color: cardColor,
+              color: Theme.of(context).unselectedWidgetColor,
             ),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
