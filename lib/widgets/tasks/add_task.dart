@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -24,6 +23,8 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   bool _monthly = false;
   bool _isExpanded = false;
   String _selectedOption = 'Daily';
+  int _daysPerMonth = 1;
+  int _daysPerWeek = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +78,12 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                           Divider(color: Theme.of(context).dividerColor),
                           const SizedBox(height: 16),
                           _buildBiDailySwitch(),
-                          Divider(color: Colors.grey),
+                          const Divider(color: Colors.grey),
                           _buildWeeklySwitch(),
-                          Divider(color: Colors.grey),
+                          if (_weekly) _buildDaysPerWeekSelector(),
+                          const Divider(color: Colors.grey),
                           _buildMonthlySwitch(),
+                          if (_monthly) _buildDaysPerMonthSelector()
                         ],
                       ),
                       isExpanded: _isExpanded,
@@ -107,7 +110,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
       ),
       child: Text(
         'Task Days: $_selectedOption',
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
@@ -181,6 +184,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                             _monthly = false;
                             _selectedOption = 'Custom';
                           }
+                          updateSelectionOptionAndState();
                         });
                       },
               ),
@@ -212,6 +216,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _monthly = false;
                       _selectedOption = 'BiDaily';
                     }
+                    updateSelectionOptionAndState();
                   });
                 },
           activeColor: Theme.of(context).primaryColor,
@@ -242,6 +247,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _monthly = false;
                       _selectedOption = 'Weekly';
                     }
+                    updateSelectionOptionAndState();
                   });
                 },
           activeColor: Theme.of(context).primaryColor,
@@ -272,6 +278,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _weekly = false;
                       _selectedOption = 'Monthly';
                     }
+                    updateSelectionOptionAndState();
                   });
                 },
           activeColor: Theme.of(context).primaryColor,
@@ -283,8 +290,8 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   Widget _buildSubmitButton(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: Theme.of(context).primaryColor,
-        onPrimary: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
@@ -300,10 +307,108 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             'biDaily': _biDaily,
             'weekly': _weekly,
             'monthly': _monthly,
+            'daysPerWeek': _daysPerWeek,
+            'daysPerMonth': _daysPerMonth,
           };
           Navigator.pop(context, taskData);
         }
       },
     );
+  }
+
+  Widget _buildDaysPerWeekSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text(
+          'Days per Week:',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: _daysPerWeek > 1
+                  ? () {
+                      setState(() {
+                        _daysPerWeek--;
+                      });
+                    }
+                  : null,
+            ),
+            Text(
+              '$_daysPerWeek',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                setState(() {
+                  _daysPerWeek++;
+                });
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDaysPerMonthSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text(
+          'Days per Month:',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: _daysPerMonth > 1
+                  ? () {
+                      setState(() {
+                        _daysPerMonth--;
+                      });
+                    }
+                  : null,
+            ),
+            Text(
+              '$_daysPerMonth',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                setState(() {
+                  _daysPerMonth++;
+                });
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void updateSelectedOption() {
+    if (_daysOfWeek.contains(true)) {
+      _selectedOption = 'Custom';
+    } else if (_biDaily) {
+      _selectedOption = 'BiDaily';
+    } else if (_weekly) {
+      _selectedOption = 'Weekly';
+    } else if (_monthly) {
+      _selectedOption = 'Monthly';
+    } else {
+      _selectedOption = 'Daily';
+    }
+  }
+
+  void updateSelectionOptionAndState() {
+    setState(() {
+      updateSelectedOption();
+    });
   }
 }

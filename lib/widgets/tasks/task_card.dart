@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -10,14 +9,19 @@ class TaskCard extends StatefulWidget {
   final bool biDaily;
   final bool weekly;
   final bool monthly;
+  final int daysPerMonth;
+  final int daysPerWeek;
 
-  TaskCard({
+  const TaskCard({
+    super.key,
     required this.title,
     required this.tag,
     required this.daysOfWeek,
     required this.biDaily,
     required this.weekly,
     required this.monthly,
+    required this.daysPerMonth,
+    required this.daysPerWeek,
   });
 
   @override

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/pages/HomePage.dart';
-import 'package:taskzoo/pages/ZooPage.dart';
-import 'package:taskzoo/pages/StatsPage.dart';
-import 'package:taskzoo/pages/SettingsPage.dart';
-import 'package:taskzoo/widgets/home/Navbar.dart';
+import 'package:taskzoo/pages/home_page.dart';
+import 'package:taskzoo/pages/zoo_page.dart';
+import 'package:taskzoo/pages/stats_page.dart';
+import 'package:taskzoo/pages/settings_page.dart';
+import 'package:taskzoo/widgets/home/navbar.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final pages = [
       HomePage(),
-      ZooPage(),
+      const ZooPage(),
     ];
     return Scaffold(
       body: PageView(
@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      index == 0 ? StatsPage() : SettingsPage()),
+                      index == 0 ? const StatsPage() : const SettingsPage()),
             );
           } else {
             _pageController.jumpToPage(index - 1);

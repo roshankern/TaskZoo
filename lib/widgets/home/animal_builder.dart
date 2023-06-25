@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AnimalBuilder extends StatefulWidget {
-  AnimalBuilder({required this.svgPath, required this.biomeIcon, Key? key})
+  const AnimalBuilder(
+      {required this.svgPath, required this.biomeIcon, Key? key})
       : super(key: key);
 
   final String svgPath;
@@ -83,7 +84,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
       future: svgDataFuture,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text('Loading...');
+          return const Text('Loading...');
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         }
@@ -122,7 +123,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
                 children: <Widget>[
                   Text(
                     '${(_buildPercent * 100).toStringAsFixed(0)}%',
-                    style: TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 12),
                   ),
                   Expanded(
                     child: Padding(
@@ -134,11 +135,12 @@ class AnimalBuilderState extends State<AnimalBuilder> {
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey, width: 1),
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
+                                  const BorderRadius.all(Radius.circular(4)),
                             ),
                           ),
                           ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(4)),
                             child: LinearProgressIndicator(
                               value: _buildPercent,
                               backgroundColor: Colors.transparent,
@@ -152,7 +154,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
                   ),
                   Text(
                     '$_numShapes/$_totalNumShapes shapes',
-                    style: TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 12),
                   ),
                 ],
               ),

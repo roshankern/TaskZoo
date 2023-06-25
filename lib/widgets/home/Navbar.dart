@@ -31,7 +31,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                 children: [
                   IconButton(
                     color: Theme.of(context).indicatorColor,
-                    icon: Icon(Icons.pie_chart_outline),
+                    icon: const Icon(Icons.pie_chart_outline),
                     onPressed: () {
                       widget.onTap(0);
                     },
@@ -39,7 +39,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                   ),
                   IconButton(
                     color: Theme.of(context).indicatorColor,
-                    icon: Icon(Icons.settings_outlined),
+                    icon: const Icon(Icons.settings_outlined),
                     onPressed: () {
                       widget.onTap(3);
                     },
@@ -55,7 +55,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                       color: widget.currentIndex == 1
                           ? Theme.of(context).indicatorColor
                           : Theme.of(context).dividerColor,
-                      icon: Icon(Icons.fiber_manual_record),
+                      icon: const Icon(Icons.fiber_manual_record),
                       onPressed: () {
                         widget.onTap(1);
                       },
@@ -65,7 +65,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                       color: widget.currentIndex == 2
                           ? Theme.of(context).indicatorColor
                           : Theme.of(context).dividerColor,
-                      icon: Icon(Icons.fiber_manual_record),
+                      icon: const Icon(Icons.fiber_manual_record),
                       onPressed: () {
                         widget.onTap(2);
                       },

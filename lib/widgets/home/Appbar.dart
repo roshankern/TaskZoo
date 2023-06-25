@@ -11,6 +11,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
   @override
   _CustomAppBarState createState() =>
+      // ignore: no_logic_in_create_state
       _CustomAppBarState(onAddTaskPressed: onAddTaskPressed);
 
   @override
@@ -70,7 +71,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             width: 1,
             height: appBarSize,
             color: Theme.of(context).indicatorColor,
-            margin: EdgeInsets.symmetric(horizontal: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
           ),
           IconButton(
             iconSize: appBarSize / 1.5,

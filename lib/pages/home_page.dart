@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/home/Appbar.dart';
-import 'package:taskzoo/widgets/tasks/AddTask.dart';
-import 'package:taskzoo/widgets/tasks/TaskCard.dart';
-import 'package:taskzoo/widgets/home/AnimalBuilder.dart';
+import 'package:taskzoo/widgets/home/appbar.dart';
+import 'package:taskzoo/widgets/tasks/add_task.dart';
+import 'package:taskzoo/widgets/tasks/task_card.dart';
+import 'package:taskzoo/widgets/home/animal_builder.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -33,6 +33,8 @@ class _HomePageState extends State<HomePage> {
           biDaily: result['biDaily'],
           weekly: result['weekly'],
           monthly: result['monthly'],
+          daysPerMonth: result['daysPerMonth'],
+          daysPerWeek: result['daysPerWeek'],
         ));
       });
     }

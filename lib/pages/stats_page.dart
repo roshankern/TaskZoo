@@ -6,14 +6,14 @@ class StatsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: const Center(
         child: Text('Stats', style: TextStyle(fontSize: 24)),
       ),
       bottomNavigationBar: BottomAppBar(
         height: 50,
         color: Theme.of(context).unselectedWidgetColor,
         child: IconButton(
-          icon: Icon(Icons.close),
+          icon: const Icon(Icons.close),
           onPressed: () {
             Navigator.pop(context);
           },
