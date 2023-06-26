@@ -20,12 +20,12 @@ class StatsPage extends StatelessWidget {
       "sun": 0.1,
     };
 
-    List<int> monthTotalCompletedTestData = [19, 18, 16, 4, 19, 9, 8, 5, 7, 16, 18, 11, 0, 17, 11, 11, 19, 10, 16, 0, 5, 14, 1, 8, 3, 17, 8, 11, 2, 10];
+    List<int> monthTotalCompletedTestData = [10, 15, 16, 4, 19, 9, 8, 5, 7, 16, 18, 11, 12, 17, 11, 5, 8, 3, 17, 8, 11, 2, 10];
 
     return Scaffold(
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             PiecesProgressCard(
               piecesCollected: 15,
@@ -37,7 +37,7 @@ class StatsPage extends StatelessWidget {
             DailyPercentCompletedCard(
               data: dailyPercentCompletedTestData,
               barWidth: 15,
-              barHeight: 200,
+              barHeight: 180,
               taskPercentGoal: 0.6,
             ),
             MonthTotalTasksCompletedCard(
