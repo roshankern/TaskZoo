@@ -8,13 +8,13 @@ class StatsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var dailyPercentCompltedTestData = {
-      "mon": 0.5,
+      "mon": 0.3,
       "tue": 0.7,
-      "wed": 0.3,
-      "thu": 0.6,
+      "wed": 0.0,
+      "thu": 0.5,
       "fri": 0.1,
       "sat": 0.6,
-      "sun": 0.9,
+      "sun": 1.0,
     };
 
     return Scaffold(
@@ -31,8 +31,9 @@ class StatsPage extends StatelessWidget {
             ),
             DailyPercentCompletedCard(
               data: dailyPercentCompltedTestData,
-              width: 300,
+              width: 320,
               height: 150,
+              taskPercentGoal: 0.5,
             )
           ]),
       bottomNavigationBar: BottomAppBar(
