@@ -32,60 +32,79 @@ class MonthTotalTasksCompletedCard extends StatelessWidget {
     );
 
     return Padding(
-  padding: const EdgeInsets.all(10.0),
-  child: Container(
-    width: MediaQuery.of(context).size.width,
-    padding: const EdgeInsets.all(0.0),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10.0),
-      color: Theme.of(context).unselectedWidgetColor,
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      padding: const EdgeInsets.all(10.0),
+      child: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'total tasks completed',
-              style: TextStyle(
-                fontSize: 12,
-              ),
-              textAlign: TextAlign.center,
+          Container(
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.all(0.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              color: Theme.of(context).unselectedWidgetColor,
             ),
-          ),
-          SizedBox(
-            height: height-20,
-            child: LineChart(
-              LineChartData(
-                minX: 0,
-                maxX: maxX,
-                minY: -1,
-                maxY: maxY,
-                titlesData: FlTitlesData(show: false),
-                borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  LineChartBarData(
-                    gradient: lineChartGradient,
-                    spots: spots,
-                    isCurved: true,
-                    dotData: FlDotData(show: false),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: lineChartGradient,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'total tasks completed',
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SizedBox(
+                    height: height-20,
+                    child: LineChart(
+                      LineChartData(
+                        minX: 0,
+                        maxX: maxX,
+                        minY: -1,
+                        maxY: maxY,
+                        titlesData: FlTitlesData(show: false),
+                        borderData: FlBorderData(show: false),
+                        lineBarsData: [
+                          LineChartBarData(
+                            gradient: lineChartGradient,
+                            spots: spots,
+                            isCurved: true,
+                            dotData: FlDotData(show: false),
+                            belowBarData: BarAreaData(
+                              show: true,
+                              gradient: lineChartGradient,
+                            ),
+                          ),
+                        ],
+                        gridData: FlGridData(show: false),
+                      ),
                     ),
                   ),
                 ],
-                gridData: FlGridData(show: false),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '${data.length} day history',
+                style: TextStyle(
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
         ],
       ),
-    ),
-  ),
-);
-
+    );
   }
 }
+
