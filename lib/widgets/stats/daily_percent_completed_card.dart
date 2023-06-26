@@ -159,7 +159,7 @@ class BarChartPainter extends CustomPainter {
 
     // Draw dashed line
     double goalLineTop = maxBarHeight - (maxBarHeight * taskPercentGoal);
-    double goalLineWidth = ((i-1) * (barWidth + spaceWidth)) + barWidth;  // Calculate the rightmost edge of the last bar
+    double goalLineWidth = ((i-1) * (barWidth + spaceWidth)) + 5;  // Calculate the rightmost edge of the last bar
     canvas.save();
     canvas.translate(0, goalLineTop);
     DashedLinePainter().paint(canvas, Size(goalLineWidth, 0));  // Use goalLineWidth instead of availableWidth
