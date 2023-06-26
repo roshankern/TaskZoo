@@ -31,9 +31,9 @@ class StatsPage extends StatelessWidget {
             ),
             DailyPercentCompletedCard(
               data: dailyPercentCompltedTestData,
-              width: 320,
-              height: 150,
-              taskPercentGoal: 0.5,
+              barWidth: 20,
+              barHeight: 200,
+              taskPercentGoal: 0.6,
             )
           ]),
       bottomNavigationBar: BottomAppBar(
