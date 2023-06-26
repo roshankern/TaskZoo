@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:curved_progress_bar/curved_progress_bar.dart';
 
 class Circle extends CustomPainter {
+  final double outlineStrokeWidth;
+  final Color outlineColor;
+
+  Circle({this.outlineStrokeWidth = 3, this.outlineColor = Colors.grey});
+
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint()
-      ..color = Colors.grey
-      ..strokeWidth = 3
+      ..color = outlineColor
+      ..strokeWidth = outlineStrokeWidth
       ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(size.center(Offset.zero), size.width / 2, paint);
@@ -20,12 +26,14 @@ class PiecesProgressCard extends StatelessWidget {
   final int totalPieces;
   final double circularProgressDiameter;
   final double circularProgressStroke;
+  final double outlineStrokeWidth;
 
   PiecesProgressCard({
     required this.piecesCollected,
     required this.totalPieces,
     this.circularProgressDiameter = 200,
     this.circularProgressStroke = 20,
+    this.outlineStrokeWidth = 3,
     Key? key,
   }) : super(key: key);
 
@@ -51,23 +59,35 @@ class PiecesProgressCard extends StatelessWidget {
                 alignment: Alignment.center,
                 children: <Widget>[
                   CustomPaint(
-                    painter: Circle(),
+                    painter: Circle(
+                        outlineStrokeWidth: outlineStrokeWidth,
+                        outlineColor: Theme.of(context).dividerColor),
                     child: Container(
-                      height: (circularProgressDiameter+circularProgressStroke)-3,
-                      width: (circularProgressDiameter+circularProgressStroke)-3,
+                      height:
+                          (circularProgressDiameter + circularProgressStroke) -
+                              outlineStrokeWidth,
+                      width:
+                          (circularProgressDiameter + circularProgressStroke) -
+                              outlineStrokeWidth,
                     ),
                   ),
                   CustomPaint(
-                    painter: Circle(),
+                    painter: Circle(
+                        outlineStrokeWidth: outlineStrokeWidth,
+                        outlineColor: Theme.of(context).dividerColor),
                     child: Container(
-                      height: (circularProgressDiameter-circularProgressStroke)+3,
-                      width: (circularProgressDiameter-circularProgressStroke)+3,
+                      height:
+                          (circularProgressDiameter - circularProgressStroke) +
+                              outlineStrokeWidth,
+                      width:
+                          (circularProgressDiameter - circularProgressStroke) +
+                              outlineStrokeWidth,
                     ),
                   ),
                   Container(
                     height: circularProgressDiameter,
                     width: circularProgressDiameter,
-                    child: CircularProgressIndicator(
+                    child: CurvedCircularProgressIndicator(
                       value: progress,
                       strokeWidth: circularProgressStroke,
                       color: Colors.white,
@@ -76,14 +96,29 @@ class PiecesProgressCard extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
-                        '$piecesCollected/$totalPieces',
-                        style:
-                            TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      RichText(
+                        text: TextSpan(
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: '$piecesCollected',
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).dividerColor),
+                            ),
+                            TextSpan(
+                              text: '/$totalPieces',
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        ),
                       ),
                       Text(
                         'pieces collected',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                     ],
                   ),

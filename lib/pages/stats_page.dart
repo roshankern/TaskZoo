@@ -10,7 +10,16 @@ class StatsPage extends StatelessWidget {
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [PiecesProgressCard(piecesCollected: 15, totalPieces: 20)]),
+          children: [
+            PiecesProgressCard(
+              piecesCollected: 15, 
+              totalPieces: 20,
+              circularProgressDiameter: 200,
+              circularProgressStroke : 20,
+              outlineStrokeWidth: 2,
+              )
+            ]
+          ),
       bottomNavigationBar: BottomAppBar(
         height: 50,
         color: Theme.of(context).unselectedWidgetColor,
