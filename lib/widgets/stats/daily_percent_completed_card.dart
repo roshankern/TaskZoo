@@ -41,8 +41,8 @@ class DailyPercentCompletedCard extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   CustomPaint(
-                    size: Size(barWidth * data.length, barHeight + 20),
-                    painter: BarChartPainter(data, barWidth, barHeight),
+                    size: Size(barWidth * data.length, barHeight + 10),
+                    painter: BarChartPainter(data, barWidth, barHeight, MediaQuery.of(context).size.width, taskPercentGoal),
                   ),
                 ],
               ),
@@ -83,20 +83,23 @@ class DailyPercentCompletedCard extends StatelessWidget {
 
 class BarChartPainter extends CustomPainter {
   final Map<String, double> data;
-  double barWidth;
+  final double barWidth;
   final double barHeight;
+  final double availableWidth; // Add this parameter
   final Color barColor = Colors.white;
   final Color backgroundBarColor = Colors.grey;
   final double cornerRadius = 8.0;
   final double strokeWidth = 2.0;
+  final double taskPercentGoal;
 
-  BarChartPainter(this.data, this.barWidth, this.barHeight);
+  BarChartPainter(this.data, this.barWidth, this.barHeight, this.availableWidth, this.taskPercentGoal); // Add availableWidth here
 
   @override
   void paint(Canvas canvas, Size size) {
-    double maxBarHeight = barHeight - 20;
-    double gapWidth = size.width / (2 * data.length + 1); // Added this line
-    barWidth = gapWidth; // Update barWidth based on the calculated gapWidth
+    double maxBarHeight = barHeight - 10;
+    double totalBarWidth = barWidth * data.length;
+    double totalSpacingWidth = availableWidth - totalBarWidth;
+    double spaceWidth = totalSpacingWidth / (data.length);
 
     var textPainter = TextPainter(
       textDirection: TextDirection.ltr,
@@ -106,7 +109,7 @@ class BarChartPainter extends CustomPainter {
     int i = 0;
     for (var entry in data.entries) {
       double actualBarHeight = maxBarHeight * entry.value;
-      double left = (2 * i + 1) * gapWidth; // Update left position calculation
+      double left = i * (barWidth + spaceWidth); // Change this line
       double top = maxBarHeight - actualBarHeight;
 
       var backgroundRect = RRect.fromRectAndRadius(
@@ -149,10 +152,35 @@ class BarChartPainter extends CustomPainter {
 
       i++;
     }
+
+    // Draw dashed line
+    double goalLineTop = maxBarHeight - (maxBarHeight * taskPercentGoal);
+    double goalLineWidth = ((i-1) * (barWidth + spaceWidth)) + barWidth;  // Calculate the rightmost edge of the last bar
+    canvas.save();
+    canvas.translate(0, goalLineTop);
+    DashedLinePainter().paint(canvas, Size(goalLineWidth, 0));  // Use goalLineWidth instead of availableWidth
+    canvas.restore();
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return false;
   }
+}
+
+class DashedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    double dashWidth = 9, dashSpace = 5, startX = 0;
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1;
+    while (startX < size.width) {
+      canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
