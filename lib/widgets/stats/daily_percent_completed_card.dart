@@ -42,7 +42,7 @@ class DailyPercentCompletedCard extends StatelessWidget {
                   SizedBox(height: 10),
                   CustomPaint(
                     size: Size(barWidth * data.length, barHeight + 10),
-                    painter: BarChartPainter(data, barWidth, barHeight, MediaQuery.of(context).size.width, taskPercentGoal),
+                    painter: BarChartPainter(data, barWidth, barHeight, MediaQuery.of(context).size.width-30-20-30, taskPercentGoal),
                   ),
                 ],
               ),
@@ -57,7 +57,7 @@ class DailyPercentCompletedCard extends StatelessWidget {
                     child: RotatedBox(
                       quarterTurns: -1,
                       child: Text(
-                        'lost',
+                        'gained',
                         style: TextStyle(fontSize: 12),
                       ),
                     ),
@@ -66,7 +66,7 @@ class DailyPercentCompletedCard extends StatelessWidget {
                     child: RotatedBox(
                       quarterTurns: -1,
                       child: Text(
-                        'gained',
+                        'lost',
                         style: TextStyle(fontSize: 12),
                       ),
                     ),
@@ -85,21 +85,25 @@ class BarChartPainter extends CustomPainter {
   final Map<String, double> data;
   final double barWidth;
   final double barHeight;
-  final double availableWidth; // Add this parameter
+  final double availableWidth; // Total available width
   final Color barColor = Colors.white;
   final Color backgroundBarColor = Colors.grey;
   final double cornerRadius = 8.0;
   final double strokeWidth = 2.0;
   final double taskPercentGoal;
 
-  BarChartPainter(this.data, this.barWidth, this.barHeight, this.availableWidth, this.taskPercentGoal); // Add availableWidth here
+  BarChartPainter(this.data, this.barWidth, this.barHeight, this.availableWidth, this.taskPercentGoal); 
 
   @override
   void paint(Canvas canvas, Size size) {
     double maxBarHeight = barHeight - 10;
     double totalBarWidth = barWidth * data.length;
-    double totalSpacingWidth = availableWidth - totalBarWidth;
-    double spaceWidth = totalSpacingWidth / (data.length);
+
+    // Total available width for the spaces
+    double totalSpacingWidth = availableWidth - totalBarWidth; 
+
+    // Width of each space
+    double spaceWidth = totalSpacingWidth / (data.length - 1); 
 
     var textPainter = TextPainter(
       textDirection: TextDirection.ltr,
@@ -109,7 +113,7 @@ class BarChartPainter extends CustomPainter {
     int i = 0;
     for (var entry in data.entries) {
       double actualBarHeight = maxBarHeight * entry.value;
-      double left = i * (barWidth + spaceWidth); // Change this line
+      double left = i * (barWidth + spaceWidth); 
       double top = maxBarHeight - actualBarHeight;
 
       var backgroundRect = RRect.fromRectAndRadius(

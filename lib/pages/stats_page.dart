@@ -9,12 +9,12 @@ class StatsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var dailyPercentCompltedTestData = {
       "mon": 0.3,
-      "tue": 0.7,
+      "tue": 0.1,
       "wed": 0.0,
       "thu": 0.5,
-      "fri": 0.1,
+      "fri": 1.0,
       "sat": 0.6,
-      "sun": 1.0,
+      "sun": 0.1,
     };
 
     return Scaffold(
@@ -31,7 +31,7 @@ class StatsPage extends StatelessWidget {
             ),
             DailyPercentCompletedCard(
               data: dailyPercentCompltedTestData,
-              barWidth: 20,
+              barWidth: 15,
               barHeight: 200,
               taskPercentGoal: 0.6,
             )
