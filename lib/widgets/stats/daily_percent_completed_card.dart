@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dotted_line/dotted_line.dart';
 
 class DailyPercentCompletedCard extends StatelessWidget {
   final Map<String, double> data;
