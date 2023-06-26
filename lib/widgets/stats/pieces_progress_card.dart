@@ -54,7 +54,7 @@ class PiecesProgressCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
-              height: 220,
+              height: circularProgressDiameter+20,
               child: Stack(
                 alignment: Alignment.center,
                 children: <Widget>[

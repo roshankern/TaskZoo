@@ -20,9 +20,48 @@ class StatsPage extends StatelessWidget {
       "sun": 0.1,
     };
 
-    List<int> monthTotalCompletedTestData = [10, 15, 16, 4, 19, 9, 8, 5, 7, 16, 18, 11, 12, 17, 11, 5, 8, 3, 17, 8, 11, 2, 10];
+    List<int> monthTotalCompletedTestData = [
+      10,
+      15,
+      16,
+      4,
+      19,
+      9,
+      8,
+      5,
+      7,
+      16,
+      18,
+      11,
+      12,
+      17,
+      11,
+      5,
+      8,
+      3,
+      17,
+      8,
+      11,
+      2,
+      10
+    ];
+
+    const appBarSize = 40.0;
 
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        title: IconButton(
+            iconSize: appBarSize / 1.5,
+            icon: const Icon(Icons.keyboard_control),
+            color: Theme.of(context).indicatorColor,
+            onPressed: () {
+              // Perform settings action
+            },
+          ),
+      ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,12 +76,12 @@ class StatsPage extends StatelessWidget {
             DailyPercentCompletedCard(
               data: dailyPercentCompletedTestData,
               barWidth: 15,
-              barHeight: 180,
+              barHeight: 160,
               taskPercentGoal: 0.6,
             ),
             MonthTotalTasksCompletedCard(
               data: monthTotalCompletedTestData,
-              height: 200,
+              height: 180,
             ),
           ]),
       bottomNavigationBar: BottomAppBar(
