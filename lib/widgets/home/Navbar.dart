@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomNavBar extends StatefulWidget {
   // icon sizes
-  final double dotIconSize = 15;
+  final double dotIconSize = 10;
   final double otherIconSize = 25;
 
   final int currentIndex;
@@ -55,21 +55,25 @@ class _CustomNavBarState extends State<CustomNavBar> {
                       color: widget.currentIndex == 1
                           ? Theme.of(context).indicatorColor
                           : Theme.of(context).dividerColor,
-                      icon: const Icon(Icons.fiber_manual_record),
+                      icon: const Icon(Icons.circle),
                       onPressed: () {
                         widget.onTap(1);
                       },
                       iconSize: widget.dotIconSize,
+                      padding: EdgeInsets.all(5),
+                      constraints: BoxConstraints(),
                     ),
                     IconButton(
                       color: widget.currentIndex == 2
                           ? Theme.of(context).indicatorColor
                           : Theme.of(context).dividerColor,
-                      icon: const Icon(Icons.fiber_manual_record),
+                      icon: const Icon(Icons.circle),
                       onPressed: () {
                         widget.onTap(2);
                       },
                       iconSize: widget.dotIconSize,
+                      padding: EdgeInsets.all(5),
+                      constraints: BoxConstraints(),
                     ),
                   ],
                 ),
