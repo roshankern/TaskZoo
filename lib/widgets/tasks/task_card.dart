@@ -1,6 +1,9 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+
+String startOfWeek = "Tuesday";
 
 class TaskCard extends StatefulWidget {
   final String title;
@@ -13,7 +16,7 @@ class TaskCard extends StatefulWidget {
   final int daysPerWeek;
 
   const TaskCard({
-    super.key,
+    Key? key,
     required this.title,
     required this.tag,
     required this.daysOfWeek,
@@ -22,7 +25,7 @@ class TaskCard extends StatefulWidget {
     required this.monthly,
     required this.daysPerMonth,
     required this.daysPerWeek,
-  });
+  }) : super(key: key);
 
   @override
   _TaskCardState createState() => _TaskCardState();
@@ -30,6 +33,7 @@ class TaskCard extends StatefulWidget {
 
 class _TaskCardState extends State<TaskCard> {
   bool isCompleted = false;
+  bool isVisible = false;
   late DateTime previousDate;
   bool _isTapped = false;
   late Set<DateTime> completedDates;
@@ -47,57 +51,45 @@ class _TaskCardState extends State<TaskCard> {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     bool isTodayInDaysOfWeek = widget.daysOfWeek[now.weekday - 1];
-
-    if (widget.biDaily) {
-      final dayDifference = now.difference(previousDate).inDays;
-      if (dayDifference > 1) {
-        if (dayDifference <= 3) {
-          previousDate = previousDate.add(const Duration(days: 2));
-        } else {
-          previousDate = now;
-          if (streakCount > longestStreak) {
-            longestStreak = streakCount;
-          }
-          streakCount = 0;
-        }
-      }
-      isTodayInDaysOfWeek = previousDate.year == now.year &&
-          previousDate.month == now.month &&
-          previousDate.day == now.day;
-    }
-
-    if (isTodayInDaysOfWeek && isCompleted) {
-      completedDates.add(DateTime(now.year, now.month, now.day));
-      streakCount++;
-      if (streakCount > longestStreak) {
-        longestStreak = streakCount;
-      }
-    } else if (!isTodayInDaysOfWeek || !isCompleted) {
-      if (streakCount > longestStreak) {
-        longestStreak = streakCount;
-      }
-      streakCount = 0;
-    }
-
     final last30DaysDates = _getLast30DaysDates();
     final completionCount = _getCompletionCount(last30DaysDates);
+
+    String schedule = determineFrequency(
+      widget.daysOfWeek,
+      widget.biDaily,
+      widget.weekly,
+      widget.monthly,
+    );
+
+    //TODO: Implement Streaks functionality based on schedule here:
+    DateTime nextCompletionDate =
+        calculateNextCompletionDate(schedule, previousDate);
+    bool isStreakContinued = now.isBefore(nextCompletionDate);
+
+    if (isStreakContinued) {
+      if (completedDates.contains(now)) {
+        streakCount++;
+        if (streakCount > longestStreak) {
+          longestStreak = streakCount;
+        }
+      }
+    } else {
+      streakCount = 0;
+    }
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: GestureDetector(
         onTap: () {
           setState(() {
-            if (!_isTapped) {
-              _isTapped = true;
-            } else {
-              _isTapped = false;
-            }
+            _isTapped = !_isTapped;
           });
         },
         onLongPress: isTodayInDaysOfWeek && !_isTapped
             ? () {
                 setState(() {
                   isCompleted = true;
+                  completedDates.add(now);
                 });
               }
             : null,
@@ -239,6 +231,25 @@ class _TaskCardState extends State<TaskCard> {
     );
   }
 
+  String determineFrequency(
+    List<bool> daysOfWeek,
+    bool biDaily,
+    bool weekly,
+    bool monthly,
+  ) {
+    if (daysOfWeek.any((day) => day == true)) {
+      return 'custom';
+    } else if (weekly) {
+      return 'weekly';
+    } else if (monthly) {
+      return 'monthly';
+    } else if (biDaily) {
+      return 'biDaily';
+    } else {
+      return 'daily';
+    }
+  }
+
   String _getTimeUntilMidnight() {
     final now = DateTime.now();
     final midnight = DateTime(now.year, now.month, now.day + 1);
@@ -266,5 +277,123 @@ class _TaskCardState extends State<TaskCard> {
       }
     }
     return count;
+  }
+
+  DateTime calculateNextCompletionDate(
+      String schedule, DateTime previousCompletionDate) {
+    DateTime nextValidDate = previousCompletionDate;
+    print("invoked");
+    print(schedule);
+    switch (schedule) {
+      case 'daily':
+        return previousCompletionDate.add(const Duration(days: 1));
+      case 'custom':
+        final mondayShifted = shiftRight(widget.daysOfWeek, 1);
+        final daysOfWeek = widget.daysOfWeek;
+        final currentDay = previousCompletionDate.weekday;
+        final nextValidDay = (currentDay) % 7; // Get the next day index
+        final now = DateTime.now();
+
+        if (mondayShifted[nextValidDay] == true) {
+          nextValidDate = DateTime(now.year, now.month, now.day)
+              .add(const Duration(hours: 23, minutes: 59));
+          // print("Today's the day");
+          // print(widget.daysOfWeek);
+          // print('Next valid date: $nextValidDate');
+          // print(DateFormat('EEEE').format(nextValidDate));
+          return nextValidDate;
+        }
+
+        // Find the next true day of the week
+        int count = 0;
+        for (int i = nextValidDay; i < 7; i++) {
+          count++;
+          if (daysOfWeek[i]) {
+            nextValidDate = DateTime(now.year, now.month, now.day + count)
+                .add(const Duration(hours: 23, minutes: 59));
+            // print("In at least a few days");
+            // print(widget.daysOfWeek);
+            // print('Next valid date: $nextValidDate');
+            // print(DateFormat('EEEE').format(nextValidDate));
+            break;
+          }
+        }
+        return nextValidDate;
+      case 'weekly':
+        final currentDay = previousCompletionDate.weekday;
+        final nextValidDay = _getNextValidDay(currentDay, startOfWeek);
+        final daysToAdd = _getDaysToAdd(currentDay, nextValidDay);
+
+        nextValidDate = previousCompletionDate.add(Duration(days: daysToAdd));
+        nextValidDate = _getStartOfWeek(nextValidDate, startOfWeek);
+
+        // print("Next week's start: $nextValidDate");
+        return nextValidDate;
+
+      case 'monthly':
+        if (previousCompletionDate.month == 12) {
+          nextValidDate = DateTime(previousCompletionDate.year + 1, 1, 1);
+        } else {
+          nextValidDate = DateTime(
+              previousCompletionDate.year, previousCompletionDate.month + 1, 1);
+        }
+        // print("Next month's start: $nextValidDate");
+        return nextValidDate;
+      case 'bidaily':
+        return previousCompletionDate.add(const Duration(days: 2));
+      default:
+        return previousCompletionDate.add(const Duration(days: 1));
+    }
+  }
+
+  int _getNextValidDay(int currentDay, String startOfWeek) {
+    final daysOfWeek = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ];
+    final startDayIndex = daysOfWeek.indexOf(startOfWeek);
+    final nextValidDayIndex = (startDayIndex + 7 - currentDay) % 7;
+    return nextValidDayIndex;
+  }
+
+  int _getDaysToAdd(int currentDay, int nextValidDay) {
+    return nextValidDay >= currentDay
+        ? nextValidDay - currentDay
+        : (nextValidDay + 7) - currentDay;
+  }
+
+  DateTime _getStartOfWeek(DateTime date, String startOfWeek) {
+    final daysOfWeek = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ];
+    final startDayIndex = daysOfWeek.indexOf(startOfWeek);
+    final currentDayIndex = date.weekday - 1;
+    final daysToAdd = startDayIndex >= currentDayIndex
+        ? startDayIndex - currentDayIndex
+        : (startDayIndex + 7) - currentDayIndex;
+    return date.add(Duration(days: daysToAdd));
+  }
+
+  List<bool> shiftRight(List<bool> array, int n) {
+    List<bool> shiftedArray = List.from(array);
+    final int size = array.length;
+
+    for (int i = 0; i < size; i++) {
+      int newIndex = (i + n) % size;
+      shiftedArray[newIndex] = array[i];
+    }
+
+    return shiftedArray;
   }
 }
