@@ -17,10 +17,11 @@ class TaskCard extends StatefulWidget {
   int streakCount = 0;
   int longestStreak = 0;
   bool isMeantForToday = true;
+  int currentCycleCompletions = 0;
   late List<DateTime> last30DaysDates;
   late int completionCount30days;
-  late Set<DateTime> completedDates;
-  late DateTime previousDate;
+  late Set<DateTime> completedDates = HashSet<DateTime>();
+  late DateTime previousDate = DateTime.now();
   late DateTime nextCompletionDate;
   late bool isStreakContinued;
 
@@ -49,8 +50,6 @@ class _TaskCardState extends State<TaskCard> {
   @override
   void initState() {
     super.initState();
-    widget.previousDate = DateTime.now();
-    widget.completedDates = HashSet<DateTime>();
     widget.nextCompletionDate = calculateNextCompletionDate(
         determineFrequency(
           widget.daysOfWeek,
@@ -65,8 +64,6 @@ class _TaskCardState extends State<TaskCard> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-
     String schedule = determineFrequency(
       widget.daysOfWeek,
       widget.biDaily,
@@ -76,6 +73,8 @@ class _TaskCardState extends State<TaskCard> {
 
     //Reset completion
     _completionResetHandler();
+
+    //Handle setting and resetting stats based on the schedule
     _streakAndStatsHandler(schedule);
 
     return Padding(
@@ -283,7 +282,6 @@ class _TaskCardState extends State<TaskCard> {
   void _streakAndStatsHandler(String schedule) {
     DateTime now = DateTime.now();
     if (schedule == "daily") {
-      //Calculate nexCompletionDate
       DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
       isStreakContinued = now.isBefore(widget.nextCompletionDate);
       if (isStreakContinued && widget.isCompleted) {
@@ -306,7 +304,37 @@ class _TaskCardState extends State<TaskCard> {
         widget.nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
-    } else if (schedule == "monthly") {}
+    } else if (schedule == "custom") {
+      //Requires further testing
+      DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
+      widget.isMeantForToday = widget.daysOfWeek[now.weekday - 1];
+
+      isStreakContinued =
+          widget.previousDate.isBefore(widget.nextCompletionDate) ||
+              !widget.isMeantForToday;
+      if (isStreakContinued && widget.isCompleted && widget.isMeantForToday) {
+        if (!widget.completedDates.contains(today)) {
+          if (widget.isMeantForToday) {
+            widget.completedDates.add(today);
+            widget.last30DaysDates = _getLast30DaysDates();
+            widget.completionCount30days =
+                _getCompletionCount(widget.last30DaysDates);
+            widget.streakCount++;
+            if (widget.streakCount > widget.longestStreak) {
+              widget.longestStreak = widget.streakCount;
+            }
+            widget.previousDate = today;
+            widget.nextCompletionDate =
+                calculateNextCompletionDate(schedule, widget.previousDate);
+          }
+        }
+      }
+      if (!isStreakContinued) {
+        widget.streakCount = 0;
+        widget.nextCompletionDate =
+            calculateNextCompletionDate(schedule, DateTime.now());
+      }
+    }
   }
 
   void _completionResetHandler() {
@@ -314,6 +342,7 @@ class _TaskCardState extends State<TaskCard> {
         !(widget.completedDates.contains(DateTime(DateTime.now().year,
             DateTime.now().month, DateTime.now().day, 0, 0, 0)))) {
       print("resetting completion");
+      print(widget.completedDates);
       print(widget.isCompleted);
       widget.isCompleted = false;
     } else {
