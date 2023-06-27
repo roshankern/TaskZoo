@@ -1,9 +1,8 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 
-String startOfWeek = "Tuesday";
+String startOfWeek = "Monday";
 
 class TaskCard extends StatefulWidget {
   final String title;
@@ -14,8 +13,18 @@ class TaskCard extends StatefulWidget {
   final bool monthly;
   final int daysPerMonth;
   final int daysPerWeek;
+  bool isCompleted = false;
+  int streakCount = 0;
+  int longestStreak = 0;
+  bool isMeantForToday = true;
+  late List<DateTime> last30DaysDates;
+  late int completionCount30days;
+  late Set<DateTime> completedDates;
+  late DateTime previousDate;
+  late DateTime nextCompletionDate;
+  late bool isStreakContinued;
 
-  const TaskCard({
+  TaskCard({
     Key? key,
     required this.title,
     required this.tag,
@@ -32,27 +41,31 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> {
-  bool isCompleted = false;
-  bool isVisible = false;
-  late DateTime previousDate;
   bool _isTapped = false;
-  late Set<DateTime> completedDates;
-  int streakCount = 0;
-  int longestStreak = 0;
 
+  late bool isStreakContinued;
+
+  //Make modifications to previous date when storing data persistently
   @override
   void initState() {
     super.initState();
-    previousDate = DateTime.now();
-    completedDates = HashSet<DateTime>();
+    widget.previousDate = DateTime.now();
+    widget.completedDates = HashSet<DateTime>();
+    widget.nextCompletionDate = calculateNextCompletionDate(
+        determineFrequency(
+          widget.daysOfWeek,
+          widget.biDaily,
+          widget.weekly,
+          widget.monthly,
+        ),
+        widget.previousDate);
+    widget.last30DaysDates = _getLast30DaysDates();
+    widget.completionCount30days = _getCompletionCount(widget.last30DaysDates);
   }
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    bool isTodayInDaysOfWeek = widget.daysOfWeek[now.weekday - 1];
-    final last30DaysDates = _getLast30DaysDates();
-    final completionCount = _getCompletionCount(last30DaysDates);
+    DateTime now = DateTime.now();
 
     String schedule = determineFrequency(
       widget.daysOfWeek,
@@ -61,21 +74,9 @@ class _TaskCardState extends State<TaskCard> {
       widget.monthly,
     );
 
-    //TODO: Implement Streaks functionality based on schedule here:
-    DateTime nextCompletionDate =
-        calculateNextCompletionDate(schedule, previousDate);
-    bool isStreakContinued = now.isBefore(nextCompletionDate);
-
-    if (isStreakContinued) {
-      if (completedDates.contains(now)) {
-        streakCount++;
-        if (streakCount > longestStreak) {
-          longestStreak = streakCount;
-        }
-      }
-    } else {
-      streakCount = 0;
-    }
+    //Reset completion
+    _completionResetHandler();
+    _streakAndStatsHandler(schedule);
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -85,11 +86,11 @@ class _TaskCardState extends State<TaskCard> {
             _isTapped = !_isTapped;
           });
         },
-        onLongPress: isTodayInDaysOfWeek && !_isTapped
+        onLongPress: !widget.isCompleted && !_isTapped
             ? () {
                 setState(() {
-                  isCompleted = true;
-                  completedDates.add(now);
+                  widget.isCompleted = true;
+                  _streakAndStatsHandler(schedule);
                 });
               }
             : null,
@@ -100,7 +101,7 @@ class _TaskCardState extends State<TaskCard> {
             color: Theme.of(context).unselectedWidgetColor,
           ),
           child: Opacity(
-            opacity: isTodayInDaysOfWeek ? 1 : 0.5,
+            opacity: widget.isMeantForToday ? 1 : 0.5,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +120,7 @@ class _TaskCardState extends State<TaskCard> {
                               widget.title,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: isTodayInDaysOfWeek
+                                color: widget.isMeantForToday
                                     ? Colors.black
                                     : Theme.of(context).dividerColor,
                                 fontSize: 20.0,
@@ -128,7 +129,7 @@ class _TaskCardState extends State<TaskCard> {
                             Text(
                               widget.tag,
                               style: TextStyle(
-                                color: isTodayInDaysOfWeek
+                                color: widget.isMeantForToday
                                     ? Colors.grey
                                     : Theme.of(context).dividerColor,
                               ),
@@ -160,7 +161,7 @@ class _TaskCardState extends State<TaskCard> {
                                   ),
                                   const SizedBox(width: 8.0),
                                   Text(
-                                    '$streakCount',
+                                    widget.streakCount.toString(),
                                     style: const TextStyle(
                                       fontSize: 14.0,
                                       color: Colors.grey,
@@ -178,7 +179,7 @@ class _TaskCardState extends State<TaskCard> {
                                   ),
                                   const SizedBox(width: 8.0),
                                   Text(
-                                    '$longestStreak',
+                                    widget.longestStreak.toString(),
                                     style: const TextStyle(
                                       fontSize: 14.0,
                                       color: Colors.grey,
@@ -196,7 +197,7 @@ class _TaskCardState extends State<TaskCard> {
                                   ),
                                   const SizedBox(width: 8.0),
                                   Text(
-                                    '$completionCount',
+                                    widget.completionCount30days.toString(),
                                     style: const TextStyle(
                                       fontSize: 14.0,
                                       color: Colors.grey,
@@ -206,8 +207,8 @@ class _TaskCardState extends State<TaskCard> {
                               )
                             ],
                           )
-                        : isTodayInDaysOfWeek
-                            ? !isCompleted
+                        : widget.isMeantForToday
+                            ? !widget.isCompleted
                                 ? Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
@@ -272,18 +273,59 @@ class _TaskCardState extends State<TaskCard> {
   int _getCompletionCount(List<DateTime> last30DaysDates) {
     int count = 0;
     for (final date in last30DaysDates) {
-      if (completedDates.contains(date)) {
+      if (widget.completedDates.contains(date)) {
         count++;
       }
     }
     return count;
   }
 
+  void _streakAndStatsHandler(String schedule) {
+    DateTime now = DateTime.now();
+    if (schedule == "daily") {
+      //Calculate nexCompletionDate
+      DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
+      isStreakContinued = now.isBefore(widget.nextCompletionDate);
+      if (isStreakContinued && widget.isCompleted) {
+        if (!widget.completedDates.contains(today)) {
+          widget.completedDates.add(today);
+          widget.last30DaysDates = _getLast30DaysDates();
+          widget.completionCount30days =
+              _getCompletionCount(widget.last30DaysDates);
+          widget.streakCount++;
+          if (widget.streakCount > widget.longestStreak) {
+            widget.longestStreak = widget.streakCount;
+          }
+          widget.previousDate = today;
+          widget.nextCompletionDate =
+              calculateNextCompletionDate(schedule, widget.previousDate);
+        }
+      }
+      if (!isStreakContinued) {
+        widget.streakCount = 0;
+        widget.nextCompletionDate =
+            calculateNextCompletionDate(schedule, DateTime.now());
+      }
+    } else if (schedule == "monthly") {}
+  }
+
+  void _completionResetHandler() {
+    if (widget.isCompleted &&
+        !(widget.completedDates.contains(DateTime(DateTime.now().year,
+            DateTime.now().month, DateTime.now().day, 0, 0, 0)))) {
+      print("resetting completion");
+      print(widget.isCompleted);
+      widget.isCompleted = false;
+    } else {
+      print("No Reset");
+      print(widget.isCompleted);
+    }
+  }
+
   DateTime calculateNextCompletionDate(
       String schedule, DateTime previousCompletionDate) {
     DateTime nextValidDate = previousCompletionDate;
-    print("invoked");
-    print(schedule);
+
     switch (schedule) {
       case 'daily':
         return previousCompletionDate.add(const Duration(days: 1));
@@ -297,10 +339,6 @@ class _TaskCardState extends State<TaskCard> {
         if (mondayShifted[nextValidDay] == true) {
           nextValidDate = DateTime(now.year, now.month, now.day)
               .add(const Duration(hours: 23, minutes: 59));
-          // print("Today's the day");
-          // print(widget.daysOfWeek);
-          // print('Next valid date: $nextValidDate');
-          // print(DateFormat('EEEE').format(nextValidDate));
           return nextValidDate;
         }
 
@@ -311,10 +349,6 @@ class _TaskCardState extends State<TaskCard> {
           if (daysOfWeek[i]) {
             nextValidDate = DateTime(now.year, now.month, now.day + count)
                 .add(const Duration(hours: 23, minutes: 59));
-            // print("In at least a few days");
-            // print(widget.daysOfWeek);
-            // print('Next valid date: $nextValidDate');
-            // print(DateFormat('EEEE').format(nextValidDate));
             break;
           }
         }
@@ -326,8 +360,6 @@ class _TaskCardState extends State<TaskCard> {
 
         nextValidDate = previousCompletionDate.add(Duration(days: daysToAdd));
         nextValidDate = _getStartOfWeek(nextValidDate, startOfWeek);
-
-        // print("Next week's start: $nextValidDate");
         return nextValidDate;
 
       case 'monthly':
@@ -337,7 +369,6 @@ class _TaskCardState extends State<TaskCard> {
           nextValidDate = DateTime(
               previousCompletionDate.year, previousCompletionDate.month + 1, 1);
         }
-        // print("Next month's start: $nextValidDate");
         return nextValidDate;
       case 'bidaily':
         return previousCompletionDate.add(const Duration(days: 2));
