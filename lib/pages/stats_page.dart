@@ -47,6 +47,10 @@ class StatsPage extends StatelessWidget {
     ];
 
     const appBarSize = 40.0;
+    const prop1 = 0.22;
+    const prop2 = 0.18;
+    const prop3 = 0.20;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -64,24 +68,24 @@ class StatsPage extends StatelessWidget {
       ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             PiecesProgressCard(
               piecesCollected: 15,
               totalPieces: 20,
-              circularProgressDiameter: 200,
+              circularProgressDiameter: MediaQuery.of(context).size.height * prop1,
               circularProgressStroke: 20,
               outlineStrokeWidth: 2,
             ),
             DailyPercentCompletedCard(
               data: dailyPercentCompletedTestData,
               barWidth: 15,
-              barHeight: 160,
+              barHeight: MediaQuery.of(context).size.height * prop2,
               taskPercentGoal: 0.6,
             ),
             MonthTotalTasksCompletedCard(
               data: monthTotalCompletedTestData,
-              height: 180,
+              height: MediaQuery.of(context).size.height * prop3,
             ),
           ]),
       bottomNavigationBar: BottomAppBar(

@@ -32,7 +32,7 @@ class MonthTotalTasksCompletedCard extends StatelessWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.fromLTRB(10,0,10,0),
       child: Stack(
         children: [
           Container(
