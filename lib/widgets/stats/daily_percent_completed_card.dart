@@ -16,7 +16,7 @@ class DailyPercentCompletedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.fromLTRB(10,0,10,0),
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.all(15.0),

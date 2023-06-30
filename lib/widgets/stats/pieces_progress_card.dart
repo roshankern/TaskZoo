@@ -42,7 +42,7 @@ class PiecesProgressCard extends StatelessWidget {
     double progress = piecesCollected / totalPieces;
 
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.fromLTRB(10,0,10,0),
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.all(15.0),
