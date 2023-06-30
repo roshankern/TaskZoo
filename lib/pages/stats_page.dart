@@ -47,24 +47,24 @@ class StatsPage extends StatelessWidget {
     ];
 
     const appBarSize = 40.0;
-    const prop1 = 0.22;
+    const prop1 = 0.20;
     const prop2 = 0.18;
-    const prop3 = 0.20;
-
+    const prop3 = 0.19;
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
+        toolbarHeight: appBarSize,
         title: IconButton(
-            iconSize: appBarSize / 1.5,
-            icon: const Icon(Icons.keyboard_control),
-            color: Theme.of(context).indicatorColor,
-            onPressed: () {
-              // Perform settings action
-            },
-          ),
+          iconSize: appBarSize / 1.5,
+          icon: const Icon(Icons.keyboard_control),
+          color: Theme.of(context).indicatorColor,
+          onPressed: () {
+            // Perform settings action
+          },
+        ),
       ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -73,7 +73,8 @@ class StatsPage extends StatelessWidget {
             PiecesProgressCard(
               piecesCollected: 15,
               totalPieces: 20,
-              circularProgressDiameter: MediaQuery.of(context).size.height * prop1,
+              circularProgressDiameter:
+                  MediaQuery.of(context).size.height * prop1,
               circularProgressStroke: 20,
               outlineStrokeWidth: 2,
             ),
