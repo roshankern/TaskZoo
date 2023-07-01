@@ -23,8 +23,8 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   bool _monthly = false;
   bool _isExpanded = false;
   String _selectedOption = 'Daily';
-  int _daysPerMonth = 1;
-  int _daysPerWeek = 1;
+  int _timesPerMonth = 1;
+  int _timesPerWeek = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -307,8 +307,8 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             'biDaily': _biDaily,
             'weekly': _weekly,
             'monthly': _monthly,
-            'daysPerWeek': _daysPerWeek,
-            'daysPerMonth': _daysPerMonth,
+            'timesPerWeek': _timesPerWeek,
+            'timesPerMonth': _timesPerMonth,
           };
           Navigator.pop(context, taskData);
         }
@@ -328,23 +328,23 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
           children: [
             IconButton(
               icon: const Icon(Icons.remove),
-              onPressed: _daysPerWeek > 1
+              onPressed: _timesPerWeek > 1
                   ? () {
                       setState(() {
-                        _daysPerWeek--;
+                        _timesPerWeek--;
                       });
                     }
                   : null,
             ),
             Text(
-              '$_daysPerWeek',
+              '$_timesPerWeek',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
                 setState(() {
-                  _daysPerWeek++;
+                  _timesPerWeek++;
                 });
               },
             ),
@@ -366,23 +366,23 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
           children: [
             IconButton(
               icon: const Icon(Icons.remove),
-              onPressed: _daysPerMonth > 1
+              onPressed: _timesPerMonth > 1
                   ? () {
                       setState(() {
-                        _daysPerMonth--;
+                        _timesPerMonth--;
                       });
                     }
                   : null,
             ),
             Text(
-              '$_daysPerMonth',
+              '$_timesPerMonth',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
                 setState(() {
-                  _daysPerMonth++;
+                  _timesPerMonth++;
                 });
               },
             ),

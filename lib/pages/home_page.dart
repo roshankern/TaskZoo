@@ -33,8 +33,8 @@ class _HomePageState extends State<HomePage> {
           biDaily: result['biDaily'],
           weekly: result['weekly'],
           monthly: result['monthly'],
-          daysPerMonth: result['daysPerMonth'],
-          daysPerWeek: result['daysPerWeek'],
+          timesPerMonth: result['timesPerMonth'],
+          timesPerWeek: result['timesPerWeek'],
         ));
       });
     }
