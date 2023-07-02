@@ -8,6 +8,7 @@ String startOfWeek = "Monday";
 class TaskCard extends StatefulWidget {
   final String title;
   final String tag;
+  final String schedule;
   final List<bool> daysOfWeek;
   final bool biDaily;
   final bool weekly;
@@ -36,6 +37,7 @@ class TaskCard extends StatefulWidget {
     required this.monthly,
     required this.timesPerMonth,
     required this.timesPerWeek,
+    required this.schedule,
   }) : super(key: key);
 
   @override
@@ -73,6 +75,8 @@ class _TaskCardState extends State<TaskCard> {
     );
 
     String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
+
+    print("Created TaskCard");
 
     //Reset completion
     _completionResetHandler();
@@ -215,6 +219,7 @@ class _TaskCardState extends State<TaskCard> {
                         : widget.isMeantForToday
                             ? !widget.isCompleted
                                 ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Row(
                                         mainAxisAlignment:
@@ -226,8 +231,12 @@ class _TaskCardState extends State<TaskCard> {
                                         ],
                                       ),
                                       if (_setCompletionStatus(schedule) > 0)
-                                        Text(
-                                          '${_setCompletionStatus(schedule)} times left this $monthlyOrWeekly',
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 8.0),
+                                          child: Text(
+                                            '${_setCompletionStatus(schedule)} more this $monthlyOrWeekly',
+                                          ),
                                         ),
                                     ],
                                   )
@@ -319,10 +328,11 @@ class _TaskCardState extends State<TaskCard> {
     }
   }
 
+  //TODO: Refactor this method before release
   void _streakAndStatsHandler(String schedule) {
     DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
     if (schedule == "daily") {
-      DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
       isStreakContinued = now.isBefore(widget.nextCompletionDate);
       if (isStreakContinued && widget.isCompleted) {
         if (!widget.completedDates.contains(today)) {
@@ -346,9 +356,7 @@ class _TaskCardState extends State<TaskCard> {
       }
     } else if (schedule == "custom") {
       //Requires further testing
-      DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
       widget.isMeantForToday = widget.daysOfWeek[now.weekday - 1];
-
       isStreakContinued =
           widget.previousDate.isBefore(widget.nextCompletionDate) ||
               !widget.isMeantForToday;
@@ -375,7 +383,6 @@ class _TaskCardState extends State<TaskCard> {
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "biDaily") {
-      DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
       isStreakContinued = now.isBefore(widget.nextCompletionDate);
       if (isStreakContinued && widget.isCompleted) {
         if (!widget.completedDates.contains(today)) {
@@ -398,7 +405,6 @@ class _TaskCardState extends State<TaskCard> {
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "weekly") {
-      DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
       isStreakContinued = now.isBefore(widget.nextCompletionDate);
       if (isStreakContinued && widget.isCompleted) {
         if (!widget.completedDates.contains(today)) {
@@ -422,7 +428,6 @@ class _TaskCardState extends State<TaskCard> {
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "monthly") {
-      DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
       isStreakContinued = now.isBefore(widget.nextCompletionDate);
       if (isStreakContinued && widget.isCompleted) {
         if (!widget.completedDates.contains(today)) {
@@ -448,6 +453,7 @@ class _TaskCardState extends State<TaskCard> {
     }
   }
 
+  //TODO: Remove Print Statements before release
   void _completionResetHandler() {
     if (widget.isCompleted &&
         !(widget.completedDates.contains(DateTime(DateTime.now().year,

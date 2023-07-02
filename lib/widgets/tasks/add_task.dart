@@ -25,6 +25,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   String _selectedOption = 'Daily';
   int _timesPerMonth = 1;
   int _timesPerWeek = 1;
+  String _schedule = "";
 
   @override
   Widget build(BuildContext context) {
@@ -216,6 +217,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _monthly = false;
                       _selectedOption = 'BiDaily';
                     }
+
                     updateSelectionOptionAndState();
                   });
                 },
@@ -247,6 +249,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _monthly = false;
                       _selectedOption = 'Weekly';
                     }
+
                     updateSelectionOptionAndState();
                   });
                 },
@@ -278,6 +281,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                       _weekly = false;
                       _selectedOption = 'Monthly';
                     }
+
                     updateSelectionOptionAndState();
                   });
                 },
@@ -309,6 +313,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             'monthly': _monthly,
             'timesPerWeek': _timesPerWeek,
             'timesPerMonth': _timesPerMonth,
+            'schedule': getPageState(_daysOfWeek, _biDaily, _weekly, _monthly)
           };
           Navigator.pop(context, taskData);
         }
@@ -390,6 +395,25 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         ),
       ],
     );
+  }
+
+  String getPageState(
+    List<bool> daysOfWeek,
+    bool biDaily,
+    bool weekly,
+    bool monthly,
+  ) {
+    if (daysOfWeek.any((day) => day == true)) {
+      return 'Weekly';
+    } else if (weekly) {
+      return 'Weekly';
+    } else if (monthly) {
+      return 'Monthly';
+    } else if (biDaily) {
+      return 'Daily';
+    } else {
+      return 'Daily';
+    }
   }
 
   void updateSelectedOption() {

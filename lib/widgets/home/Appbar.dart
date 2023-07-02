@@ -1,32 +1,37 @@
 import 'package:flutter/material.dart';
 
-// const selectedColor = Theme.of(context).indicatorColor;
-const appBarSize = 40.0;
+const double appBarSize = 40.0;
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  @override
   final VoidCallback onAddTaskPressed;
+  final Function(String) onSelectSchedule;
 
-  const CustomAppBar({super.key, required this.onAddTaskPressed});
+  const CustomAppBar({
+    Key? key,
+    required this.onAddTaskPressed,
+    required this.onSelectSchedule,
+  }) : super(key: key);
 
   @override
-  _CustomAppBarState createState() =>
-      // ignore: no_logic_in_create_state
-      _CustomAppBarState(onAddTaskPressed: onAddTaskPressed);
+  _CustomAppBarState createState() => _CustomAppBarState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  final VoidCallback onAddTaskPressed;
   int selectedIndex = 0;
-
-  _CustomAppBarState({required this.onAddTaskPressed});
 
   void selectButton(int index) {
     setState(() {
       selectedIndex = index;
+      if (index == 0) {
+        widget.onSelectSchedule('Daily');
+      } else if (index == 1) {
+        widget.onSelectSchedule('Weekly');
+      } else if (index == 2) {
+        widget.onSelectSchedule('Monthly');
+      }
     });
   }
 
@@ -77,7 +82,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             iconSize: appBarSize / 1.5,
             icon: const Icon(Icons.add),
             color: Theme.of(context).indicatorColor,
-            onPressed: onAddTaskPressed,
+            onPressed: widget.onAddTaskPressed,
           ),
         ],
       ),

@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<TaskCard> _tasks = [];
   final GlobalKey<AnimalBuilderState> _animalBuilderKey = GlobalKey();
+  late String selectedSchedule;
 
   void _createTaskButton() async {
     final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -35,16 +36,37 @@ class _HomePageState extends State<HomePage> {
           monthly: result['monthly'],
           timesPerMonth: result['timesPerMonth'],
           timesPerWeek: result['timesPerWeek'],
+          schedule: result['schedule'],
         ));
       });
     }
   }
 
+  List<TaskCard> getFilteredTasks(String selectedSchedule) {
+    return _tasks.where((task) => task.schedule == selectedSchedule).toList();
+  }
+
+  void updateSelectedSchedule(String schedule) {
+    setState(() {
+      selectedSchedule = schedule;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    selectedSchedule = 'Daily';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CustomAppBar(onAddTaskPressed: _createTaskButton),
-        body: ListView(children: [
+      appBar: CustomAppBar(
+        onAddTaskPressed: _createTaskButton,
+        onSelectSchedule: updateSelectedSchedule,
+      ),
+      body: ListView(
+        children: [
           AnimalBuilder(
             svgPath: "assets/low_poly_curled_fox.svg",
             biomeIcon: Icons.terrain_outlined,
@@ -58,8 +80,10 @@ class _HomePageState extends State<HomePage> {
             key: ValueKey(_tasks.length),
             crossAxisCount: 2,
             shrinkWrap: true,
-            children: _tasks,
+            children: getFilteredTasks(selectedSchedule),
           ),
-        ]));
+        ],
+      ),
+    );
   }
 }
