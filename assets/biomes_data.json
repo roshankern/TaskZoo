@@ -22,52 +22,6 @@
                     "svg_path": "assets/biome_data/arctic/reindeer.svg"
                 }
             ]
-        },
-        "mountain": {
-            "primary_color": "#A3B2CC",
-            "secondary_color": "#798AA0",
-            "icon": "mountain peak",
-            "animals": [
-                {
-                    "name": "Fox",
-                    "svg_path": "assets/biome_data/mountain/fox.svg"
-                },
-                {
-                    "name": "Wolf",
-                    "svg_path": "assets/biome_data/mountain/wolf.svg"
-                },
-                {
-                    "name": "Rabbit",
-                    "svg_path": "assets/biome_data/mountain/rabbit.svg"
-                },
-                {
-                    "name": "Falcon",
-                    "svg_path": "assets/biome_data/mountain/falcon.svg"
-                }
-            ]
-        },
-        "ocean": {
-            "primary_color": "#00B0D8",
-            "secondary_color": "#0091AC",
-            "icon": "wave",
-            "animals": [
-                {
-                    "name": "Dolphin",
-                    "svg_path": "assets/biome_data/ocean/dolphin.svg"
-                },
-                {
-                    "name": "Sea Turtle",
-                    "svg_path": "assets/biome_data/ocean/sea_turtle.svg"
-                },
-                {
-                    "name": "Octopus",
-                    "svg_path": "assets/biome_data/ocean/octopus.svg"
-                },
-                {
-                    "name": "Seahorse",
-                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
-                }
-            ]
         }
     }
 }
