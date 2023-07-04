@@ -13,7 +13,6 @@ class ZooPage extends StatefulWidget {
 
 class _ZooPageState extends State<ZooPage> {
   Future<Widget> loadBiomeData() async {
-
     final String biomesData =
         await rootBundle.loadString('assets/biomes_data.json');
     Map<String, dynamic> json = jsonDecode(biomesData);
@@ -30,6 +29,7 @@ class _ZooPageState extends State<ZooPage> {
         return SvgPicture.asset(
           animals[index]['svg_path'],
           semanticsLabel: animals[index]['name'],
+          fit: BoxFit.contain,
         );
       },
     );
