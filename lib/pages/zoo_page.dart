@@ -16,7 +16,7 @@ class _ZooPageState extends State<ZooPage> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           color: Theme.of(context).unselectedWidgetColor,
           borderRadius: BorderRadius.circular(10.0),
