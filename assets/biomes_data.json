@@ -7,19 +7,19 @@
             "animals": [
                 {
                     "name": "Polar Bear",
-                    "svg_path": "assets/biome_data/arctic/polar_bear.svg"
+                    "svg_path": "assets/biomes_data/arctic/polar_bear.svg"
                 },
                 {
                     "name": "Penguin",
-                    "svg_path": "assets/biome_data/arctic/penguin.svg"
+                    "svg_path": "assets/biomes_data/arctic/penguin.svg"
                 },
                 {
                     "name": "Snowy Owl",
-                    "svg_path": "assets/biome_data/arctic/snowy_owl.svg"
+                    "svg_path": "assets/biomes_data/arctic/snowy_owl.svg"
                 },
                 {
                     "name": "Reindeer",
-                    "svg_path": "assets/biome_data/arctic/reindeer.svg"
+                    "svg_path": "assets/biomes_data/arctic/reindeer.svg"
                 }
             ]
         }

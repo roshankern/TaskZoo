@@ -13,11 +13,6 @@ class ZooPage extends StatefulWidget {
 
 class _ZooPageState extends State<ZooPage> {
   Future<Widget> loadBiomeData() async {
-    final String svgData =
-        await rootBundle.loadString('assets/biomes_data/arctic/reindeer.svg');
-      print(svgData);
-
-      return Center(child: CircularProgressIndicator());
 
     final String biomesData =
         await rootBundle.loadString('assets/biomes_data.json');
