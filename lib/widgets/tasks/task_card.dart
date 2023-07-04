@@ -20,12 +20,12 @@ class TaskCard extends StatefulWidget {
   int longestStreak = 0;
   bool isMeantForToday = true;
   int currentCycleCompletions = 0;
-  late List<DateTime> last30DaysDates;
-  late int completionCount30days;
-  late Set<DateTime> completedDates = HashSet<DateTime>();
-  late DateTime previousDate = DateTime.now();
-  late DateTime nextCompletionDate;
-  late bool isStreakContinued;
+  List<DateTime> last30DaysDates = [];
+  int completionCount30days = 0;
+  Set<DateTime> completedDates = HashSet<DateTime>();
+  DateTime previousDate = DateTime.now();
+  DateTime nextCompletionDate = DateTime.now();
+  bool isStreakContinued = false;
 
   TaskCard({
     Key? key,
@@ -47,7 +47,23 @@ class TaskCard extends StatefulWidget {
 class _TaskCardState extends State<TaskCard> {
   bool _isTapped = false;
 
-  late bool isStreakContinued;
+  @override
+  void didUpdateWidget(TaskCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.title != oldWidget.title ||
+        widget.tag != oldWidget.tag ||
+        widget.daysOfWeek != oldWidget.daysOfWeek ||
+        widget.biDaily != oldWidget.biDaily ||
+        widget.weekly != oldWidget.weekly ||
+        widget.monthly != oldWidget.monthly ||
+        widget.timesPerMonth != oldWidget.timesPerMonth ||
+        widget.timesPerWeek != oldWidget.timesPerWeek ||
+        widget.schedule != oldWidget.schedule) {
+      // Trigger an update by calling setState
+      setState(() {});
+    }
+  }
 
   //Make modifications to previous date when storing data persistently
   @override
@@ -333,8 +349,8 @@ class _TaskCardState extends State<TaskCard> {
     DateTime now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
     if (schedule == "daily") {
-      isStreakContinued = now.isBefore(widget.nextCompletionDate);
-      if (isStreakContinued && widget.isCompleted) {
+      widget.isStreakContinued = now.isBefore(widget.nextCompletionDate);
+      if (widget.isStreakContinued && widget.isCompleted) {
         if (!widget.completedDates.contains(today)) {
           widget.completedDates.add(today);
           widget.last30DaysDates = _getLast30DaysDates();
@@ -349,7 +365,7 @@ class _TaskCardState extends State<TaskCard> {
               calculateNextCompletionDate(schedule, widget.previousDate);
         }
       }
-      if (!isStreakContinued) {
+      if (!widget.isStreakContinued) {
         widget.streakCount = 0;
         widget.nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
@@ -357,10 +373,12 @@ class _TaskCardState extends State<TaskCard> {
     } else if (schedule == "custom") {
       //Requires further testing
       widget.isMeantForToday = widget.daysOfWeek[now.weekday - 1];
-      isStreakContinued =
+      widget.isStreakContinued =
           widget.previousDate.isBefore(widget.nextCompletionDate) ||
               !widget.isMeantForToday;
-      if (isStreakContinued && widget.isCompleted && widget.isMeantForToday) {
+      if (widget.isStreakContinued &&
+          widget.isCompleted &&
+          widget.isMeantForToday) {
         if (!widget.completedDates.contains(today)) {
           if (widget.isMeantForToday) {
             widget.completedDates.add(today);
@@ -377,14 +395,14 @@ class _TaskCardState extends State<TaskCard> {
           }
         }
       }
-      if (!isStreakContinued) {
+      if (!widget.isStreakContinued) {
         widget.streakCount = 0;
         widget.nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "biDaily") {
-      isStreakContinued = now.isBefore(widget.nextCompletionDate);
-      if (isStreakContinued && widget.isCompleted) {
+      widget.isStreakContinued = now.isBefore(widget.nextCompletionDate);
+      if (widget.isStreakContinued && widget.isCompleted) {
         if (!widget.completedDates.contains(today)) {
           widget.completedDates.add(today);
           widget.last30DaysDates = _getLast30DaysDates();
@@ -399,14 +417,14 @@ class _TaskCardState extends State<TaskCard> {
               calculateNextCompletionDate(schedule, widget.previousDate);
         }
       }
-      if (!isStreakContinued) {
+      if (!widget.isStreakContinued) {
         widget.streakCount = 0;
         widget.nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "weekly") {
-      isStreakContinued = now.isBefore(widget.nextCompletionDate);
-      if (isStreakContinued && widget.isCompleted) {
+      widget.isStreakContinued = now.isBefore(widget.nextCompletionDate);
+      if (widget.isStreakContinued && widget.isCompleted) {
         if (!widget.completedDates.contains(today)) {
           _getCompletionCount(widget.last30DaysDates);
           widget.currentCycleCompletions++;
@@ -422,14 +440,14 @@ class _TaskCardState extends State<TaskCard> {
               calculateNextCompletionDate(schedule, widget.previousDate);
         }
       }
-      if (!isStreakContinued) {
+      if (!widget.isStreakContinued) {
         widget.streakCount = 0;
         widget.nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "monthly") {
-      isStreakContinued = now.isBefore(widget.nextCompletionDate);
-      if (isStreakContinued && widget.isCompleted) {
+      widget.isStreakContinued = now.isBefore(widget.nextCompletionDate);
+      if (widget.isStreakContinued && widget.isCompleted) {
         if (!widget.completedDates.contains(today)) {
           _getCompletionCount(widget.last30DaysDates);
           widget.currentCycleCompletions++;
@@ -445,7 +463,7 @@ class _TaskCardState extends State<TaskCard> {
               calculateNextCompletionDate(schedule, widget.previousDate);
         }
       }
-      if (!isStreakContinued) {
+      if (!widget.isStreakContinued) {
         widget.streakCount = 0;
         widget.nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
