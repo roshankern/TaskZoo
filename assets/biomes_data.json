@@ -3,7 +3,10 @@
         "arctic": {
             "primary_color": "#E6F7FF",
             "secondary_color": "#CCE6FF",
-            "icon": "snowflake",
+            "icon": {
+                "name": "Snowflake",
+                "svg_path": "assets/biomes_data/arctic/snowflake.svg"
+            },
             "animals": [
                 {
                     "name": "Polar Bear",
