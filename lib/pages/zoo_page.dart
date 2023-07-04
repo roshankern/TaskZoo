@@ -12,6 +12,33 @@ class ZooPage extends StatefulWidget {
 }
 
 class _ZooPageState extends State<ZooPage> {
+  Widget getAnimalCard(String svgPath, String animalName) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Container(
+        padding: const EdgeInsets.all(15.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context).unselectedWidgetColor,
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 5,
+            ),
+          ],
+        ),
+        child: Center(
+          child: SvgPicture.asset(
+            svgPath,
+            semanticsLabel: animalName,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<Widget> loadBiomeData() async {
     final String biomesData =
         await rootBundle.loadString('assets/biomes_data.json');
@@ -26,11 +53,8 @@ class _ZooPageState extends State<ZooPage> {
           SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemCount: animals.length,
       itemBuilder: (BuildContext context, int index) {
-        return SvgPicture.asset(
-          animals[index]['svg_path'],
-          semanticsLabel: animals[index]['name'],
-          fit: BoxFit.contain,
-        );
+        return getAnimalCard(
+            animals[index]['svg_path'], animals[index]['name']);
       },
     );
   }
