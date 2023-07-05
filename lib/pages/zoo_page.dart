@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:taskzoo/widgets/zoo/Appbar.dart';
+
 class ZooPage extends StatefulWidget {
   const ZooPage({Key? key}) : super(key: key);
 
@@ -60,7 +62,9 @@ class _ZooPageState extends State<ZooPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Widget>(
+    return Scaffold(
+      appBar: CustomAppBar(),
+      body: FutureBuilder<Widget>(
         future: loadBiomeData(),
         builder:
             (BuildContext context, AsyncSnapshot<Widget> biomeWidgetSnapshot) {
@@ -69,12 +73,14 @@ class _ZooPageState extends State<ZooPage> {
             return Center(child: CircularProgressIndicator());
           } else if (biomeWidgetSnapshot.connectionState ==
               ConnectionState.done) {
-            // The JSON file is still being loaded.
+            // The JSON file is loaded.
             return biomeWidgetSnapshot.data ?? Center(child: Text('No data'));
           } else {
             // The JSON file could not be loaded or parsed.
             return Center(child: Text('Error: ${biomeWidgetSnapshot.error}'));
           }
-        });
+        },
+      ),
+    );
   }
 }
