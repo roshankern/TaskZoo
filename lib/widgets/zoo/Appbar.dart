@@ -24,7 +24,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
     final jsonData = json.decode(jsonString);
     //print(jsonData);
     final Biomes biomeData = Biomes.fromJson(jsonData);
-    biomeData.printBiomes();
     return biomeData;
   }
 
@@ -37,14 +36,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
           return AppBar(title: CircularProgressIndicator());
         } else if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            //print(snapshot.error);
+            print(snapshot.error);
             return AppBar(title: Text('Error: ${snapshot.error}'));
           }
 
           List<BiomeIcon> icons = [];
-          snapshot.data!.biomes.forEach((key, value) {
-            icons.add(value.icon);
-          });
+          // snapshot.data!.biomes.forEach((key, value) {
+          //   icons.add(value.icon);
+          // });
 
           return AppBar(
             backgroundColor: Colors.transparent,
