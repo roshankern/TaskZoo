@@ -1,6 +1,7 @@
 {
-    "biomes": {
-        "arctic": {
+    "biomes": [
+        {
+            "name": "arctic",
             "primary_color": "#E6F7FF",
             "secondary_color": "#CCE6FF",
             "icon": {
@@ -25,6 +26,33 @@
                     "svg_path": "assets/biomes_data/arctic/reindeer.svg"
                 }
             ]
+        },
+        {
+            "name": "desert",
+            "primary_color": "#FFD700",
+            "secondary_color": "#FFA500",
+            "icon": {
+                "name": "Sun",
+                "svg_path": "assets/biomes_data/desert/sun.svg"
+            },
+            "animals": [
+                {
+                    "name": "Fennec Fox",
+                    "svg_path": "assets/biomes_data/desert/fennec_fox.svg"
+                },
+                {
+                    "name": "Dromedary Camel",
+                    "svg_path": "assets/biomes_data/desert/dromedary_camel.svg"
+                },
+                {
+                    "name": "Lizard",
+                    "svg_path": "assets/biomes_data/desert/lizard.svg"
+                },
+                {
+                    "name": "Snake",
+                    "svg_path": "assets/biomes_data/desert/snake.svg"
+                }
+            ]
         }
-    }
+    ]
 }

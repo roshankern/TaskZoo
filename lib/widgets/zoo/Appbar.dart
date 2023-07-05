@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart';
+
+import 'package:taskzoo/models/biomes_model.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
+  final String jsonPath;
+
+  CustomAppBar({required this.jsonPath});
+
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
 
@@ -11,36 +19,54 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   int _selectedIcon = 0;  // index of the selected icon
 
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.transparent, // make AppBar clear
-      elevation: 0, // remove shadow
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          for (int i = 0; i < 3; i++)
-            IconButton(
-              icon: _getIcon(i),
-              color: _selectedIcon == i ? Colors.white : Colors.black,
-              onPressed: () => _updateSelectedIcon(i),
-            ),
-        ],
-      ),
-    );
+  Future<Biomes> loadBiomes() async {
+    String jsonString = await rootBundle.loadString(widget.jsonPath);
+    final jsonData = json.decode(jsonString);
+    //print(jsonData);
+    final Biomes biomeData = Biomes.fromJson(jsonData);
+    biomeData.printBiomes();
+    return biomeData;
   }
 
-  Icon _getIcon(int index) {
-    switch (index) {
-      case 0:
-        return Icon(Icons.ac_unit);
-      case 1:
-        return Icon(Icons.sunny);
-      case 2:
-        return Icon(Icons.landscape);
-      default:
-        return Icon(Icons.error); // return error icon if index is out of range
-    }
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Biomes>(
+      future: loadBiomes(),
+      builder: (BuildContext context, AsyncSnapshot<Biomes> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return AppBar(title: CircularProgressIndicator());
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            //print(snapshot.error);
+            return AppBar(title: Text('Error: ${snapshot.error}'));
+          }
+
+          List<BiomeIcon> icons = [];
+          snapshot.data!.biomes.forEach((key, value) {
+            icons.add(value.icon);
+          });
+
+          return AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                for (int i = 0; i < icons.length; i++)
+                  IconButton(
+                    // using network icon for the demo, you should load svg in your actual application
+                    icon: ImageIcon(NetworkImage(icons[i].svgPath)),
+                    color: _selectedIcon == i ? Colors.white : Colors.black,
+                    onPressed: () => _updateSelectedIcon(i),
+                  ),
+              ],
+            ),
+          );
+        } else {
+          return AppBar(title: Text('Unexpected state'));
+        }
+      },
+    );
   }
 
   void _updateSelectedIcon(int index) {

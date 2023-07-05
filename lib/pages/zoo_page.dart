@@ -63,7 +63,7 @@ class _ZooPageState extends State<ZooPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(),
+      appBar: CustomAppBar(jsonPath: 'assets/biomes_data.json'),
       body: FutureBuilder<Widget>(
         future: loadBiomeData(),
         builder:
