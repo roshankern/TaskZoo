@@ -65,7 +65,9 @@ flutter:
   assets:
     - assets/low_poly_curled_fox.svg
     - assets/biomes_data.json
-    - assets/biomes_data/
+    - assets/biomes_data/arctic/
+    - assets/biomes_data/mountain/
+    - assets/biomes_data/ocean/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

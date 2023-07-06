@@ -22,7 +22,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     final biomes = widget.biomesData.biomes;
     final icons = biomes.map((biome) => biome.icon).toList();
-    print(icons);
 
     return AppBar(
       backgroundColor: Colors.transparent,
@@ -30,19 +29,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: icons.map((BiomeIcon) {
+          int iconIndex = icons.indexOf(BiomeIcon);
           return IconButton(
-            icon: SvgPicture.asset(BiomeIcon.svgPath), 
+            icon: SvgPicture.asset(
+              BiomeIcon.svgPath,
+              colorFilter: ColorFilter.mode(
+                  _selectedIcon == iconIndex ? Colors.white : Colors.black,
+                  BlendMode.srcIn),
+            ),
             onPressed: () {
-              int iconIndex = icons.indexOf(BiomeIcon);
               setState(() {
                 _selectedIcon = iconIndex;
               });
             },
-            color: _selectedIcon == icons.indexOf(BiomeIcon) ? Colors.white : Colors.black,
           );
         }).toList(),
       ),
     );
   }
-
 }
