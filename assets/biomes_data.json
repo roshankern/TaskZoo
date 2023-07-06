@@ -26,6 +26,26 @@
                     "svgPath": "assets/biomes_data/arctic/reindeer.svg"
                 }
             ]
+        },
+        {
+            "name": "mountain",
+            "primaryColor": "#A9A9A9",
+            "secondaryColor": "#808080",
+            "icon": {
+                "name": "Mountain",
+                "svgPath": "assets/biomes_data/mountain/mountain.svg"
+            },
+            "animals": []
+        },
+        {
+            "name": "ocean",
+            "primaryColor": "#00BFFF",
+            "secondaryColor": "#87CEEB",
+            "icon": {
+                "name": "Wave",
+                "svgPath": "assets/biomes_data/ocean/wave.svg"
+            },
+            "animals": []
         }
     ]
 }
