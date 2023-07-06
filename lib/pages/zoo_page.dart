@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:taskzoo/widgets/zoo/Appbar.dart';
 import 'package:taskzoo/widgets/zoo/ZooBody.dart';
 import 'package:taskzoo/models/biomes_model.dart';
+import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 class ZooPage extends StatefulWidget {
   const ZooPage({Key? key}) : super(key: key);

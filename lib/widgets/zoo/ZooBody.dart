@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
 import 'package:taskzoo/models/biomes_model.dart';
 
 class ZooBody extends StatelessWidget {
