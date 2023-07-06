@@ -49,9 +49,11 @@ class _ZooPageState extends State<ZooPage> {
             ),
           );
         } else {
-          return Scaffold(
-            appBar: CustomAppBar(biomesData: snapshot.data!),
-            body: ZooBody(biomesData: snapshot.data!),
+          return Column(
+            children: [
+              CustomAppBar(biomesData: snapshot.data!),
+              Expanded(child: ZooBody(biomesData: snapshot.data!)),
+            ],
           );
         }
       },
