@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:convert';
-import 'package:flutter/services.dart';
 
 import 'package:taskzoo/models/biomes_model.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final String jsonPath;
+  final Biomes biomesData;
 
-  CustomAppBar({required this.jsonPath});
+  CustomAppBar({required this.biomesData});
 
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
@@ -19,58 +17,32 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   int _selectedIcon = 0; // index of the selected icon
-  late Future<Biomes> _biomesFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _biomesFuture = loadBiomesData(widget.jsonPath);
-  }
-
-  Future<Biomes> loadBiomesData(String jsonPath) async {
-    String jsonString = await rootBundle.loadString(jsonPath);
-    final jsonData = json.decode(jsonString);
-    final biomesData = Biomes.fromJson(jsonData);
-
-    return biomesData;
-  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Biomes>(
-      future: _biomesFuture,
-      builder: (BuildContext context, AsyncSnapshot<Biomes> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AppBar(
-            title: Text('Loading...'),
-          );
-        } else if (snapshot.hasData) {
-          final biomes = snapshot.data!.biomes;
-          final icons = biomes.map((biome) => biome.icon).toList();
+    final biomes = widget.biomesData.biomes;
+    final icons = biomes.map((biome) => biome.icon).toList();
+    print(icons);
 
-          return AppBar(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(icons.length, (index) {
-                final BiomeIcon = icons[index];
-                return IconButton(
-                  icon: SvgPicture.asset(BiomeIcon.svgPath), 
-                  onPressed: () {
-                    setState(() {
-                      _selectedIcon = index;
-                    });
-                  },
-                  color: _selectedIcon == index ? Colors.white : Colors.black,
-                );
-              }),
-            ),
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: icons.map((BiomeIcon) {
+          return IconButton(
+            icon: SvgPicture.asset(BiomeIcon.svgPath), 
+            onPressed: () {
+              int iconIndex = icons.indexOf(BiomeIcon);
+              setState(() {
+                _selectedIcon = iconIndex;
+              });
+            },
+            color: _selectedIcon == icons.indexOf(BiomeIcon) ? Colors.white : Colors.black,
           );
-        } else {
-          return AppBar(
-            title: Text('Error loading data'),
-          );
-        }
-      },
+        }).toList(),
+      ),
     );
   }
+
 }
