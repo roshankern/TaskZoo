@@ -32,16 +32,39 @@ class _CustomAppBarState extends State<CustomAppBar> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: icons.map((currentBiomeIcon) {
           int iconIndex = icons.indexOf(currentBiomeIcon);
-          return IconButton(
-            icon: SvgPicture.asset(
-              currentBiomeIcon.svgPath,
-              colorFilter: ColorFilter.mode(
-                  zooNotifier.currentBiome == iconIndex ? Colors.white : Colors.black,
-                  BlendMode.srcIn),
+          return Container(
+            height: 35.0, // adjust as needed
+            width: 35.0, // adjust as needed
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: zooNotifier.currentBiome == iconIndex
+                  ? Colors.black
+                  : Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: zooNotifier.currentBiome == iconIndex
+                      ? Colors.black
+                      : Colors.white,
+                  spreadRadius: 4,
+                  blurRadius: 5,
+                ),
+              ],
             ),
-            onPressed: () {
-              zooNotifier.changeBiome(iconIndex);
-            },
+            child: FittedBox(
+              child: IconButton(
+                icon: SvgPicture.asset(
+                  currentBiomeIcon.svgPath,
+                  colorFilter: ColorFilter.mode(
+                      zooNotifier.currentBiome == iconIndex
+                          ? Colors.white
+                          : Colors.black,
+                      BlendMode.srcIn),
+                ),
+                onPressed: () {
+                  zooNotifier.changeBiome(iconIndex);
+                },
+              ),
+            ),
           );
         }).toList(),
       ),

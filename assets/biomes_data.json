@@ -45,7 +45,32 @@
                 "name": "Mountain",
                 "svgPath": "assets/biomes_data/mountain/mountain.svg"
             },
-            "animals": []
+            "animals": [
+                {
+                    "name": "Wolf",
+                    "svg_path": "assets/biome_data/mountain/wolf.svg"
+                },
+                {
+                    "name": "Rabbit",
+                    "svg_path": "assets/biome_data/mountain/rabbit.svg"
+                },
+                {
+                    "name": "Falcon",
+                    "svg_path": "assets/biome_data/mountain/falcon.svg"
+                },
+                {
+                    "name": "Fox",
+                    "svgPath": "assets/biomes_data/arctic/fox.svg"
+                },
+                {
+                    "name": "Fox",
+                    "svgPath": "assets/biomes_data/arctic/fox.svg"
+                },
+                {
+                    "name": "Fox",
+                    "svgPath": "assets/biomes_data/arctic/fox.svg"
+                }
+            ]
         },
         {
             "name": "ocean",
@@ -56,7 +81,36 @@
                 "name": "Wave",
                 "svgPath": "assets/biomes_data/ocean/wave.svg"
             },
-            "animals": []
+            "animals": [
+                {
+                    "name": "Dolphin",
+                    "svg_path": "assets/biome_data/ocean/dolphin.svg"
+                },
+                {
+                    "name": "Sea Turtle",
+                    "svg_path": "assets/biome_data/ocean/sea_turtle.svg"
+                },
+                {
+                    "name": "Octopus",
+                    "svg_path": "assets/biome_data/ocean/octopus.svg"
+                },
+                {
+                    "name": "Seahorse",
+                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
+                },
+                {
+                    "name": "Seahorse",
+                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
+                },
+                {
+                    "name": "Seahorse",
+                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
+                },
+                {
+                    "name": "Seahorse",
+                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
+                }
+            ]
         }
     ]
 }
