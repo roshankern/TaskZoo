@@ -4,7 +4,7 @@
             "name": "arctic",
             "primaryColor": "#E6F7FF",
             "secondaryColor": "#CCE6FF",
-            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.svg",
+            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.png",
             "icon": {
                 "name": "Snowflake",
                 "svgPath": "assets/biomes_data/arctic/snowflake.svg"
@@ -38,9 +38,9 @@
         },
         {
             "name": "mountain",
-            "primaryColor": "#A9A9A9",
-            "secondaryColor": "#808080",
-            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.svg",
+            "primaryColor": "#8db7b6",
+            "secondaryColor": "#afd2d2",
+            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.png",
             "icon": {
                 "name": "Mountain",
                 "svgPath": "assets/biomes_data/mountain/mountain.svg"
@@ -49,9 +49,9 @@
         },
         {
             "name": "ocean",
-            "primaryColor": "#00BFFF",
-            "secondaryColor": "#87CEEB",
-            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.svg",
+            "primaryColor": "#00B0D8",
+            "secondaryColor": "#0091AC",
+            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.png",
             "icon": {
                 "name": "Wave",
                 "svgPath": "assets/biomes_data/ocean/wave.svg"

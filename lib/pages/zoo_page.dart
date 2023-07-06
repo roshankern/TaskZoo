@@ -58,7 +58,7 @@ class _ZooPageState extends State<ZooPage> {
               children: [
                 SvgPicture.asset(
                   snapshot.data!.biomes[0].backgroundSvgPath,
-                  fit: BoxFit.fitHeight,
+                  width: MediaQuery.of(context).size.width,
                 ),
                 ZooBody(biomesData: snapshot.data!)
               ],
