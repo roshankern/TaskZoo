@@ -54,10 +54,11 @@ class _ZooPageState extends State<ZooPage> {
             extendBodyBehindAppBar: true,
             appBar: CustomAppBar(biomesData: snapshot.data!),
             body: ListView(
+              padding: EdgeInsets.only(top: 0),
               children: [
                 SvgPicture.asset(
                   snapshot.data!.biomes[0].backgroundSvgPath,
-                  fit: BoxFit.fitWidth,
+                  fit: BoxFit.fitHeight,
                 ),
                 ZooBody(biomesData: snapshot.data!)
               ],
