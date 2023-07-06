@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import 'package:taskzoo/models/biomes_model.dart';
 
+import 'package:taskzoo/notifiers/zoo_notifier.dart';
+
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Biomes biomesData;
 
@@ -17,10 +19,9 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  int _selectedIcon = 0; // index of the selected icon
-
   @override
   Widget build(BuildContext context) {
+    final zooNotifier = Provider.of<ZooNotifier>(context);
     final biomes = widget.biomesData.biomes;
     final icons = biomes.map((biome) => biome.icon).toList();
 
@@ -29,19 +30,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
       elevation: 0,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: icons.map((BiomeIcon) {
-          int iconIndex = icons.indexOf(BiomeIcon);
+        children: icons.map((currentBiomeIcon) {
+          int iconIndex = icons.indexOf(currentBiomeIcon);
           return IconButton(
             icon: SvgPicture.asset(
-              BiomeIcon.svgPath,
+              currentBiomeIcon.svgPath,
               colorFilter: ColorFilter.mode(
-                  _selectedIcon == iconIndex ? Colors.white : Colors.black,
+                  zooNotifier.currentBiome == iconIndex ? Colors.white : Colors.black,
                   BlendMode.srcIn),
             ),
             onPressed: () {
-              setState(() {
-                _selectedIcon = iconIndex;
-              });
+              zooNotifier.changeBiome(iconIndex);
             },
           );
         }).toList(),

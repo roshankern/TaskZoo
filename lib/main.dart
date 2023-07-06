@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:taskzoo/pages/home_page.dart';
 import 'package:taskzoo/pages/zoo_page.dart';
 import 'package:taskzoo/pages/stats_page.dart';
 import 'package:taskzoo/pages/settings_page.dart';
+
 import 'package:taskzoo/widgets/home/navbar.dart';
+
+import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -72,7 +77,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final pages = [
       HomePage(),
-      const ZooPage(),
+      ChangeNotifierProvider(
+        create: (context) => ZooNotifier(),
+        child: const ZooPage(),
+      ),
     ];
     return Scaffold(
       body: PageView(

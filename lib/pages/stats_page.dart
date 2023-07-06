@@ -3,8 +3,6 @@ import 'package:taskzoo/widgets/stats/pieces_progress_card.dart';
 import 'package:taskzoo/widgets/stats/daily_percent_completed_card.dart';
 import 'package:taskzoo/widgets/stats/month_total_tasks_completed_card.dart';
 
-import 'dart:math';
-
 class StatsPage extends StatelessWidget {
   const StatsPage({Key? key}) : super(key: key);
 

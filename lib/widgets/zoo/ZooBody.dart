@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import 'package:taskzoo/models/biomes_model.dart';
 
+import 'package:taskzoo/notifiers/zoo_notifier.dart';
+
 class ZooBody extends StatelessWidget {
   final Biomes biomesData;
 
@@ -38,8 +40,13 @@ class ZooBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final animals = biomesData.biomes.expand((biome) => biome.animals).toList();
+    // get the ZooNotifier
+    final zooNotifier = Provider.of<ZooNotifier>(context);
 
+    // get the animals of the current biome
+    final animals = biomesData.biomes[zooNotifier.currentBiome].animals;
+
+    // rest of the code
     return GridView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
