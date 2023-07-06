@@ -4,6 +4,7 @@
             "name": "arctic",
             "primaryColor": "#E6F7FF",
             "secondaryColor": "#CCE6FF",
+            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.svg",
             "icon": {
                 "name": "Snowflake",
                 "svgPath": "assets/biomes_data/arctic/snowflake.svg"
@@ -31,6 +32,7 @@
             "name": "mountain",
             "primaryColor": "#A9A9A9",
             "secondaryColor": "#808080",
+            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.svg",
             "icon": {
                 "name": "Mountain",
                 "svgPath": "assets/biomes_data/mountain/mountain.svg"
@@ -41,6 +43,7 @@
             "name": "ocean",
             "primaryColor": "#00BFFF",
             "secondaryColor": "#87CEEB",
+            "backgroundSvgPath": "assets/biomes_data/mountain/mountain_background.svg",
             "icon": {
                 "name": "Wave",
                 "svgPath": "assets/biomes_data/ocean/wave.svg"

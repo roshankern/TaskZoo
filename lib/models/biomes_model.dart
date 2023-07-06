@@ -15,6 +15,7 @@ class Biome {
   String name;
   String primaryColor;
   String secondaryColor;
+  String backgroundSvgPath;
   BiomeIcon icon;
   List<Animal> animals;
 
@@ -22,6 +23,7 @@ class Biome {
     required this.name,
     required this.primaryColor,
     required this.secondaryColor,
+    required this.backgroundSvgPath,
     required this.icon,
     required this.animals,
   });
@@ -34,6 +36,7 @@ class Biome {
       name: json['name'] as String,
       primaryColor: json['primaryColor'] as String,
       secondaryColor: json['secondaryColor'] as String,
+      backgroundSvgPath: json['backgroundSvgPath'] as String,
       icon: BiomeIcon.fromJson(json['icon']),
       animals: animals,
     );
@@ -50,7 +53,6 @@ class BiomeIcon {
   });
 
   factory BiomeIcon.fromJson(Map<String, dynamic> json) {
-    print(json['name']);
     return BiomeIcon(
       name: json['name'] as String,
       svgPath: json['svgPath'] as String,
