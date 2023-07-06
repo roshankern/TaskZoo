@@ -1,105 +1,52 @@
 class Biomes {
-  List<Biome>? biomes;
+  List<Biome> biomes;
 
-  Biomes({this.biomes});
+  Biomes({required this.biomes});
 
-  Biomes.fromJson(Map<String, dynamic> json) {
-    if (json['biomes'] != null) {
-      biomes = [];
-      print(json['biomes']);
-      json['biomes'].forEach((Map<String, dynamic>v) {
-        print(v);
-        biomes!.add(new Biome.fromJson(v));
-      });
-    }
-  }
+  factory Biomes.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> biomesJson = json['biomes'] as List<dynamic>;
+    final List<Biome> biomes = biomesJson.map((item) => Biome.fromJson(item)).toList();
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.biomes != null) {
-      data['biomes'] = this.biomes!.map((v) => v.toJson()).toList();
-    }
-    return data;
+    return Biomes(biomes: biomes);
   }
 }
 
 class Biome {
-  String? name;
-  String? primaryColor;
-  String? secondaryColor;
-  BiomeIcon? icon;
-  List<Animal>? animals;
+  String name;
+  String primaryColor;
+  String secondaryColor;
+  BiomeIcon icon;
 
-  Biome(
-      {this.name,
-      this.primaryColor,
-      this.secondaryColor,
-      this.icon,
-      this.animals});
+  Biome({
+    required this.name,
+    required this.primaryColor,
+    required this.secondaryColor,
+    required this.icon,
+  });
 
-  Biome.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    primaryColor = json['primary_color'];
-    secondaryColor = json['secondary_color'];
-    icon = json['icon'] != null ? new BiomeIcon.fromJson(json['icon']) : null;
-    if (json['animals'] != null) {
-      animals = [];
-      json['animals'].forEach((v) {
-        animals!.add(new Animal.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['primary_color'] = this.primaryColor;
-    data['secondary_color'] = this.secondaryColor;
-    if (this.icon != null) {
-      data['icon'] = this.icon!.toJson();
-    }
-    if (this.animals != null) {
-      data['animals'] = this.animals!.map((v) => v.toJson()).toList();
-    }
-    return data;
+  factory Biome.fromJson(Map<String, dynamic> json) {
+    return Biome(
+      name: json['name'] as String,
+      primaryColor: json['primaryColor'] as String,
+      secondaryColor: json['secondaryColor'] as String,
+      icon: BiomeIcon.fromJson(json['icon']),
+    );
   }
 }
 
 class BiomeIcon {
-  String? name;
-  String? svgPath;
+  String name;
+  String svgPath;
 
-  BiomeIcon({this.name, this.svgPath});
+  BiomeIcon({
+    required this.name,
+    required this.svgPath,
+  });
 
-  BiomeIcon.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    svgPath = json['svg_path'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['svg_path'] = this.svgPath;
-    return data;
-  }
-}
-
-class Animal {
-  String? name;
-  String? svgPath;
-
-  Animal({this.name, this.svgPath});
-
-  Animal.fromJson(Map<String, dynamic> json) {
-    print(json['name']);
-    name = json['name'];
-    svgPath = json['svg_path'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['svg_path'] = this.svgPath;
-    return data;
+  factory BiomeIcon.fromJson(Map<String, dynamic> json) {
+    return BiomeIcon(
+      name: json['name'] as String,
+      svgPath: json['svgPath'] as String,
+    );
   }
 }

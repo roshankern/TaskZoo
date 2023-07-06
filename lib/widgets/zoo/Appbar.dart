@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
@@ -17,63 +18,59 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  int _selectedIcon = 0;  // index of the selected icon
+  int _selectedIcon = 0; // index of the selected icon
+  late Future<Biomes> _biomesFuture;
 
-  Future<Biomes> loadBiomes() async {
-    String jsonString = await rootBundle.loadString(widget.jsonPath);
+  @override
+  void initState() {
+    super.initState();
+    _biomesFuture = loadBiomesData(widget.jsonPath);
+  }
+
+  Future<Biomes> loadBiomesData(String jsonPath) async {
+    String jsonString = await rootBundle.loadString(jsonPath);
     final jsonData = json.decode(jsonString);
-    //print(jsonData);
-    final Biomes biomeData = Biomes.fromJson(jsonData);
-    return biomeData;
+    final biomesData = Biomes.fromJson(jsonData);
+
+    return biomesData;
   }
 
   @override
   Widget build(BuildContext context) {
-    final biomeData = loadBiomes();
-    return CircularProgressIndicator();
+    return FutureBuilder<Biomes>(
+      future: _biomesFuture,
+      builder: (BuildContext context, AsyncSnapshot<Biomes> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return AppBar(
+            title: Text('Loading...'),
+          );
+        } else if (snapshot.hasData) {
+          final biomes = snapshot.data!.biomes;
+          final icons = biomes.map((biome) => biome.icon).toList();
 
-    // return FutureBuilder<Biomes>(
-    //   future: loadBiomes(),
-    //   builder: (BuildContext context, AsyncSnapshot<Biomes> snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return AppBar(title: CircularProgressIndicator());
-    //     } else if (snapshot.connectionState == ConnectionState.done) {
-    //       if (snapshot.hasError) {
-    //         print(snapshot.error);
-    //         return AppBar(title: Text('Error: ${snapshot.error}'));
-    //       }
-
-    //       List<BiomeIcon> icons = [];
-    //       // snapshot.data!.biomes.forEach((key, value) {
-    //       //   icons.add(value.icon);
-    //       // });
-
-    //       return AppBar(
-    //         backgroundColor: Colors.transparent,
-    //         elevation: 0,
-    //         title: Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    //           children: [
-    //             for (int i = 0; i < icons.length; i++)
-    //               IconButton(
-    //                 // using network icon for the demo, you should load svg in your actual application
-    //                 icon: ImageIcon(NetworkImage(icons[i].svgPath!)),
-    //                 color: _selectedIcon == i ? Colors.white : Colors.black,
-    //                 onPressed: () => _updateSelectedIcon(i),
-    //               ),
-    //           ],
-    //         ),
-    //       );
-    //     } else {
-    //       return AppBar(title: Text('Unexpected state'));
-    //     }
-    //   },
-    // );
-  }
-
-  void _updateSelectedIcon(int index) {
-    setState(() {
-      _selectedIcon = index;
-    });
+          return AppBar(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(icons.length, (index) {
+                final BiomeIcon = icons[index];
+                return IconButton(
+                  icon: SvgPicture.asset(BiomeIcon.svgPath), 
+                  onPressed: () {
+                    setState(() {
+                      _selectedIcon = index;
+                    });
+                  },
+                  color: _selectedIcon == index ? Colors.white : Colors.black,
+                );
+              }),
+            ),
+          );
+        } else {
+          return AppBar(
+            title: Text('Error loading data'),
+          );
+        }
+      },
+    );
   }
 }
