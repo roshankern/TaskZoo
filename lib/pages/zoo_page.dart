@@ -49,11 +49,19 @@ class _ZooPageState extends State<ZooPage> {
             ),
           );
         } else {
-          return Column(
-            children: [
-              CustomAppBar(biomesData: snapshot.data!),
-              Expanded(child: ZooBody(biomesData: snapshot.data!)),
-            ],
+          return Scaffold(
+            extendBody: true,
+            extendBodyBehindAppBar: true,
+            appBar: CustomAppBar(biomesData: snapshot.data!),
+            body: ListView(
+              children: [
+                SvgPicture.asset(
+                  snapshot.data!.biomes[0].backgroundSvgPath,
+                  fit: BoxFit.fitWidth,
+                ),
+                ZooBody(biomesData: snapshot.data!)
+              ],
+            ),
           );
         }
       },

@@ -25,6 +25,14 @@
                 {
                     "name": "Reindeer",
                     "svgPath": "assets/biomes_data/arctic/reindeer.svg"
+                },
+                {
+                    "name": "Reindeer",
+                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
+                },
+                {
+                    "name": "Reindeer",
+                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
                 }
             ]
         },

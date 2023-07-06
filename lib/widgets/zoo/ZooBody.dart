@@ -9,7 +9,7 @@ class ZooBody extends StatelessWidget {
 
   Widget getAnimalCard(BuildContext context, String svgPath, String animalName) {
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(00.0),
       child: Container(
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
@@ -39,12 +39,14 @@ class ZooBody extends StatelessWidget {
     final animals = biomesData.biomes.expand((biome) => biome.animals).toList();
 
     return GridView.builder(
-      padding: EdgeInsets.all(10.0),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(30.0),
       itemCount: animals.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 10.0,
-        mainAxisSpacing: 10.0,
+        crossAxisSpacing: 30.0,
+        mainAxisSpacing: 30.0,
       ),
       itemBuilder: (BuildContext context, int index) {
         return getAnimalCard(context, animals[index].svgPath, animals[index].name);
