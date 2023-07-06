@@ -45,30 +45,23 @@
                 "name": "Mountain",
                 "svgPath": "assets/biomes_data/mountain/mountain.svg"
             },
+            
             "animals": [
                 {
-                    "name": "Wolf",
-                    "svg_path": "assets/biome_data/mountain/wolf.svg"
+                    "name": "Snowy Owl",
+                    "svgPath": "assets/biomes_data/arctic/snowy_owl.svg"
                 },
                 {
-                    "name": "Rabbit",
-                    "svg_path": "assets/biome_data/mountain/rabbit.svg"
+                    "name": "Reindeer",
+                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
                 },
                 {
-                    "name": "Falcon",
-                    "svg_path": "assets/biome_data/mountain/falcon.svg"
+                    "name": "Reindeer",
+                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
                 },
                 {
-                    "name": "Fox",
-                    "svgPath": "assets/biomes_data/arctic/fox.svg"
-                },
-                {
-                    "name": "Fox",
-                    "svgPath": "assets/biomes_data/arctic/fox.svg"
-                },
-                {
-                    "name": "Fox",
-                    "svgPath": "assets/biomes_data/arctic/fox.svg"
+                    "name": "Reindeer",
+                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
                 }
             ]
         },
@@ -81,34 +74,23 @@
                 "name": "Wave",
                 "svgPath": "assets/biomes_data/ocean/wave.svg"
             },
+            
             "animals": [
                 {
-                    "name": "Dolphin",
-                    "svg_path": "assets/biome_data/ocean/dolphin.svg"
+                    "name": "Polar Bear",
+                    "svgPath": "assets/biomes_data/arctic/polar_bear.svg"
                 },
                 {
-                    "name": "Sea Turtle",
-                    "svg_path": "assets/biome_data/ocean/sea_turtle.svg"
+                    "name": "Penguin",
+                    "svgPath": "assets/biomes_data/arctic/penguin.svg"
                 },
                 {
-                    "name": "Octopus",
-                    "svg_path": "assets/biome_data/ocean/octopus.svg"
+                    "name": "Snowy Owl",
+                    "svgPath": "assets/biomes_data/arctic/snowy_owl.svg"
                 },
                 {
-                    "name": "Seahorse",
-                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
-                },
-                {
-                    "name": "Seahorse",
-                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
-                },
-                {
-                    "name": "Seahorse",
-                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
-                },
-                {
-                    "name": "Seahorse",
-                    "svg_path": "assets/biome_data/ocean/seahorse.svg"
+                    "name": "Reindeer",
+                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
                 }
             ]
         }
