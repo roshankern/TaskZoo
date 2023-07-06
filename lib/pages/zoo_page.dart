@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:taskzoo/widgets/zoo/Appbar.dart';
 import 'package:taskzoo/widgets/zoo/ZooBody.dart';
@@ -56,9 +55,9 @@ class _ZooPageState extends State<ZooPage> {
             body: ListView(
               padding: EdgeInsets.only(top: 0),
               children: [
-                SvgPicture.asset(
-                  snapshot.data!.biomes[0].backgroundSvgPath,
-                  width: MediaQuery.of(context).size.width,
+                Image.asset(
+                  snapshot.data!.biomes[0].backgroundPath,
+                  fit: BoxFit.cover,
                 ),
                 ZooBody(biomesData: snapshot.data!)
               ],

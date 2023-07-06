@@ -22,7 +22,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     final biomes = widget.biomesData.biomes;
     final icons = biomes.map((biome) => biome.icon).toList();
-    final backgroundSvgPath = biomes[_selectedIcon].backgroundSvgPath;
 
     return AppBar(
       backgroundColor: Colors.transparent,
