@@ -1,75 +1,105 @@
 class Biomes {
-  List<Biome> biomes;
+  List<Biome>? biomes;
 
-  Biomes({required this.biomes});
+  Biomes({this.biomes});
 
-  factory Biomes.fromJson(Map<String, dynamic> json) {
-    return Biomes(
-      biomes: (json['biomes'] as List).map((i) => Biome.fromJson(i)).toList(),
-    );
+  Biomes.fromJson(Map<String, dynamic> json) {
+    if (json['biomes'] != null) {
+      biomes = [];
+      print(json['biomes']);
+      json['biomes'].forEach((Map<String, dynamic>v) {
+        print(v);
+        biomes!.add(new Biome.fromJson(v));
+      });
+    }
   }
 
-  void printBiomes() {
-    biomes.forEach((biome) {
-      print('Biome name: ${biome.name}');
-      print('Primary Color: ${biome.primaryColor}');
-      print('Secondary Color: ${biome.secondaryColor}');
-      print('Icon Name: ${biome.icon.name}');
-      print('Icon SVG Path: ${biome.icon.svgPath}');
-      print('Animals:');
-      biome.animals.forEach((animal) {
-        print('  Animal Name: ${animal.name}');
-        print('  Animal SVG Path: ${animal.svgPath}');
-      });
-      print('--------------------------------');
-    });
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.biomes != null) {
+      data['biomes'] = this.biomes!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
 
 class Biome {
-  String name;
-  String primaryColor;
-  String secondaryColor;
-  BiomeIcon icon;
-  List<Animal> animals;
+  String? name;
+  String? primaryColor;
+  String? secondaryColor;
+  BiomeIcon? icon;
+  List<Animal>? animals;
 
-  Biome({required this.name, required this.primaryColor, required this.secondaryColor, required this.icon, required this.animals});
+  Biome(
+      {this.name,
+      this.primaryColor,
+      this.secondaryColor,
+      this.icon,
+      this.animals});
 
-  factory Biome.fromJson(Map<String, dynamic> json) {
-    return Biome(
-      name: json['name'],
-      primaryColor: json['primary_color'],
-      secondaryColor: json['secondary_color'],
-      icon: BiomeIcon.fromJson(json['icon']),
-      animals: (json['animals'] as List).map((i) => Animal.fromJson(i)).toList(),
-    );
+  Biome.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    primaryColor = json['primary_color'];
+    secondaryColor = json['secondary_color'];
+    icon = json['icon'] != null ? new BiomeIcon.fromJson(json['icon']) : null;
+    if (json['animals'] != null) {
+      animals = [];
+      json['animals'].forEach((v) {
+        animals!.add(new Animal.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['name'] = this.name;
+    data['primary_color'] = this.primaryColor;
+    data['secondary_color'] = this.secondaryColor;
+    if (this.icon != null) {
+      data['icon'] = this.icon!.toJson();
+    }
+    if (this.animals != null) {
+      data['animals'] = this.animals!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
 
 class BiomeIcon {
-  String name;
-  String svgPath;
+  String? name;
+  String? svgPath;
 
-  BiomeIcon({required this.name, required this.svgPath});
+  BiomeIcon({this.name, this.svgPath});
 
-  factory BiomeIcon.fromJson(Map<String, dynamic> json) {
-    return BiomeIcon(
-      name: json['name'],
-      svgPath: json['svg_path'],
-    );
+  BiomeIcon.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    svgPath = json['svg_path'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['name'] = this.name;
+    data['svg_path'] = this.svgPath;
+    return data;
   }
 }
 
 class Animal {
-  String name;
-  String svgPath;
+  String? name;
+  String? svgPath;
 
-  Animal({required this.name, required this.svgPath});
+  Animal({this.name, this.svgPath});
 
-  factory Animal.fromJson(Map<String, dynamic> json) {
-    return Animal(
-      name: json['name'],
-      svgPath: json['svg_path'],
-    );
+  Animal.fromJson(Map<String, dynamic> json) {
+    print(json['name']);
+    name = json['name'];
+    svgPath = json['svg_path'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['name'] = this.name;
+    data['svg_path'] = this.svgPath;
+    return data;
   }
 }

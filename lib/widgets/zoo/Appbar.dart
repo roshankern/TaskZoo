@@ -29,43 +29,46 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Biomes>(
-      future: loadBiomes(),
-      builder: (BuildContext context, AsyncSnapshot<Biomes> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AppBar(title: CircularProgressIndicator());
-        } else if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            print(snapshot.error);
-            return AppBar(title: Text('Error: ${snapshot.error}'));
-          }
+    final biomeData = loadBiomes();
+    return CircularProgressIndicator();
 
-          List<BiomeIcon> icons = [];
-          // snapshot.data!.biomes.forEach((key, value) {
-          //   icons.add(value.icon);
-          // });
+    // return FutureBuilder<Biomes>(
+    //   future: loadBiomes(),
+    //   builder: (BuildContext context, AsyncSnapshot<Biomes> snapshot) {
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       return AppBar(title: CircularProgressIndicator());
+    //     } else if (snapshot.connectionState == ConnectionState.done) {
+    //       if (snapshot.hasError) {
+    //         print(snapshot.error);
+    //         return AppBar(title: Text('Error: ${snapshot.error}'));
+    //       }
 
-          return AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                for (int i = 0; i < icons.length; i++)
-                  IconButton(
-                    // using network icon for the demo, you should load svg in your actual application
-                    icon: ImageIcon(NetworkImage(icons[i].svgPath)),
-                    color: _selectedIcon == i ? Colors.white : Colors.black,
-                    onPressed: () => _updateSelectedIcon(i),
-                  ),
-              ],
-            ),
-          );
-        } else {
-          return AppBar(title: Text('Unexpected state'));
-        }
-      },
-    );
+    //       List<BiomeIcon> icons = [];
+    //       // snapshot.data!.biomes.forEach((key, value) {
+    //       //   icons.add(value.icon);
+    //       // });
+
+    //       return AppBar(
+    //         backgroundColor: Colors.transparent,
+    //         elevation: 0,
+    //         title: Row(
+    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //           children: [
+    //             for (int i = 0; i < icons.length; i++)
+    //               IconButton(
+    //                 // using network icon for the demo, you should load svg in your actual application
+    //                 icon: ImageIcon(NetworkImage(icons[i].svgPath!)),
+    //                 color: _selectedIcon == i ? Colors.white : Colors.black,
+    //                 onPressed: () => _updateSelectedIcon(i),
+    //               ),
+    //           ],
+    //         ),
+    //       );
+    //     } else {
+    //       return AppBar(title: Text('Unexpected state'));
+    //     }
+    //   },
+    // );
   }
 
   void _updateSelectedIcon(int index) {

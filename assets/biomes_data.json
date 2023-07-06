@@ -2,55 +2,28 @@
     "biomes": [
         {
             "name": "arctic",
-            "primary_color": "#E6F7FF",
-            "secondary_color": "#CCE6FF",
+            "primaryColor": "#E6F7FF",
+            "secondaryColor": "#CCE6FF",
             "icon": {
                 "name": "Snowflake",
-                "svg_path": "assets/biomes_data/arctic/snowflake.svg"
+                "svgPath": "assets/biomes_data/arctic/snowflake.svg"
             },
             "animals": [
                 {
                     "name": "Polar Bear",
-                    "svg_path": "assets/biomes_data/arctic/polar_bear.svg"
+                    "svgPath": "assets/biomes_data/arctic/polar_bear.svg"
                 },
                 {
                     "name": "Penguin",
-                    "svg_path": "assets/biomes_data/arctic/penguin.svg"
+                    "svgPath": "assets/biomes_data/arctic/penguin.svg"
                 },
                 {
                     "name": "Snowy Owl",
-                    "svg_path": "assets/biomes_data/arctic/snowy_owl.svg"
+                    "svgPath": "assets/biomes_data/arctic/snowy_owl.svg"
                 },
                 {
                     "name": "Reindeer",
-                    "svg_path": "assets/biomes_data/arctic/reindeer.svg"
-                }
-            ]
-        },
-        {
-            "name": "desert",
-            "primary_color": "#FFD700",
-            "secondary_color": "#FFA500",
-            "icon": {
-                "name": "Sun",
-                "svg_path": "assets/biomes_data/desert/sun.svg"
-            },
-            "animals": [
-                {
-                    "name": "Fennec Fox",
-                    "svg_path": "assets/biomes_data/desert/fennec_fox.svg"
-                },
-                {
-                    "name": "Dromedary Camel",
-                    "svg_path": "assets/biomes_data/desert/dromedary_camel.svg"
-                },
-                {
-                    "name": "Lizard",
-                    "svg_path": "assets/biomes_data/desert/lizard.svg"
-                },
-                {
-                    "name": "Snake",
-                    "svg_path": "assets/biomes_data/desert/snake.svg"
+                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
                 }
             ]
         }
