@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:taskzoo/widgets/zoo/Appbar.dart';
+import 'package:taskzoo/widgets/zoo/ZooBody.dart';
 import 'package:taskzoo/models/biomes_model.dart';
 
 class ZooPage extends StatefulWidget {
@@ -50,9 +51,7 @@ class _ZooPageState extends State<ZooPage> {
         } else {
           return Scaffold(
             appBar: CustomAppBar(biomesData: snapshot.data!),
-            body: Center(
-              child: Text('Zoo Body'),
-            ),
+            body: ZooBody(biomesData: snapshot.data!),
           );
         }
       },
