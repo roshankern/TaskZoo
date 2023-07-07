@@ -12,9 +12,15 @@ import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
-const backgroundColor = const Color(0xff8db7b6);
-const unselectedColor = const Color(0xffafd2d2);
 const lineColor = const Color(0xff8c9292);
+
+// arctic biome colors
+const backgroundColor = const Color(0xffE6F7FF);
+const unselectedColor = const Color(0xffCCE6FF);
+
+// mountain biome colors
+// const backgroundColor = const Color(0xff8db7b6);
+// const unselectedColor = const Color(0xffafd2d2);
 
 void main() {
   runApp(const MyApp());

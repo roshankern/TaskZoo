@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:taskzoo/widgets/zoo/Appbar.dart';
+import 'package:taskzoo/widgets/zoo/BackgroundImage.dart';
 import 'package:taskzoo/widgets/zoo/ZooBody.dart';
+
 import 'package:taskzoo/models/biomes_model.dart';
 
 class ZooPage extends StatefulWidget {
@@ -55,11 +57,8 @@ class _ZooPageState extends State<ZooPage> {
             body: ListView(
               padding: EdgeInsets.only(top: 0),
               children: [
-                Image.asset(
-                  snapshot.data!.biomes[0].backgroundPath,
-                  fit: BoxFit.cover,
-                ),
-                ZooBody(biomesData: snapshot.data!)
+                BackgroundImage(imagePath: snapshot.data!.biomes[0].backgroundPath),
+                ZooBody(biomesData: snapshot.data!),
               ],
             ),
           );
