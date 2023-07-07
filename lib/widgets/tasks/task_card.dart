@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:taskzoo/widgets/tasks/edit_task.dart';
 
 String startOfWeek = "Monday";
 
@@ -127,142 +128,185 @@ class _TaskCardState extends State<TaskCard> {
           ),
           child: Opacity(
             opacity: widget.isMeantForToday ? 1 : 0.5,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                if (!_isTapped)
-                  Expanded(
-                    flex: 6,
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              widget.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: widget.isMeantForToday
-                                    ? Colors.black
-                                    : Theme.of(context).dividerColor,
-                                fontSize: 20.0,
-                              ),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    if (!_isTapped)
+                      Expanded(
+                        flex: 6,
+                        child: Center(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  widget.title,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: widget.isMeantForToday
+                                        ? Colors.black
+                                        : Theme.of(context).dividerColor,
+                                    fontSize: 20.0,
+                                  ),
+                                ),
+                                Text(
+                                  widget.tag,
+                                  style: TextStyle(
+                                    color: widget.isMeantForToday
+                                        ? Colors.grey
+                                        : Theme.of(context).dividerColor,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              widget.tag,
-                              style: TextStyle(
-                                color: widget.isMeantForToday
-                                    ? Colors.grey
-                                    : Theme.of(context).dividerColor,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
+                      ),
+                    if (!_isTapped)
+                      Container(
+                        height: 1.0,
+                        color: Theme.of(context).dividerColor,
+                        margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                      ),
+                    Expanded(
+                      flex: 4,
+                      child: Center(
+                        child: _isTapped
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.local_fire_department,
+                                        color: Colors.orange,
+                                      ),
+                                      const SizedBox(width: 8.0),
+                                      Text(
+                                        widget.streakCount.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.star,
+                                        color: Colors.yellow,
+                                      ),
+                                      const SizedBox(width: 8.0),
+                                      Text(
+                                        widget.longestStreak.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_month,
+                                        color: Colors.green,
+                                      ),
+                                      const SizedBox(width: 8.0),
+                                      Text(
+                                        widget.completionCount30days.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              )
+                            : widget.isMeantForToday
+                                ? !widget.isCompleted
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              const Icon(
+                                                  FontAwesomeIcons.clock),
+                                              const SizedBox(width: 8.0),
+                                              Text(_getTimeUntilMidnight()),
+                                            ],
+                                          ),
+                                          if (_setCompletionStatus(schedule) >
+                                              0)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: Text(
+                                                '${_setCompletionStatus(schedule)} more this $monthlyOrWeekly',
+                                              ),
+                                            ),
+                                        ],
+                                      )
+                                    : const Icon(
+                                        FontAwesomeIcons.check,
+                                        color: Colors.black,
+                                      )
+                                : const Text('Relax, not for today'),
+                      ),
+                    ),
+                  ],
+                ),
+                if (_isTapped)
+                  Positioned(
+                    top: 10.0,
+                    right: 10.0,
+                    child: GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet<Map<String, dynamic>>(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (BuildContext context) {
+                            return EditTaskSheet(
+                              title: widget.title,
+                              tag: widget.tag,
+                              daysOfWeek: widget.daysOfWeek,
+                              biDaily: widget.biDaily,
+                              weekly: widget.weekly,
+                              monthly: widget.monthly,
+                              timesPerWeek: widget.timesPerWeek,
+                              timesPerMonth: widget.timesPerMonth,
+                            );
+                          },
+                        ).then((editedTaskData) {
+                          // Handle the edited task data here
+                          if (editedTaskData != null) {
+                            // Perform the necessary actions with the edited task data
+                            print('Edited Task Data: $editedTaskData');
+                          }
+                        });
+                      },
+                      child: Icon(
+                        Icons.edit,
+                        color: Colors.grey,
                       ),
                     ),
                   ),
-                if (!_isTapped)
-                  Container(
-                    height: 1.0,
-                    color: Theme.of(context).dividerColor,
-                    margin: const EdgeInsets.symmetric(horizontal: 10.0),
-                  ),
-                Expanded(
-                  flex: 4,
-                  child: Center(
-                    child: _isTapped
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.local_fire_department,
-                                    color: Colors.orange,
-                                  ),
-                                  const SizedBox(width: 8.0),
-                                  Text(
-                                    widget.streakCount.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8.0),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.star,
-                                    color: Colors.yellow,
-                                  ),
-                                  const SizedBox(width: 8.0),
-                                  Text(
-                                    widget.longestStreak.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8.0),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.calendar_month,
-                                    color: Colors.green,
-                                  ),
-                                  const SizedBox(width: 8.0),
-                                  Text(
-                                    widget.completionCount30days.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          )
-                        : widget.isMeantForToday
-                            ? !widget.isCompleted
-                                ? Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          const Icon(FontAwesomeIcons.clock),
-                                          const SizedBox(width: 8.0),
-                                          Text(_getTimeUntilMidnight()),
-                                        ],
-                                      ),
-                                      if (_setCompletionStatus(schedule) > 0)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 8.0),
-                                          child: Text(
-                                            '${_setCompletionStatus(schedule)} more this $monthlyOrWeekly',
-                                          ),
-                                        ),
-                                    ],
-                                  )
-                                : const Icon(
-                                    FontAwesomeIcons.check,
-                                    color: Colors.black,
-                                  )
-                            : const Text('Relax, not for today'),
-                  ),
-                ),
               ],
             ),
           ),
@@ -270,6 +314,8 @@ class _TaskCardState extends State<TaskCard> {
       ),
     );
   }
+
+  // Rest of the code remains the same...
 
   String determineFrequency(
     List<bool> daysOfWeek,
