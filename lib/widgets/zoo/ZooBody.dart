@@ -23,7 +23,7 @@ class ZooBody extends StatelessWidget {
           return Container(
             decoration: BoxDecoration(
               color: fillColor,
-              borderRadius: BorderRadius.circular(10.0),
+              borderRadius: BorderRadius.circular(20.0),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -32,7 +32,8 @@ class ZooBody extends StatelessWidget {
                 ),
               ],
             ),
-            child: Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
               child: SvgPicture.asset(
                 svgPath,
                 semanticsLabel: animalName,
