@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import 'package:taskzoo/widgets/zoo/Appbar.dart';
 import 'package:taskzoo/widgets/zoo/BackgroundImage.dart';
 import 'package:taskzoo/widgets/zoo/ZooBody.dart';
 
 import 'package:taskzoo/models/biomes_model.dart';
+
+import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 class ZooPage extends StatefulWidget {
   const ZooPage({Key? key}) : super(key: key);
@@ -34,6 +37,9 @@ class _ZooPageState extends State<ZooPage> {
 
   @override
   Widget build(BuildContext context) {
+    // get the ZooNotifier
+    final zooNotifier = Provider.of<ZooNotifier>(context);
+
     return FutureBuilder<Biomes>(
       future: _biomesFuture,
       builder: (BuildContext context, AsyncSnapshot<Biomes> snapshot) {
@@ -57,7 +63,9 @@ class _ZooPageState extends State<ZooPage> {
             body: ListView(
               padding: EdgeInsets.only(top: 0),
               children: [
-                BackgroundImage(imagePath: snapshot.data!.biomes[0].backgroundPath),
+                BackgroundImage(
+                    imagePath: snapshot
+                        .data!.biomes[zooNotifier.currentBiome].backgroundPath),
                 ZooBody(biomesData: snapshot.data!),
               ],
             ),

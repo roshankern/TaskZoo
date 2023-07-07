@@ -7,27 +7,19 @@ class BackgroundImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        Image.asset(
+    return ShaderMask(
+      shaderCallback: (rect) {
+        return LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.black, Colors.transparent],
+        ).createShader(Rect.fromLTRB(0, rect.height *3/4, rect.width, rect.height));
+      },
+      blendMode: BlendMode.dstIn,
+      child: Image.asset(
           imagePath,
           fit: BoxFit.cover,
-        ),
-        Container(
-          height: 150,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.transparent,
-                Theme.of(context).scaffoldBackgroundColor,
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
