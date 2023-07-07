@@ -12,9 +12,9 @@ import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
-const backgroundColor = Color.fromRGBO(141, 183, 182, 1);
-const unselectedColor = Color.fromRGBO(175, 210, 210, 1);
-const lineColor = Color.fromRGBO(140, 146, 146, 1);
+const backgroundColor = const Color(0xff8db7b6);
+const unselectedColor = const Color(0xffafd2d2);
+const lineColor = const Color(0xff8c9292);
 
 void main() {
   runApp(const MyApp());
