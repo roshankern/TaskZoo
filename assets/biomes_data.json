@@ -40,12 +40,16 @@
             "name": "mountain",
             "primaryColor": "#8db7b6",
             "secondaryColor": "#afd2d2",
-            "backgroundPath": "assets/biomes_data/mountain/mountain_background.png",
+            "backgroundPath": "assets/biomes_data/mountain/mountain_background_geometrized.png",
             "icon": {
                 "name": "Mountain",
                 "svgPath": "assets/biomes_data/mountain/mountain.svg"
             },
             "animals": [
+                {
+                    "name": "Wolf",
+                    "svgPath": "assets/biomes_data/mountain/wolf.svg"
+                },
                 {
                     "name": "Fox",
                     "svgPath": "assets/biomes_data/mountain/fox.svg"
@@ -57,10 +61,6 @@
                 {
                     "name": "Rabbit",
                     "svgPath": "assets/biomes_data/mountain/rabbit.svg"
-                },
-                {
-                    "name": "Wolf",
-                    "svgPath": "assets/biomes_data/mountain/wolf.svg"
                 }
             ]
         },
