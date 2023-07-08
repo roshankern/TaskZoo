@@ -7,15 +7,15 @@ import 'package:taskzoo/widgets/tasks/edit_task.dart';
 String startOfWeek = "Monday";
 
 class TaskCard extends StatefulWidget {
-  final String title;
-  final String tag;
-  final String schedule;
-  final List<bool> daysOfWeek;
-  final bool biDaily;
-  final bool weekly;
-  final bool monthly;
-  final int timesPerMonth;
-  final int timesPerWeek;
+  String title;
+  String tag;
+  String schedule;
+  List<bool> daysOfWeek;
+  bool biDaily;
+  bool weekly;
+  bool monthly;
+  int timesPerMonth;
+  int timesPerWeek;
   bool isCompleted = false;
   int streakCount = 0;
   int longestStreak = 0;
@@ -249,7 +249,8 @@ class _TaskCardState extends State<TaskCard> {
                                               const Icon(
                                                   FontAwesomeIcons.clock),
                                               const SizedBox(width: 8.0),
-                                              Text(_getTimeUntilMidnight()),
+                                              Text(
+                                                  _getTimeUntilNextCompletionDate()),
                                             ],
                                           ),
                                           if (_setCompletionStatus(schedule) >
@@ -291,17 +292,32 @@ class _TaskCardState extends State<TaskCard> {
                               monthly: widget.monthly,
                               timesPerWeek: widget.timesPerWeek,
                               timesPerMonth: widget.timesPerMonth,
+                              onUpdateTask: (editedTaskData) {
+                                if (editedTaskData != null) {
+                                  // Update the task data in the TaskCard widget
+                                  setState(() {
+                                    widget.title = editedTaskData['title'];
+                                    widget.tag = editedTaskData['tag'];
+                                    widget.daysOfWeek =
+                                        editedTaskData['daysOfWeek'];
+                                    widget.biDaily = editedTaskData['biDaily'];
+                                    widget.weekly = editedTaskData['weekly'];
+                                    widget.monthly = editedTaskData['monthly'];
+                                    widget.timesPerWeek =
+                                        editedTaskData['timesPerWeek'];
+                                    widget.timesPerMonth =
+                                        editedTaskData['timesPerMonth'];
+                                    widget.schedule =
+                                        editedTaskData['schedule'];
+                                    isCompletedFalse(schedule);
+                                  });
+                                }
+                              },
                             );
                           },
-                        ).then((editedTaskData) {
-                          // Handle the edited task data here
-                          if (editedTaskData != null) {
-                            // Perform the necessary actions with the edited task data
-                            print('Edited Task Data: $editedTaskData');
-                          }
-                        });
+                        );
                       },
-                      child: Icon(
+                      child: const Icon(
                         Icons.edit,
                         color: Colors.grey,
                       ),
@@ -316,6 +332,17 @@ class _TaskCardState extends State<TaskCard> {
   }
 
   // Rest of the code remains the same...
+
+  void isCompletedFalse(String schedule) {
+    if (widget.completedDates.isNotEmpty) {
+      DateTime earliestDate =
+          widget.completedDates.reduce((a, b) => a.isBefore(b) ? a : b);
+      widget.completedDates.remove(earliestDate);
+      setState(() {
+        widget.isCompleted = false;
+      });
+    }
+  }
 
   String determineFrequency(
     List<bool> daysOfWeek,
@@ -336,13 +363,23 @@ class _TaskCardState extends State<TaskCard> {
     }
   }
 
-  String _getTimeUntilMidnight() {
+  String _getTimeUntilNextCompletionDate() {
     final now = DateTime.now();
-    final midnight = DateTime(now.year, now.month, now.day + 1);
-    final difference = midnight.difference(now);
-    final hours = difference.inHours;
+    final difference = widget.nextCompletionDate.difference(now);
+
+    final days = difference.inDays;
+    final hours = difference.inHours % 24;
     final minutes = difference.inMinutes % 60;
-    return hours > 0 ? "$hours hours left" : "$minutes minutes left";
+
+    if (days > 1) {
+      return "$days days left";
+    } else if (days == 1) {
+      return "1 day left";
+    } else if (hours > 0) {
+      return "$hours hours left";
+    } else {
+      return "$minutes minutes left";
+    }
   }
 
   List<DateTime> _getLast30DaysDates() {

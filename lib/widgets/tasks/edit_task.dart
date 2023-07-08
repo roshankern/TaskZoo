@@ -15,18 +15,20 @@ class EditTaskSheet extends StatefulWidget {
   final bool monthly;
   final int timesPerWeek;
   final int timesPerMonth;
+  final Function(Map<String, dynamic>) onUpdateTask;
 
-  const EditTaskSheet({
-    Key? key,
-    required this.title,
-    required this.tag,
-    required this.daysOfWeek,
-    required this.biDaily,
-    required this.weekly,
-    required this.monthly,
-    required this.timesPerWeek,
-    required this.timesPerMonth,
-  }) : super(key: key);
+  const EditTaskSheet(
+      {Key? key,
+      required this.title,
+      required this.tag,
+      required this.daysOfWeek,
+      required this.biDaily,
+      required this.weekly,
+      required this.monthly,
+      required this.timesPerWeek,
+      required this.timesPerMonth,
+      required this.onUpdateTask})
+      : super(key: key);
 
   @override
   _EditTaskSheetState createState() => _EditTaskSheetState();
@@ -348,7 +350,9 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
             'timesPerMonth': _timesPerMonth,
             'schedule': getPageState(_daysOfWeek, _biDaily, _weekly, _monthly)
           };
-          Navigator.pop(context, taskData);
+          widget.onUpdateTask(
+              taskData); // Call the callback function with updated task data
+          Navigator.pop(context);
         }
       },
     );
