@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:taskzoo/pages/home_page.dart';
 import 'package:taskzoo/pages/zoo_page.dart';
 import 'package:taskzoo/pages/stats_page.dart';
 import 'package:taskzoo/pages/settings_page.dart';
+
 import 'package:taskzoo/widgets/home/navbar.dart';
+
+import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
-const backgroundColor = Color.fromRGBO(141, 183, 182, 1);
-const unselectedColor = Color.fromRGBO(175, 210, 210, 1);
-const lineColor = Color.fromRGBO(140, 146, 146, 1);
+const lineColor = const Color(0xff8c9292);
+
+// arctic biome colors
+// const backgroundColor = const Color(0xffE6F7FF);
+// const unselectedColor = const Color(0xffCCE6FF);
+
+// mountain biome colors
+const backgroundColor = const Color(0xff92ad40);
+const unselectedColor = const Color(0xffaac94b);
 
 void main() {
   runApp(const MyApp());
@@ -72,7 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final pages = [
       HomePage(),
-      const ZooPage(),
+      ChangeNotifierProvider(
+        create: (context) => ZooNotifier(),
+        child: const ZooPage(),
+      ),
     ];
     return Scaffold(
       body: PageView(

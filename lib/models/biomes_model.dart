@@ -15,7 +15,7 @@ class Biome {
   String name;
   String primaryColor;
   String secondaryColor;
-  String backgroundSvgPath;
+  String backgroundPath;
   BiomeIcon icon;
   List<Animal> animals;
 
@@ -23,7 +23,7 @@ class Biome {
     required this.name,
     required this.primaryColor,
     required this.secondaryColor,
-    required this.backgroundSvgPath,
+    required this.backgroundPath,
     required this.icon,
     required this.animals,
   });
@@ -36,7 +36,7 @@ class Biome {
       name: json['name'] as String,
       primaryColor: json['primaryColor'] as String,
       secondaryColor: json['secondaryColor'] as String,
-      backgroundSvgPath: json['backgroundSvgPath'] as String,
+      backgroundPath: json['backgroundPath'] as String,
       icon: BiomeIcon.fromJson(json['icon']),
       animals: animals,
     );
