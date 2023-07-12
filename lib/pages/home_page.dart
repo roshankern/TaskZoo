@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   final List<TaskCard> _tasks = [];
   final GlobalKey<AnimalBuilderState> _animalBuilderKey = GlobalKey();
   late String selectedSchedule;
+  List<String> selectedTags = [];
 
   void _createTaskButton() async {
     final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -40,15 +41,40 @@ class _HomePageState extends State<HomePage> {
         ));
       });
     }
+
+    List<String> getAllTags() {
+      final Set<String> allTags = Set<String>();
+
+      for (var task in _tasks) {
+        allTags.add(task.tag);
+      }
+
+      return allTags.toList();
+    }
   }
 
   List<TaskCard> getFilteredTasks(String selectedSchedule) {
     return _tasks.where((task) => task.schedule == selectedSchedule).toList();
   }
 
+  List<TaskCard> getFilteredTagTasks(String selectedSchedule) {
+    return _tasks
+        .where((task) =>
+            task.schedule == selectedSchedule &&
+            (selectedTags.isEmpty ||
+                selectedTags.any((tag) => task.tag.contains(tag))))
+        .toList();
+  }
+
   void updateSelectedSchedule(String schedule) {
     setState(() {
       selectedSchedule = schedule;
+    });
+  }
+
+  void updateSelectedTags(List<String> tags) {
+    setState(() {
+      selectedTags = tags;
     });
   }
 
@@ -64,6 +90,8 @@ class _HomePageState extends State<HomePage> {
       appBar: CustomAppBar(
         onAddTaskPressed: _createTaskButton,
         onSelectSchedule: updateSelectedSchedule,
+        onUpdateSelectedTags: updateSelectedTags,
+        tasks: _tasks,
       ),
       body: ListView(
         children: [
@@ -80,7 +108,7 @@ class _HomePageState extends State<HomePage> {
             key: ValueKey(_tasks.length),
             crossAxisCount: 2,
             shrinkWrap: true,
-            children: getFilteredTasks(selectedSchedule),
+            children: getFilteredTagTasks(selectedSchedule),
           ),
         ],
       ),
