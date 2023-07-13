@@ -38,17 +38,6 @@ class ZooBody extends StatelessWidget {
     );
   }
 
-  Color _extractFillColor(String animalSvgString) {
-    final fillAttributeRegex = RegExp(r'fill="([^"]+)"');
-    final match = fillAttributeRegex.firstMatch(animalSvgString);
-    final fillColor = match!.group(1);
-    final rgbValues = fillColor!.substring(4, fillColor.length - 1).split(',');
-    final red = int.parse(rgbValues[0].trim());
-    final green = int.parse(rgbValues[1].trim());
-    final blue = int.parse(rgbValues[2].trim());
-    return Color.fromRGBO(red, green, blue, 1.0);
-  }
-
   @override
   Widget build(BuildContext context) {
     // get the ZooNotifier

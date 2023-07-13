@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         //primaryColor is for items when selected
         primaryColor: Colors.white,
         //scaffoldBackgroundColor is for the background
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: Color(0xff90b53e),
         //unslectedWidgetColor is for icons when unselected
         unselectedWidgetColor: Color.fromARGB(255, 201, 201, 201),
         //dividerColor is for the lines
