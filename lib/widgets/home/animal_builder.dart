@@ -4,11 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class AnimalBuilder extends StatefulWidget {
   const AnimalBuilder(
-      {required this.svgPath, required this.biomeIcon, Key? key})
+      {required this.svgPath, required this.biomeIcon, required this.backgroundColor, Key? key})
       : super(key: key);
 
   final String svgPath;
   final IconData biomeIcon;
+  final Color backgroundColor;
 
   @override
   State<AnimalBuilder> createState() => AnimalBuilderState();
@@ -101,7 +102,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
             padding: const EdgeInsets.all(15.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
-              color: Theme.of(context).unselectedWidgetColor,
+              color: widget.backgroundColor,
             ),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [

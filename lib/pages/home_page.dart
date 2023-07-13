@@ -94,6 +94,7 @@ class _HomePageState extends State<HomePage> {
           AnimalBuilder(
             svgPath: "assets/low_poly_curled_fox.svg",
             biomeIcon: Icons.terrain_outlined,
+            backgroundColor: Color(0xffA1CC40),
             key: _animalBuilderKey,
           ),
           FloatingActionButton(
