@@ -51,6 +51,10 @@
                     "svgPath": "assets/biomes_data/mountain/wolf.svg"
                 },
                 {
+                    "name": "Bear",
+                    "svgPath": "assets/biomes_data/mountain/bear.svg"
+                },
+                {
                     "name": "Fox",
                     "svgPath": "assets/biomes_data/mountain/fox.svg"
                 },
@@ -61,10 +65,6 @@
                 {
                     "name": "Rabbit",
                     "svgPath": "assets/biomes_data/mountain/rabbit.svg"
-                },
-                {
-                    "name": "Bear",
-                    "svgPath": "assets/biomes_data/mountain/bear.svg"
                 }
             ]
         },
