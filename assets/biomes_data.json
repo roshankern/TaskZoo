@@ -38,8 +38,8 @@
         },
         {
             "name": "mountain",
-            "primaryColor": "#8db7b6",
-            "secondaryColor": "#afd2d2",
+            "primaryColor": "#90b53e",
+            "secondaryColor": "#A1CC40",
             "backgroundPath": "assets/biomes_data/mountain/mountain_background_geometrized.png",
             "icon": {
                 "name": "Mountain",

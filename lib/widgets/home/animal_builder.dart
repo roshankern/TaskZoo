@@ -4,7 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class AnimalBuilder extends StatefulWidget {
   const AnimalBuilder(
-      {required this.svgPath, required this.biomeIcon, required this.backgroundColor, Key? key})
+      {required this.svgPath,
+      required this.biomeIcon,
+      required this.backgroundColor,
+      Key? key})
       : super(key: key);
 
   final String svgPath;
@@ -97,12 +100,19 @@ class AnimalBuilderState extends State<AnimalBuilder> {
         svgData = getBuilderSvg(svgData, _numShapes);
 
         return Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(20.0),
           child: Container(
             padding: const EdgeInsets.all(15.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
               color: widget.backgroundColor,
+              boxShadow: [
+                BoxShadow(
+                  color: widget.backgroundColor,
+                  spreadRadius: 8,
+                  blurRadius: 8,
+                ),
+              ],
             ),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
