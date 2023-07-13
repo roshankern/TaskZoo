@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
       body: ListView(
         children: [
           AnimalBuilder(
-            svgPath: "assets/low_poly_curled_fox.svg",
+            svgPath: "assets/biomes_data/mountain/wolf.svg",
             biomeIcon: Icons.terrain_outlined,
             backgroundColor: Color(0xffA1CC40),
             key: _animalBuilderKey,

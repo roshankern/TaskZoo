@@ -38,7 +38,7 @@
         },
         {
             "name": "mountain",
-            "primaryColor": "#90b53e",
+            "primaryColor": "#7AB331",
             "secondaryColor": "#A1CC40",
             "backgroundPath": "assets/biomes_data/mountain/mountain_background_midjourney.png",
             "icon": {

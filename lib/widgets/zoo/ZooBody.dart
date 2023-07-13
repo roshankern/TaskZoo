@@ -11,14 +11,15 @@ class ZooBody extends StatelessWidget {
 
   ZooBody({required this.biomesData});
 
-  Widget getAnimalCard(BuildContext context, String svgPath, String animalName) {
+  Widget getAnimalCard(BuildContext context, String svgPath, String animalName,
+      Color backgroundColor) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).unselectedWidgetColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(20.0),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).dividerColor.withOpacity(0.5),
+            color: backgroundColor,
             spreadRadius: 5,
             blurRadius: 5,
           ),
@@ -29,10 +30,10 @@ class ZooBody extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(10.0),
           child: SvgPicture.asset(
-          svgPath,
-          semanticsLabel: animalName,
-          fit: BoxFit.contain,
-        ),
+            svgPath,
+            semanticsLabel: animalName,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
@@ -46,6 +47,10 @@ class ZooBody extends StatelessWidget {
     // get the animals of the current biome
     final animals = biomesData.biomes[zooNotifier.currentBiome].animals;
 
+    // get color for animal cards in current biome
+    final animalCardColor =
+        HexColor(biomesData.biomes[zooNotifier.currentBiome].secondaryColor);
+
     // rest of the code
     return GridView.builder(
       shrinkWrap: true,
@@ -58,9 +63,21 @@ class ZooBody extends StatelessWidget {
         mainAxisSpacing: 20.0,
       ),
       itemBuilder: (BuildContext context, int index) {
-        return getAnimalCard(
-            context, animals[index].svgPath, animals[index].name);
+        return getAnimalCard(context, animals[index].svgPath,
+            animals[index].name, animalCardColor);
       },
     );
   }
+}
+
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }
