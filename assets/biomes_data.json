@@ -47,6 +47,14 @@
             },
             "animals": [
                 {
+                    "name": "Blue Bird",
+                    "svgPath": "assets/biomes_data/mountain/blue_bird.svg"
+                },
+                {
+                    "name": "Falcon",
+                    "svgPath": "assets/biomes_data/mountain/falcon.svg"
+                },
+                {
                     "name": "Wolf",
                     "svgPath": "assets/biomes_data/mountain/wolf.svg"
                 },
@@ -57,10 +65,6 @@
                 {
                     "name": "Fox",
                     "svgPath": "assets/biomes_data/mountain/fox.svg"
-                },
-                {
-                    "name": "Falcon",
-                    "svgPath": "assets/biomes_data/mountain/falcon.svg"
                 },
                 {
                     "name": "Rabbit",
