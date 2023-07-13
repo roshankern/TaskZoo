@@ -601,13 +601,13 @@ class _TaskCardState extends State<TaskCard> {
         }
         return nextValidDate;
       case 'weekly':
-        final currentDay = previousCompletionDate.weekday;
-        final nextValidDay = _getNextValidDay(currentDay, startOfWeek);
-        final daysToAdd = _getDaysToAdd(currentDay, nextValidDay);
-
-        nextValidDate = previousCompletionDate.add(Duration(days: daysToAdd));
-        nextValidDate = _getStartOfWeek(nextValidDate, startOfWeek);
-        return nextValidDate;
+        final currentDate = DateTime.now();
+        final currentDay = currentDate.weekday;
+        final daysUntilNextMonday = (8 - currentDay) % 7;
+        final nextMonday = currentDate.add(Duration(days: daysUntilNextMonday));
+        final nextMondayAtMidnight =
+            DateTime(nextMonday.year, nextMonday.month, nextMonday.day);
+        return nextMondayAtMidnight;
 
       case 'monthly':
         if (previousCompletionDate.month == 12) {

@@ -53,10 +53,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  List<TaskCard> getFilteredTasks(String selectedSchedule) {
-    return _tasks.where((task) => task.schedule == selectedSchedule).toList();
-  }
-
   List<TaskCard> getFilteredTagTasks(String selectedSchedule) {
     return _tasks
         .where((task) =>
