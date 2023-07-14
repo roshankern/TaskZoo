@@ -4,7 +4,7 @@
             "name": "arctic",
             "primaryColor": "#E6F7FF",
             "secondaryColor": "#CCE6FF",
-            "backgroundPath": "assets/biomes_data/arctic/arctic_background_geometrized.png",
+            "backgroundPath": "assets/biomes_data/arctic/arctic_background_midjourney.png",
             "icon": {
                 "name": "Snowflake",
                 "svgPath": "assets/biomes_data/arctic/snowflake.svg"

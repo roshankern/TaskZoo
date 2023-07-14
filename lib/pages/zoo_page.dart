@@ -57,6 +57,8 @@ class _ZooPageState extends State<ZooPage> {
           );
         } else {
           return Scaffold(
+            backgroundColor: HexColor(snapshot
+                        .data!.biomes[zooNotifier.currentBiome].primaryColor),
             extendBody: true,
             extendBodyBehindAppBar: true,
             appBar: CustomAppBar(biomesData: snapshot.data!),
@@ -74,4 +76,16 @@ class _ZooPageState extends State<ZooPage> {
       },
     );
   }
+}
+
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }
