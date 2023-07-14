@@ -11,84 +11,32 @@ class ZooBody extends StatelessWidget {
 
   ZooBody({required this.biomesData});
 
-  Widget getAnimalCard(
-      BuildContext context, String svgPath, String animalName) {
-    return FutureBuilder<String>(
-      future: DefaultAssetBundle.of(context).loadString(svgPath),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final animalSvgString = snapshot.data!;
-          final fillColor = _extractFillColor(animalSvgString);
-
-          return Container(
-            decoration: BoxDecoration(
-              color: fillColor,
-              borderRadius: BorderRadius.circular(20.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 5,
-                  blurRadius: 5,
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: SvgPicture.asset(
-                svgPath,
-                semanticsLabel: animalName,
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        } else {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
+  Widget getAnimalCard(BuildContext context, String svgPath, String animalName,
+      Color backgroundColor) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: backgroundColor,
+            spreadRadius: 5,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: SvgPicture.asset(
+            svgPath,
+            semanticsLabel: animalName,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
     );
-
-    // return Padding(
-    //   padding: const EdgeInsets.all(8.0),
-    //   child: Container(
-    //     padding: const EdgeInsets.all(0),
-    //     decoration: BoxDecoration(
-    //       color: fillColor,
-    //       borderRadius: BorderRadius.circular(10.0),
-    //       boxShadow: [
-    //         BoxShadow(
-    //           color: Colors.grey.withOpacity(0.5),
-    //           spreadRadius: 5,
-    //           blurRadius: 5,
-    //         ),
-    //       ],
-    //     ),
-    //     child: FutureBuilder<String>(
-    //       future: DefaultAssetBundle.of(context).loadString(svgPath),
-    //       builder: (context, snapshot) {
-    //         if (snapshot.hasData) {
-    //           final svgString = snapshot.data!;
-    //           return SvgPicture.string(
-    //             svgString,
-    //             fit: BoxFit.contain,
-    //           );
-    //         } else {
-    //           return Center(child: CircularProgressIndicator());
-    //         }
-    //       },
-    //     ),
-    //   ),
-    // );
-  }
-
-  Color _extractFillColor(String animalSvgString) {
-    final fillAttributeRegex = RegExp(r'fill="([^"]+)"');
-    final match = fillAttributeRegex.firstMatch(animalSvgString);
-    final fillColor = match!.group(1);
-    final rgbValues = fillColor!.substring(4, fillColor.length - 1).split(',');
-    final red = int.parse(rgbValues[0].trim());
-    final green = int.parse(rgbValues[1].trim());
-    final blue = int.parse(rgbValues[2].trim());
-    return Color.fromRGBO(red, green, blue, 1.0);
   }
 
   @override
@@ -98,6 +46,10 @@ class ZooBody extends StatelessWidget {
 
     // get the animals of the current biome
     final animals = biomesData.biomes[zooNotifier.currentBiome].animals;
+
+    // get color for animal cards in current biome
+    final animalCardColor =
+        HexColor(biomesData.biomes[zooNotifier.currentBiome].secondaryColor);
 
     // rest of the code
     return GridView.builder(
@@ -111,9 +63,21 @@ class ZooBody extends StatelessWidget {
         mainAxisSpacing: 20.0,
       ),
       itemBuilder: (BuildContext context, int index) {
-        return getAnimalCard(
-            context, animals[index].svgPath, animals[index].name);
+        return getAnimalCard(context, animals[index].svgPath,
+            animals[index].name, animalCardColor);
       },
     );
   }
+}
+
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }

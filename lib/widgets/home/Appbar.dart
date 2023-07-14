@@ -249,7 +249,7 @@ class CircleButton extends StatelessWidget {
           ),
           color: isSelected
               ? Theme.of(context).dialogBackgroundColor
-              : Theme.of(context).unselectedWidgetColor,
+              : Theme.of(context).primaryColor,
         ),
         child: Center(
           child: Text(

@@ -17,69 +17,76 @@ class CustomNavBar extends StatefulWidget {
 class _CustomNavBarState extends State<CustomNavBar> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).unselectedWidgetColor,
-      child: SafeArea(
-        child: Container(
-          height: 50,
-          color: Theme.of(context).unselectedWidgetColor,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SafeArea(
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  color: Theme.of(context).indicatorColor,
+                  icon: const Icon(Icons.pie_chart_outline),
+                  onPressed: () {
+                    widget.onTap(0);
+                  },
+                  iconSize: widget.otherIconSize,
+                ),
+                IconButton(
+                  color: Theme.of(context).indicatorColor,
+                  icon: const Icon(Icons.settings_outlined),
+                  onPressed: () {
+                    widget.onTap(3);
+                  },
+                  iconSize: widget.otherIconSize,
+                ),
+              ],
+            ),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    color: Theme.of(context).indicatorColor,
-                    icon: const Icon(Icons.pie_chart_outline),
+                    color: widget.currentIndex == 1
+                        ? Theme.of(context).indicatorColor
+                        : Theme.of(context).dividerColor,
+                    icon: const Icon(Icons.circle),
                     onPressed: () {
-                      widget.onTap(0);
+                      widget.onTap(1);
                     },
-                    iconSize: widget.otherIconSize,
+                    iconSize: widget.dotIconSize,
+                    padding: EdgeInsets.all(5),
+                    constraints: BoxConstraints(),
                   ),
                   IconButton(
-                    color: Theme.of(context).indicatorColor,
-                    icon: const Icon(Icons.settings_outlined),
+                    color: widget.currentIndex == 2
+                        ? Theme.of(context).indicatorColor
+                        : Theme.of(context).dividerColor,
+                    icon: const Icon(Icons.circle),
                     onPressed: () {
-                      widget.onTap(3);
+                      widget.onTap(2);
                     },
-                    iconSize: widget.otherIconSize,
+                    iconSize: widget.dotIconSize,
+                    padding: EdgeInsets.all(5),
+                    constraints: BoxConstraints(),
                   ),
                 ],
               ),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      color: widget.currentIndex == 1
-                          ? Theme.of(context).indicatorColor
-                          : Theme.of(context).dividerColor,
-                      icon: const Icon(Icons.circle),
-                      onPressed: () {
-                        widget.onTap(1);
-                      },
-                      iconSize: widget.dotIconSize,
-                      padding: EdgeInsets.all(5),
-                      constraints: BoxConstraints(),
-                    ),
-                    IconButton(
-                      color: widget.currentIndex == 2
-                          ? Theme.of(context).indicatorColor
-                          : Theme.of(context).dividerColor,
-                      icon: const Icon(Icons.circle),
-                      onPressed: () {
-                        widget.onTap(2);
-                      },
-                      iconSize: widget.dotIconSize,
-                      padding: EdgeInsets.all(5),
-                      constraints: BoxConstraints(),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

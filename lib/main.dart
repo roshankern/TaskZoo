@@ -14,14 +14,6 @@ const maxCharLimit = 20;
 const selectedColor = Colors.black;
 const lineColor = const Color(0xff8c9292);
 
-// arctic biome colors
-const backgroundColor = const Color(0xffE6F7FF);
-const unselectedColor = const Color(0xffCCE6FF);
-
-// mountain biome colors
-// const backgroundColor = const Color(0xff92ad40);
-// const unselectedColor = const Color(0xffaac94b);
-
 void main() {
   runApp(const MyApp());
 }
@@ -36,11 +28,11 @@ class MyApp extends StatelessWidget {
       title: 'TaskZoo',
       theme: ThemeData(
         //primaryColor is for items when selected
-        primaryColor: backgroundColor,
+        primaryColor: Colors.white,
         //scaffoldBackgroundColor is for the background
-        scaffoldBackgroundColor: backgroundColor,
+        scaffoldBackgroundColor: Colors.white,
         //unslectedWidgetColor is for icons when unselected
-        unselectedWidgetColor: unselectedColor,
+        unselectedWidgetColor: Color.fromARGB(255, 201, 201, 201),
         //dividerColor is for the lines
         dividerColor: lineColor,
         //IndicatorColor is for Icons

@@ -4,7 +4,7 @@
             "name": "arctic",
             "primaryColor": "#E6F7FF",
             "secondaryColor": "#CCE6FF",
-            "backgroundPath": "assets/biomes_data/arctic/arctic_background_geometrized.png",
+            "backgroundPath": "assets/biomes_data/arctic/arctic_background_midjourney.png",
             "icon": {
                 "name": "Snowflake",
                 "svgPath": "assets/biomes_data/arctic/snowflake.svg"
@@ -38,25 +38,33 @@
         },
         {
             "name": "mountain",
-            "primaryColor": "#8db7b6",
-            "secondaryColor": "#afd2d2",
-            "backgroundPath": "assets/biomes_data/mountain/mountain_background_geometrized.png",
+            "primaryColor": "#7AB331",
+            "secondaryColor": "#A1CC40",
+            "backgroundPath": "assets/biomes_data/mountain/mountain_background_midjourney.png",
             "icon": {
                 "name": "Mountain",
                 "svgPath": "assets/biomes_data/mountain/mountain.svg"
             },
             "animals": [
                 {
-                    "name": "Wolf",
-                    "svgPath": "assets/biomes_data/mountain/wolf.svg"
-                },
-                {
-                    "name": "Fox",
-                    "svgPath": "assets/biomes_data/mountain/fox.svg"
+                    "name": "Blue Bird",
+                    "svgPath": "assets/biomes_data/mountain/blue_bird.svg"
                 },
                 {
                     "name": "Falcon",
                     "svgPath": "assets/biomes_data/mountain/falcon.svg"
+                },
+                {
+                    "name": "Wolf",
+                    "svgPath": "assets/biomes_data/mountain/wolf.svg"
+                },
+                {
+                    "name": "Bear",
+                    "svgPath": "assets/biomes_data/mountain/bear.svg"
+                },
+                {
+                    "name": "Fox",
+                    "svgPath": "assets/biomes_data/mountain/fox.svg"
                 },
                 {
                     "name": "Rabbit",

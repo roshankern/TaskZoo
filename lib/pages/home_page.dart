@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/home/appbar.dart';
+import 'package:taskzoo/widgets/home/Appbar.dart';
 import 'package:taskzoo/widgets/tasks/add_task.dart';
 import 'package:taskzoo/widgets/tasks/task_card.dart';
 import 'package:taskzoo/widgets/home/animal_builder.dart';
@@ -92,8 +92,9 @@ class _HomePageState extends State<HomePage> {
       body: ListView(
         children: [
           AnimalBuilder(
-            svgPath: "assets/low_poly_curled_fox.svg",
+            svgPath: "assets/biomes_data/mountain/wolf.svg",
             biomeIcon: Icons.terrain_outlined,
+            backgroundColor: Color(0xffA1CC40),
             key: _animalBuilderKey,
           ),
           FloatingActionButton(
