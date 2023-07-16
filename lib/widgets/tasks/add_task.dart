@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:taskzoo/widgets/tasks/task.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -302,20 +304,39 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 32.0),
       ),
       child: const Text('Add Task'),
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          final taskData = {
-            'title': _titleController.text,
-            'tag': _tagController.text,
-            'daysOfWeek': _daysOfWeek,
-            'biDaily': _biDaily,
-            'weekly': _weekly,
-            'monthly': _monthly,
-            'timesPerWeek': _timesPerWeek,
-            'timesPerMonth': _timesPerMonth,
-            'schedule': getPageState(_daysOfWeek, _biDaily, _weekly, _monthly)
-          };
-          Navigator.pop(context, taskData);
+          // create a new Task object with your form data
+          Task newTask = Task(
+            title: _titleController.text,
+            tag: _tagController.text,
+            schedule: getPageState(_daysOfWeek, _biDaily, _weekly, _monthly),
+            daysOfWeek: _daysOfWeek,
+            biDaily: _biDaily,
+            weekly: _weekly,
+            monthly: _monthly,
+            timesPerMonth: _timesPerMonth,
+            timesPerWeek: _timesPerWeek,
+            isCompleted:
+                false, // default values for properties not included in the form
+            streakCount: 0,
+            longestStreak: 0,
+            isMeantForToday: false,
+            currentCycleCompletions: 0,
+            last30DaysDates: [],
+            completionCount30days: 0,
+            completedDates: [],
+            previousDate: DateTime.now().toIso8601String(),
+            nextCompletionDate: DateTime.now().toIso8601String(),
+            isStreakContinued: false,
+          );
+
+          // add the new task to the Hive box
+          var box = Hive.box<Task>('tasks');
+          // add the new task to the Hive box
+          await box.add(newTask);
+          // then navigate back
+          Navigator.pop(context);
         }
       },
     );

@@ -3,6 +3,7 @@ import 'package:taskzoo/widgets/home/Appbar.dart';
 import 'package:taskzoo/widgets/tasks/add_task.dart';
 import 'package:taskzoo/widgets/tasks/task_card.dart';
 import 'package:taskzoo/widgets/home/animal_builder.dart';
+import 'package:hive/hive.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -16,6 +17,19 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<AnimalBuilderState> _animalBuilderKey = GlobalKey();
   late String selectedSchedule;
   List<String> selectedTags = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _openBoxAndLoadTasks();
+    selectedSchedule = 'Daily';
+  }
+
+  @override
+  void dispose() {
+    Hive.close();
+    super.dispose();
+  }
 
   void _createTaskButton() async {
     final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -74,10 +88,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    selectedSchedule = 'Daily';
+  void _openBoxAndLoadTasks() async {
+    final tasksBox = await Hive.openBox<TaskCard>('tasks');
+    setState(() {
+      _tasks.addAll(tasksBox.values.toList());
+    });
   }
 
   @override

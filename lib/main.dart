@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:taskzoo/pages/home_page.dart';
 import 'package:taskzoo/pages/zoo_page.dart';
@@ -9,12 +12,46 @@ import 'package:taskzoo/pages/settings_page.dart';
 import 'package:taskzoo/widgets/home/navbar.dart';
 
 import 'package:taskzoo/notifiers/zoo_notifier.dart';
+import 'package:taskzoo/widgets/tasks/task.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
 const lineColor = const Color(0xff8c9292);
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final appDocumentDirectory =
+      await path_provider.getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDirectory.path);
+
+  Hive.registerAdapter<Task>(TaskAdapter());
+
+  void main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    final appDocumentDirectory =
+        await path_provider.getApplicationDocumentsDirectory();
+    Hive.init(appDocumentDirectory.path);
+
+    Hive.registerAdapter<Task>(TaskAdapter());
+
+    try {
+      // Check if the box is already open
+      if (Hive.isBoxOpen('tasks')) {
+        // Close the box
+        await Hive.box('tasks').close();
+      }
+
+      // Open the box
+      await Hive.openBox<Task>('tasks');
+    } catch (e) {
+      print('Failed to open box: $e');
+    }
+
+    runApp(const MyApp());
+  }
+
   runApp(const MyApp());
 }
 
