@@ -3,43 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
+import 'package:taskzoo/widgets/tasks/task.dart';
 
 String startOfWeek = "Monday";
 
 class TaskCard extends StatefulWidget {
-  String title;
-  String tag;
-  String schedule;
-  List<bool> daysOfWeek;
-  bool biDaily;
-  bool weekly;
-  bool monthly;
-  int timesPerMonth;
-  int timesPerWeek;
-  bool isCompleted = false;
-  int streakCount = 0;
-  int longestStreak = 0;
-  bool isMeantForToday = true;
-  int currentCycleCompletions = 0;
-  List<DateTime> last30DaysDates = [];
-  int completionCount30days = 0;
-  Set<DateTime> completedDates = HashSet<DateTime>();
-  DateTime previousDate = DateTime.now();
-  DateTime nextCompletionDate = DateTime.now();
-  bool isStreakContinued = false;
+  final Task task;
 
-  TaskCard({
-    Key? key,
-    required this.title,
-    required this.tag,
-    required this.daysOfWeek,
-    required this.biDaily,
-    required this.weekly,
-    required this.monthly,
-    required this.timesPerMonth,
-    required this.timesPerWeek,
-    required this.schedule,
-  }) : super(key: key);
+  TaskCard({Key? key, required this.task}) : super(key: key);
 
   @override
   _TaskCardState createState() => _TaskCardState();
@@ -47,20 +18,23 @@ class TaskCard extends StatefulWidget {
 
 class _TaskCardState extends State<TaskCard> {
   bool _isTapped = false;
+  late DateTime previousDate;
+  late DateTime nextCompletionDate;
+  late HashSet<DateTime> completedDates;
 
   @override
   void didUpdateWidget(TaskCard oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.title != oldWidget.title ||
-        widget.tag != oldWidget.tag ||
-        widget.daysOfWeek != oldWidget.daysOfWeek ||
-        widget.biDaily != oldWidget.biDaily ||
-        widget.weekly != oldWidget.weekly ||
-        widget.monthly != oldWidget.monthly ||
-        widget.timesPerMonth != oldWidget.timesPerMonth ||
-        widget.timesPerWeek != oldWidget.timesPerWeek ||
-        widget.schedule != oldWidget.schedule) {
+    if (widget.task.title != oldWidget.task.title ||
+        widget.task.tag != oldWidget.task.tag ||
+        widget.task.daysOfWeek != oldWidget.task.daysOfWeek ||
+        widget.task.biDaily != oldWidget.task.biDaily ||
+        widget.task.weekly != oldWidget.task.weekly ||
+        widget.task.monthly != oldWidget.task.monthly ||
+        widget.task.timesPerMonth != oldWidget.task.timesPerMonth ||
+        widget.task.timesPerWeek != oldWidget.task.timesPerWeek ||
+        widget.task.schedule != oldWidget.task.schedule) {
       // Trigger an update by calling setState
       setState(() {});
     }
@@ -70,25 +44,31 @@ class _TaskCardState extends State<TaskCard> {
   @override
   void initState() {
     super.initState();
-    widget.nextCompletionDate = calculateNextCompletionDate(
+    previousDate = DateTime.parse(widget.task.previousDate);
+    nextCompletionDate = DateTime.parse(widget.task.nextCompletionDate);
+    completedDates = HashSet<DateTime>.from(
+        widget.task.completedDates.map((date) => DateTime.parse(date)));
+
+    nextCompletionDate = calculateNextCompletionDate(
         determineFrequency(
-          widget.daysOfWeek,
-          widget.biDaily,
-          widget.weekly,
-          widget.monthly,
+          widget.task.daysOfWeek,
+          widget.task.biDaily,
+          widget.task.weekly,
+          widget.task.monthly,
         ),
-        widget.previousDate);
-    widget.last30DaysDates = _getLast30DaysDates();
-    widget.completionCount30days = _getCompletionCount(widget.last30DaysDates);
+        previousDate);
+    widget.task.last30DaysDates = _getLast30DaysDates();
+    widget.task.completionCount30days =
+        _getCompletionCount(widget.task.last30DaysDates);
   }
 
   @override
   Widget build(BuildContext context) {
     String schedule = determineFrequency(
-      widget.daysOfWeek,
-      widget.biDaily,
-      widget.weekly,
-      widget.monthly,
+      widget.task.daysOfWeek,
+      widget.task.biDaily,
+      widget.task.weekly,
+      widget.task.monthly,
     );
 
     String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
@@ -112,10 +92,10 @@ class _TaskCardState extends State<TaskCard> {
             _isTapped = !_isTapped;
           });
         },
-        onLongPress: !widget.isCompleted && !_isTapped
+        onLongPress: !widget.task.isCompleted && !_isTapped
             ? () {
                 setState(() {
-                  widget.isCompleted = true;
+                  widget.task.isCompleted = true;
                   _streakAndStatsHandler(schedule);
                 });
               }
@@ -127,7 +107,7 @@ class _TaskCardState extends State<TaskCard> {
             color: Theme.of(context).unselectedWidgetColor,
           ),
           child: Opacity(
-            opacity: widget.isMeantForToday ? 1 : 0.5,
+            opacity: widget.task.isMeantForToday ? 1 : 0.5,
             child: Stack(
               children: [
                 Column(
@@ -146,19 +126,19 @@ class _TaskCardState extends State<TaskCard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  widget.title,
+                                  widget.task.title,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: widget.isMeantForToday
+                                    color: widget.task.isMeantForToday
                                         ? Colors.black
                                         : Theme.of(context).dividerColor,
                                     fontSize: 20.0,
                                   ),
                                 ),
                                 Text(
-                                  widget.tag,
+                                  widget.task.tag,
                                   style: TextStyle(
-                                    color: widget.isMeantForToday
+                                    color: widget.task.isMeantForToday
                                         ? Colors.grey
                                         : Theme.of(context).dividerColor,
                                   ),
@@ -190,7 +170,7 @@ class _TaskCardState extends State<TaskCard> {
                                       ),
                                       const SizedBox(width: 8.0),
                                       Text(
-                                        widget.streakCount.toString(),
+                                        widget.task.streakCount.toString(),
                                         style: const TextStyle(
                                           fontSize: 14.0,
                                           color: Colors.grey,
@@ -208,7 +188,7 @@ class _TaskCardState extends State<TaskCard> {
                                       ),
                                       const SizedBox(width: 8.0),
                                       Text(
-                                        widget.longestStreak.toString(),
+                                        widget.task.longestStreak.toString(),
                                         style: const TextStyle(
                                           fontSize: 14.0,
                                           color: Colors.grey,
@@ -226,7 +206,8 @@ class _TaskCardState extends State<TaskCard> {
                                       ),
                                       const SizedBox(width: 8.0),
                                       Text(
-                                        widget.completionCount30days.toString(),
+                                        widget.task.completionCount30days
+                                            .toString(),
                                         style: const TextStyle(
                                           fontSize: 14.0,
                                           color: Colors.grey,
@@ -236,8 +217,8 @@ class _TaskCardState extends State<TaskCard> {
                                   )
                                 ],
                               )
-                            : widget.isMeantForToday
-                                ? !widget.isCompleted
+                            : widget.task.isMeantForToday
+                                ? !widget.task.isCompleted
                                     ? Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -284,30 +265,33 @@ class _TaskCardState extends State<TaskCard> {
                           backgroundColor: Colors.transparent,
                           builder: (BuildContext context) {
                             return EditTaskSheet(
-                              title: widget.title,
-                              tag: widget.tag,
-                              daysOfWeek: widget.daysOfWeek,
-                              biDaily: widget.biDaily,
-                              weekly: widget.weekly,
-                              monthly: widget.monthly,
-                              timesPerWeek: widget.timesPerWeek,
-                              timesPerMonth: widget.timesPerMonth,
+                              title: widget.task.title,
+                              tag: widget.task.tag,
+                              daysOfWeek: widget.task.daysOfWeek,
+                              biDaily: widget.task.biDaily,
+                              weekly: widget.task.weekly,
+                              monthly: widget.task.monthly,
+                              timesPerWeek: widget.task.timesPerWeek,
+                              timesPerMonth: widget.task.timesPerMonth,
                               onUpdateTask: (editedTaskData) {
                                 if (editedTaskData != null) {
                                   // Update the task data in the TaskCard widget
                                   setState(() {
-                                    widget.title = editedTaskData['title'];
-                                    widget.tag = editedTaskData['tag'];
-                                    widget.daysOfWeek =
+                                    widget.task.title = editedTaskData['title'];
+                                    widget.task.tag = editedTaskData['tag'];
+                                    widget.task.daysOfWeek =
                                         editedTaskData['daysOfWeek'];
-                                    widget.biDaily = editedTaskData['biDaily'];
-                                    widget.weekly = editedTaskData['weekly'];
-                                    widget.monthly = editedTaskData['monthly'];
-                                    widget.timesPerWeek =
+                                    widget.task.biDaily =
+                                        editedTaskData['biDaily'];
+                                    widget.task.weekly =
+                                        editedTaskData['weekly'];
+                                    widget.task.monthly =
+                                        editedTaskData['monthly'];
+                                    widget.task.timesPerWeek =
                                         editedTaskData['timesPerWeek'];
-                                    widget.timesPerMonth =
+                                    widget.task.timesPerMonth =
                                         editedTaskData['timesPerMonth'];
-                                    widget.schedule =
+                                    widget.task.schedule =
                                         editedTaskData['schedule'];
                                     isCompletedFalse(schedule);
                                   });
@@ -334,12 +318,12 @@ class _TaskCardState extends State<TaskCard> {
   // Rest of the code remains the same...
 
   void isCompletedFalse(String schedule) {
-    if (widget.completedDates.isNotEmpty) {
+    if (completedDates.isNotEmpty) {
       DateTime earliestDate =
-          widget.completedDates.reduce((a, b) => a.isBefore(b) ? a : b);
-      widget.completedDates.remove(earliestDate);
+          completedDates.reduce((a, b) => a.isBefore(b) ? a : b);
+      completedDates.remove(earliestDate);
       setState(() {
-        widget.isCompleted = false;
+        widget.task.isCompleted = false;
       });
     }
   }
@@ -365,7 +349,7 @@ class _TaskCardState extends State<TaskCard> {
 
   String _getTimeUntilNextCompletionDate() {
     final now = DateTime.now();
-    final difference = widget.nextCompletionDate.difference(now);
+    final difference = nextCompletionDate.difference(now);
 
     final days = difference.inDays;
     final hours = difference.inHours % 24;
@@ -382,20 +366,21 @@ class _TaskCardState extends State<TaskCard> {
     }
   }
 
-  List<DateTime> _getLast30DaysDates() {
+  List<String> _getLast30DaysDates() {
     final today = DateTime.now();
-    final last30DaysDates = <DateTime>[];
+    final last30DaysDates = <String>[];
     for (int i = 0; i < 30; i++) {
       final date = today.subtract(Duration(days: i));
-      last30DaysDates.add(DateTime(date.year, date.month, date.day));
+      last30DaysDates
+          .add(DateTime(date.year, date.month, date.day).toIso8601String());
     }
     return last30DaysDates;
   }
 
-  int _getCompletionCount(List<DateTime> last30DaysDates) {
+  int _getCompletionCount(List<String> last30DaysDates) {
     int count = 0;
     for (final date in last30DaysDates) {
-      if (widget.completedDates.contains(date)) {
+      if (completedDates.contains(DateTime.parse(date))) {
         count++;
       }
     }
@@ -405,19 +390,19 @@ class _TaskCardState extends State<TaskCard> {
   int _setCompletionStatus(String schedule) {
     int remainingCompletions = 0;
     if (schedule == "weekly") {
-      if (widget.currentCycleCompletions < widget.timesPerWeek) {
-        widget.isCompleted = false;
+      if (widget.task.currentCycleCompletions < widget.task.timesPerWeek) {
+        widget.task.isCompleted = false;
         remainingCompletions =
-            widget.timesPerWeek - widget.currentCycleCompletions;
+            widget.task.timesPerWeek - widget.task.currentCycleCompletions;
         return remainingCompletions;
       } else {
         return 0;
       }
     } else if (schedule == "monthly") {
-      if (widget.currentCycleCompletions < widget.timesPerMonth) {
-        widget.isCompleted = false;
+      if (widget.task.currentCycleCompletions < widget.task.timesPerMonth) {
+        widget.task.isCompleted = false;
         remainingCompletions =
-            widget.timesPerMonth - widget.currentCycleCompletions;
+            widget.task.timesPerMonth - widget.task.currentCycleCompletions;
         return remainingCompletions;
       } else {
         return 0;
@@ -432,123 +417,125 @@ class _TaskCardState extends State<TaskCard> {
     DateTime now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
     if (schedule == "daily") {
-      widget.isStreakContinued = now.isBefore(widget.nextCompletionDate);
-      if (widget.isStreakContinued && widget.isCompleted) {
-        if (!widget.completedDates.contains(today)) {
-          widget.completedDates.add(today);
-          widget.last30DaysDates = _getLast30DaysDates();
-          widget.completionCount30days =
-              _getCompletionCount(widget.last30DaysDates);
-          widget.streakCount++;
-          if (widget.streakCount > widget.longestStreak) {
-            widget.longestStreak = widget.streakCount;
+      widget.task.isStreakContinued = now.isBefore(nextCompletionDate);
+      if (widget.task.isStreakContinued && widget.task.isCompleted) {
+        if (!completedDates.contains(today)) {
+          completedDates.add(today);
+          widget.task.last30DaysDates = _getLast30DaysDates();
+          widget.task.completionCount30days =
+              _getCompletionCount(widget.task.last30DaysDates);
+          widget.task.streakCount++;
+          if (widget.task.streakCount > widget.task.longestStreak) {
+            widget.task.longestStreak = widget.task.streakCount;
           }
-          widget.previousDate = today;
-          widget.nextCompletionDate =
-              calculateNextCompletionDate(schedule, widget.previousDate);
+          previousDate = today;
+          nextCompletionDate =
+              calculateNextCompletionDate(schedule, previousDate);
         }
       }
-      if (!widget.isStreakContinued) {
-        widget.streakCount = 0;
-        widget.nextCompletionDate =
+      if (!widget.task.isStreakContinued) {
+        widget.task.streakCount = 0;
+        nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "custom") {
       //Requires further testing
-      widget.isMeantForToday = widget.daysOfWeek[now.weekday - 1];
-      widget.isStreakContinued =
-          widget.previousDate.isBefore(widget.nextCompletionDate) ||
-              !widget.isMeantForToday;
-      if (widget.isStreakContinued &&
-          widget.isCompleted &&
-          widget.isMeantForToday) {
-        if (!widget.completedDates.contains(today)) {
-          if (widget.isMeantForToday) {
-            widget.completedDates.add(today);
-            widget.last30DaysDates = _getLast30DaysDates();
-            widget.completionCount30days =
-                _getCompletionCount(widget.last30DaysDates);
-            widget.streakCount++;
-            if (widget.streakCount > widget.longestStreak) {
-              widget.longestStreak = widget.streakCount;
+      widget.task.isMeantForToday = widget.task.daysOfWeek[now.weekday - 1];
+      widget.task.isStreakContinued =
+          previousDate.isBefore(nextCompletionDate) ||
+              !widget.task.isMeantForToday;
+      if (widget.task.isStreakContinued &&
+          widget.task.isCompleted &&
+          widget.task.isMeantForToday) {
+        if (!completedDates.contains(today)) {
+          if (widget.task.isMeantForToday) {
+            completedDates.add(today);
+            widget.task.last30DaysDates = _getLast30DaysDates();
+            widget.task.completionCount30days =
+                _getCompletionCount(widget.task.last30DaysDates);
+            widget.task.streakCount++;
+            if (widget.task.streakCount > widget.task.longestStreak) {
+              widget.task.longestStreak = widget.task.streakCount;
             }
-            widget.previousDate = today;
-            widget.nextCompletionDate =
-                calculateNextCompletionDate(schedule, widget.previousDate);
+            previousDate = today;
+            nextCompletionDate =
+                calculateNextCompletionDate(schedule, previousDate);
           }
         }
       }
-      if (!widget.isStreakContinued) {
-        widget.streakCount = 0;
-        widget.nextCompletionDate =
+      if (!widget.task.isStreakContinued) {
+        widget.task.streakCount = 0;
+        nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "biDaily") {
-      widget.isStreakContinued = now.isBefore(widget.nextCompletionDate);
-      if (widget.isStreakContinued && widget.isCompleted) {
-        if (!widget.completedDates.contains(today)) {
-          widget.completedDates.add(today);
-          widget.last30DaysDates = _getLast30DaysDates();
-          widget.completionCount30days =
-              _getCompletionCount(widget.last30DaysDates);
-          widget.streakCount++;
-          if (widget.streakCount > widget.longestStreak) {
-            widget.longestStreak = widget.streakCount;
+      widget.task.isStreakContinued = now.isBefore(nextCompletionDate);
+      if (widget.task.isStreakContinued && widget.task.isCompleted) {
+        if (!completedDates.contains(today)) {
+          completedDates.add(today);
+          widget.task.last30DaysDates = _getLast30DaysDates();
+          widget.task.completionCount30days =
+              _getCompletionCount(widget.task.last30DaysDates);
+          widget.task.streakCount++;
+          if (widget.task.streakCount > widget.task.longestStreak) {
+            widget.task.longestStreak = widget.task.streakCount;
           }
-          widget.previousDate = today;
-          widget.nextCompletionDate =
-              calculateNextCompletionDate(schedule, widget.previousDate);
+          previousDate = today;
+          nextCompletionDate =
+              calculateNextCompletionDate(schedule, previousDate);
         }
       }
-      if (!widget.isStreakContinued) {
-        widget.streakCount = 0;
-        widget.nextCompletionDate =
+      if (!widget.task.isStreakContinued) {
+        widget.task.streakCount = 0;
+        nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "weekly") {
-      widget.isStreakContinued = now.isBefore(widget.nextCompletionDate);
-      if (widget.isStreakContinued && widget.isCompleted) {
-        if (!widget.completedDates.contains(today)) {
-          _getCompletionCount(widget.last30DaysDates);
-          widget.currentCycleCompletions++;
-          if (widget.currentCycleCompletions < widget.timesPerWeek) {
+      widget.task.isStreakContinued = now.isBefore(nextCompletionDate);
+      if (widget.task.isStreakContinued && widget.task.isCompleted) {
+        if (!completedDates.contains(today)) {
+          _getCompletionCount(widget.task.last30DaysDates);
+          widget.task.currentCycleCompletions++;
+          if (widget.task.currentCycleCompletions < widget.task.timesPerWeek) {
             return;
           }
-          widget.completedDates.add(today);
-          widget.last30DaysDates = _getLast30DaysDates();
-          widget.completionCount30days = widget.streakCount++;
-          widget.longestStreak = max(widget.longestStreak, widget.streakCount);
-          widget.previousDate = today;
-          widget.nextCompletionDate =
-              calculateNextCompletionDate(schedule, widget.previousDate);
+          completedDates.add(today);
+          widget.task.last30DaysDates = _getLast30DaysDates();
+          widget.task.completionCount30days = widget.task.streakCount++;
+          widget.task.longestStreak =
+              max<int>(widget.task.longestStreak, widget.task.streakCount);
+          previousDate = today;
+          nextCompletionDate =
+              calculateNextCompletionDate(schedule, previousDate);
         }
       }
-      if (!widget.isStreakContinued) {
-        widget.streakCount = 0;
-        widget.nextCompletionDate =
+      if (!widget.task.isStreakContinued) {
+        widget.task.streakCount = 0;
+        nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "monthly") {
-      widget.isStreakContinued = now.isBefore(widget.nextCompletionDate);
-      if (widget.isStreakContinued && widget.isCompleted) {
-        if (!widget.completedDates.contains(today)) {
-          _getCompletionCount(widget.last30DaysDates);
-          widget.currentCycleCompletions++;
-          if (widget.currentCycleCompletions < widget.timesPerMonth) {
+      widget.task.isStreakContinued = now.isBefore(nextCompletionDate);
+      if (widget.task.isStreakContinued && widget.task.isCompleted) {
+        if (!completedDates.contains(today)) {
+          _getCompletionCount(widget.task.last30DaysDates);
+          widget.task.currentCycleCompletions++;
+          if (widget.task.currentCycleCompletions < widget.task.timesPerMonth) {
             return;
           }
-          widget.completedDates.add(today);
-          widget.last30DaysDates = _getLast30DaysDates();
-          widget.completionCount30days = widget.streakCount++;
-          widget.longestStreak = max(widget.longestStreak, widget.streakCount);
-          widget.previousDate = today;
-          widget.nextCompletionDate =
-              calculateNextCompletionDate(schedule, widget.previousDate);
+          completedDates.add(today);
+          widget.task.last30DaysDates = _getLast30DaysDates();
+          widget.task.completionCount30days = widget.task.streakCount++;
+          widget.task.longestStreak =
+              max<int>(widget.task.longestStreak, widget.task.streakCount);
+          previousDate = today;
+          nextCompletionDate =
+              calculateNextCompletionDate(schedule, previousDate);
         }
       }
-      if (!widget.isStreakContinued) {
-        widget.streakCount = 0;
-        widget.nextCompletionDate =
+      if (!widget.task.isStreakContinued) {
+        widget.task.streakCount = 0;
+        nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     }
@@ -556,16 +543,16 @@ class _TaskCardState extends State<TaskCard> {
 
   //TODO: Remove Print Statements before release
   void _completionResetHandler() {
-    if (widget.isCompleted &&
-        !(widget.completedDates.contains(DateTime(DateTime.now().year,
+    if (widget.task.isCompleted &&
+        !(completedDates.contains(DateTime(DateTime.now().year,
             DateTime.now().month, DateTime.now().day, 0, 0, 0)))) {
       print("resetting completion");
-      print(widget.completedDates);
-      print(widget.isCompleted);
-      widget.isCompleted = false;
+      print(completedDates);
+      print(widget.task.isCompleted);
+      widget.task.isCompleted = false;
     } else {
       print("No Reset");
-      print(widget.isCompleted);
+      print(widget.task.isCompleted);
     }
   }
 
@@ -577,8 +564,8 @@ class _TaskCardState extends State<TaskCard> {
       case 'daily':
         return previousCompletionDate.add(const Duration(days: 1));
       case 'custom':
-        final mondayShifted = shiftRight(widget.daysOfWeek, 1);
-        final daysOfWeek = widget.daysOfWeek;
+        final mondayShifted = shiftRight(widget.task.daysOfWeek, 1);
+        final daysOfWeek = widget.task.daysOfWeek;
         final currentDay = previousCompletionDate.weekday;
         final nextValidDay = (currentDay) % 7; // Get the next day index
         final now = DateTime.now();

@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/tasks/task_card.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:taskzoo/widgets/tasks/task.dart';
 
 const double appBarSize = 40.0;
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback onAddTaskPressed;
-  final Function(String) onSelectSchedule;
+  final ValueNotifier<String> selectedSchedule;
   final Function(List<String>) onUpdateSelectedTags;
-  final List<TaskCard> tasks;
+  final List<Task> tasks;
 
   const CustomAppBar({
     Key? key,
     required this.onAddTaskPressed,
-    required this.onSelectSchedule,
+    required this.selectedSchedule,
     required this.onUpdateSelectedTags,
     required this.tasks,
   }) : super(key: key);
@@ -33,11 +32,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
     setState(() {
       selectedIndex = index;
       if (index == 0) {
-        widget.onSelectSchedule('Daily');
+        widget.selectedSchedule.value = 'Daily';
       } else if (index == 1) {
-        widget.onSelectSchedule('Weekly');
+        widget.selectedSchedule.value = 'Weekly';
       } else if (index == 2) {
-        widget.onSelectSchedule('Monthly');
+        widget.selectedSchedule.value = 'Monthly';
       }
     });
   }
@@ -52,18 +51,21 @@ class _CustomAppBarState extends State<CustomAppBar> {
           Row(
             children: [
               CircleButton(
+                key: ValueKey('D-${selectedIndex == 0}'), // add ValueKey
                 label: 'D',
                 isSelected: selectedIndex == 0,
                 onTap: () => selectButton(0),
               ),
               const SizedBox(width: 8),
               CircleButton(
+                key: ValueKey('W-${selectedIndex == 1}'),
                 label: 'W',
                 isSelected: selectedIndex == 1,
                 onTap: () => selectButton(1),
               ),
               const SizedBox(width: 8),
               CircleButton(
+                key: ValueKey('M-${selectedIndex == 2}'),
                 label: 'M',
                 isSelected: selectedIndex == 2,
                 onTap: () => selectButton(2),
@@ -229,10 +231,11 @@ class CircleButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const CircleButton({
+    Key? key, // Add key parameter
     required this.label,
     required this.isSelected,
     required this.onTap,
-  });
+  }) : super(key: key); // Pass key to superclass
 
   @override
   Widget build(BuildContext context) {
@@ -247,17 +250,13 @@ class CircleButton extends StatelessWidget {
             color: Theme.of(context).dialogBackgroundColor,
             width: 1,
           ),
-          color: isSelected
-              ? Theme.of(context).dialogBackgroundColor
-              : Theme.of(context).primaryColor,
+          color: isSelected ? Colors.black : Colors.white,
         ),
         child: Center(
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected
-                  ? Colors.white
-                  : Theme.of(context).dialogBackgroundColor,
+              color: isSelected ? Colors.white : Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
