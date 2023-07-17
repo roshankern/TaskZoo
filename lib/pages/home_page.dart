@@ -72,10 +72,11 @@ class _HomePageState extends State<HomePage> {
     return allTags.toList();
   }
 
-  List<Task> getFilteredTagTasks(String selectedSchedule, Box<Task> box) {
+  List<Task> getFilteredTagTasks(
+      ValueNotifier<String> selectedSchedule, Box<Task> box) {
     return box.values
         .where((task) =>
-            task.schedule == selectedSchedule &&
+            task.schedule == selectedSchedule.value &&
             (selectedTags.isEmpty ||
                 selectedTags.any((tag) => task.tag.contains(tag))))
         .toList();
@@ -94,39 +95,43 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Box<Task>>(
-      future: _openBox(),
-      builder: (context, AsyncSnapshot<Box<Task>> snapshot) {
+      future: Hive.openBox<Task>('tasks'),
+      builder: (BuildContext context, AsyncSnapshot<Box<Task>> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError)
             return Text('Error: ${snapshot.error}');
           else {
-            var box = snapshot.data!;
-            return Scaffold(
-              appBar: CustomAppBar(
-                onAddTaskPressed: _createTaskButton,
-                selectedSchedule: selectedSchedule,
-                onUpdateSelectedTags: updateSelectedTags,
-                tasks: box.values.toList(),
-              ),
-              body: ValueListenableBuilder(
-                valueListenable: selectedSchedule,
-                builder: (context, String value, child) {
-                  return ListView(
+            final box = snapshot.data!;
+            return StreamBuilder(
+              stream: box.watch(), // watch for changes in the box
+              builder: (context, snapshot) {
+                return Scaffold(
+                  appBar: CustomAppBar(
+                    onAddTaskPressed: _createTaskButton,
+                    selectedSchedule: selectedSchedule,
+                    onUpdateSelectedTags: updateSelectedTags,
+                    tasks: box.values.toList(),
+                  ),
+                  body: ListView(
                     children: [
                       // Other widgets go here...
-                      GridView.count(
-                        key: ValueKey(box.values.length),
-                        crossAxisCount: 2,
-                        shrinkWrap: true,
-                        children:
-                            getFilteredTagTasks(selectedSchedule.value, box)
+                      ValueListenableBuilder<String>(
+                        valueListenable: selectedSchedule,
+                        builder: (context, value, child) {
+                          return GridView.count(
+                            key: ValueKey(box.values.length),
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            children: getFilteredTagTasks(selectedSchedule, box)
                                 .map((task) => TaskCard(task: task))
                                 .toList(),
+                          );
+                        },
                       ),
                     ],
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             );
           }
         } else {
