@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
+import 'package:taskzoo/widgets/tasks/rear_task_card_item.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
 
 String startOfWeek = "Monday";
@@ -77,10 +78,6 @@ class _TaskCardState extends State<TaskCard> {
       widget.task.monthly,
     );
 
-    // print(widget.task.isMeantForToday);
-    // print(previousDate);
-    // print(nextCompletionDate);
-
     String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
 
     //Reset completion
@@ -95,7 +92,7 @@ class _TaskCardState extends State<TaskCard> {
     printTaskCountsAndCompletionPercents();
 
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(15.0),
       child: GestureDetector(
         onTap: () {
           setState(() {
@@ -105,6 +102,7 @@ class _TaskCardState extends State<TaskCard> {
         onLongPress: !widget.task.isCompleted && !_isTapped
             ? () {
                 setState(() {
+                  updatePiecesInformation();
                   widget.task.isCompleted = true;
                   _streakAndStatsHandler(schedule);
                 });
@@ -171,60 +169,38 @@ class _TaskCardState extends State<TaskCard> {
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.local_fire_department,
-                                        color: Colors.orange,
-                                      ),
-                                      const SizedBox(width: 8.0),
-                                      Text(
-                                        widget.task.streakCount.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 14.0,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
+                                  RearTaskCardIcon(
+                                    icon: const Icon(
+                                      FontAwesomeIcons.fire,
+                                      color: Colors.orange,
+                                    ),
+                                    text: widget.task.streakCount.toString(),
                                   ),
                                   const SizedBox(height: 8.0),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.star,
-                                        color: Colors.yellow,
-                                      ),
-                                      const SizedBox(width: 8.0),
-                                      Text(
-                                        widget.task.longestStreak.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 14.0,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
+                                  RearTaskCardIcon(
+                                    icon: const Icon(
+                                      FontAwesomeIcons.trophy,
+                                      color: Colors.yellow,
+                                    ),
+                                    text: widget.task.longestStreak.toString(),
                                   ),
                                   const SizedBox(height: 8.0),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_month,
-                                        color: Colors.green,
+                                  RearTaskCardIcon(
+                                    icon: const Icon(
+                                      FontAwesomeIcons.calendar,
+                                      color: Colors.blue,
+                                    ),
+                                    text: widget.task.completionCount30days
+                                        .toString(),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  RearTaskCardIcon(
+                                      icon: const Icon(
+                                        FontAwesomeIcons.puzzlePiece,
+                                        color: Colors.purple,
                                       ),
-                                      const SizedBox(width: 8.0),
-                                      Text(
-                                        widget.task.completionCount30days
-                                            .toString(),
-                                        style: const TextStyle(
-                                          fontSize: 14.0,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                                      text:
+                                          widget.task.piecesObtained.toString())
                                 ],
                               )
                             : widget.task.isMeantForToday
@@ -284,29 +260,25 @@ class _TaskCardState extends State<TaskCard> {
                               timesPerWeek: widget.task.timesPerWeek,
                               timesPerMonth: widget.task.timesPerMonth,
                               onUpdateTask: (editedTaskData) {
-                                if (editedTaskData != null) {
-                                  // Update the task data in the TaskCard widget
-                                  setState(() {
-                                    widget.task.title = editedTaskData['title'];
-                                    widget.task.tag = editedTaskData['tag'];
-                                    widget.task.daysOfWeek =
-                                        editedTaskData['daysOfWeek'];
-                                    widget.task.biDaily =
-                                        editedTaskData['biDaily'];
-                                    widget.task.weekly =
-                                        editedTaskData['weekly'];
-                                    widget.task.monthly =
-                                        editedTaskData['monthly'];
-                                    widget.task.timesPerWeek =
-                                        editedTaskData['timesPerWeek'];
-                                    widget.task.timesPerMonth =
-                                        editedTaskData['timesPerMonth'];
-                                    widget.task.schedule =
-                                        editedTaskData['schedule'];
-                                    isCompletedFalse(schedule);
-                                    updateTaskHiveBox();
-                                  });
-                                }
+                                setState(() {
+                                  widget.task.title = editedTaskData['title'];
+                                  widget.task.tag = editedTaskData['tag'];
+                                  widget.task.daysOfWeek =
+                                      editedTaskData['daysOfWeek'];
+                                  widget.task.biDaily =
+                                      editedTaskData['biDaily'];
+                                  widget.task.weekly = editedTaskData['weekly'];
+                                  widget.task.monthly =
+                                      editedTaskData['monthly'];
+                                  widget.task.timesPerWeek =
+                                      editedTaskData['timesPerWeek'];
+                                  widget.task.timesPerMonth =
+                                      editedTaskData['timesPerMonth'];
+                                  widget.task.schedule =
+                                      editedTaskData['schedule'];
+                                  isCompletedFalse(schedule);
+                                  updateTaskHiveBox();
+                                });
                               },
                             );
                           },
@@ -720,7 +692,7 @@ class _TaskCardState extends State<TaskCard> {
     return shiftedArray;
   }
 
-  void updateTaskHiveBox() {
+  void updateTaskHiveBox() async {
     // Convert DateTime objects back into their ISO8601 string form
     widget.task.previousDate = previousDate.toIso8601String();
     widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
@@ -729,7 +701,18 @@ class _TaskCardState extends State<TaskCard> {
 
     // Update the task in the Hive box
     final box = Hive.box<Task>('tasks');
-    box.put(widget.task.key, widget.task);
+    await box.put(widget.task.key, widget.task);
+  }
+
+  void updatePiecesInformation() async {
+    // Get the current value of totalAnimalPieces from the box
+    final box = Hive.box('animalPieceInformation');
+    int currentValue = box.get('totalAnimalPieces', defaultValue: 0);
+    int newValue = currentValue + 1;
+
+    widget.task.piecesObtained += 1;
+    // Update the box with the new value
+    await box.put('totalAnimalPieces', newValue);
   }
 
   void deleteTask() async {

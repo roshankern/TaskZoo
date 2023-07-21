@@ -40,8 +40,14 @@ void main() async {
     }
     var settingsBox = await Hive.openBox('settings');
 
+    if (Hive.isBoxOpen('animalPieceInformation')) {
+      await Hive.box('animalPieceInformation').close();
+    }
+    var animalBox = await Hive.openBox('animalPieceInformation');
+
     // Check if the settings keys exist, if not, put the default values
     checkAndSetDefaultSettings(settingsBox);
+    setAnimalDefaults(animalBox);
   } catch (e) {
     print('Failed to open box: $e');
   }
@@ -145,8 +151,11 @@ void checkAndSetDefaultSettings(Box<dynamic> settingsBox) {
   if (!settingsBox.containsKey('weekdayStart')) {
     settingsBox.put('weekdayStart', 'Monday');
   }
+}
 
-  if (!settingsBox.containsKey('biome')) {
-    settingsBox.put('biome', 'Forest');
+void setAnimalDefaults(Box<dynamic> animalBox) {
+  // Check if the animal keys exist, if not, put the default values
+  if (!animalBox.containsKey('totalAnimalPieces')) {
+    animalBox.put('totalAnimalPieces', 0);
   }
 }

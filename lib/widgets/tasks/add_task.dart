@@ -328,6 +328,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             previousDate: getMidnightIso8601String(),
             nextCompletionDate: getMidnightIso8601String(),
             isStreakContinued: false,
+            piecesObtained: 0,
           );
 
           // add the new task to the Hive box
@@ -363,7 +364,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             ),
             Text(
               '$_timesPerWeek',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             IconButton(
               icon: const Icon(Icons.add),
@@ -401,7 +402,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             ),
             Text(
               '$_timesPerMonth',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             IconButton(
               icon: const Icon(Icons.add),

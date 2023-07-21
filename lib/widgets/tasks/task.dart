@@ -45,6 +45,8 @@ class Task extends HiveObject {
   String nextCompletionDate;
   @HiveField(19)
   bool isStreakContinued;
+  @HiveField(20)
+  int piecesObtained;
 
   Task({
     required this.title,
@@ -67,5 +69,6 @@ class Task extends HiveObject {
     required this.previousDate,
     required this.nextCompletionDate,
     required this.isStreakContinued,
+    required this.piecesObtained,
   });
 }
