@@ -27,29 +27,23 @@ void main() async {
 
   Hive.registerAdapter<Task>(TaskAdapter());
 
-  void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-
-    final appDocumentDirectory =
-        await path_provider.getApplicationDocumentsDirectory();
-    Hive.init(appDocumentDirectory.path);
-
-    Hive.registerAdapter<Task>(TaskAdapter());
-
-    try {
-      // Check if the box is already open
-      if (Hive.isBoxOpen('tasks')) {
-        // Close the box
-        await Hive.box('tasks').close();
-      }
-
-      // Open the box
-      await Hive.openBox<Task>('tasks');
-    } catch (e) {
-      print('Failed to open box: $e');
+  try {
+    // Open the 'tasks' box
+    if (Hive.isBoxOpen('tasks')) {
+      await Hive.box('tasks').close();
     }
+    await Hive.openBox<Task>('tasks');
 
-    runApp(const MyApp());
+    // Open the 'settings' box
+    if (Hive.isBoxOpen('settings')) {
+      await Hive.box('settings').close();
+    }
+    var settingsBox = await Hive.openBox('settings');
+
+    // Check if the settings keys exist, if not, put the default values
+    checkAndSetDefaultSettings(settingsBox);
+  } catch (e) {
+    print('Failed to open box: $e');
   }
 
   runApp(const MyApp());
@@ -143,5 +137,16 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
+  }
+}
+
+void checkAndSetDefaultSettings(Box<dynamic> settingsBox) {
+  // Check if the settings keys exist, if not, put the default values
+  if (!settingsBox.containsKey('weekdayStart')) {
+    settingsBox.put('weekdayStart', 'Monday');
+  }
+
+  if (!settingsBox.containsKey('biome')) {
+    settingsBox.put('biome', 'Forest');
   }
 }

@@ -37,7 +37,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   void addShape() {
     setState(() {
       if (_numShapes < _totalNumShapes) {
-        _numShapes += 10;
+        _numShapes += 1;
         _buildPercent = _numShapes / _totalNumShapes;
       }
     });

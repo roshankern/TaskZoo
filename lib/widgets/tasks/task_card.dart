@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hive/hive.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
 
@@ -21,24 +22,6 @@ class _TaskCardState extends State<TaskCard> {
   late DateTime previousDate;
   late DateTime nextCompletionDate;
   late HashSet<DateTime> completedDates;
-
-  @override
-  void didUpdateWidget(TaskCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.task.title != oldWidget.task.title ||
-        widget.task.tag != oldWidget.task.tag ||
-        widget.task.daysOfWeek != oldWidget.task.daysOfWeek ||
-        widget.task.biDaily != oldWidget.task.biDaily ||
-        widget.task.weekly != oldWidget.task.weekly ||
-        widget.task.monthly != oldWidget.task.monthly ||
-        widget.task.timesPerMonth != oldWidget.task.timesPerMonth ||
-        widget.task.timesPerWeek != oldWidget.task.timesPerWeek ||
-        widget.task.schedule != oldWidget.task.schedule) {
-      // Trigger an update by calling setState
-      setState(() {});
-    }
-  }
 
   //Make modifications to previous date when storing data persistently
   @override
@@ -62,6 +45,29 @@ class _TaskCardState extends State<TaskCard> {
         _getCompletionCount(widget.task.last30DaysDates);
   }
 
+  void printTaskCountsAndCompletionPercents() {
+    // Define the schedules
+    final schedules = ['Daily', 'Weekly', 'Monthly'];
+
+    // Get the 'tasks' box
+    final box = Hive.box<Task>('tasks');
+
+    // Iterate over the schedules
+    for (final schedule in schedules) {
+      // Get all tasks of the current schedule
+      final tasks =
+          box.values.where((task) => task.schedule == schedule).toList();
+
+      // Get all completed tasks of the current schedule
+      final completedTasks =
+          tasks.where((task) => task.isCompleted == true).toList();
+
+      // Calculate the percent of completed tasks
+      final completionPercent =
+          tasks.isEmpty ? 0.0 : completedTasks.length / tasks.length;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String schedule = determineFrequency(
@@ -71,9 +77,11 @@ class _TaskCardState extends State<TaskCard> {
       widget.task.monthly,
     );
 
-    String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
+    // print(widget.task.isMeantForToday);
+    // print(previousDate);
+    // print(nextCompletionDate);
 
-    print("Created TaskCard");
+    String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
 
     //Reset completion
     _completionResetHandler();
@@ -83,6 +91,8 @@ class _TaskCardState extends State<TaskCard> {
 
     //Handles Weekly/Monthly completions
     _setCompletionStatus(schedule);
+
+    printTaskCountsAndCompletionPercents();
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -294,6 +304,7 @@ class _TaskCardState extends State<TaskCard> {
                                     widget.task.schedule =
                                         editedTaskData['schedule'];
                                     isCompletedFalse(schedule);
+                                    updateTaskHiveBox();
                                   });
                                 }
                               },
@@ -303,7 +314,55 @@ class _TaskCardState extends State<TaskCard> {
                       },
                       child: const Icon(
                         Icons.edit,
-                        color: Colors.grey,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                if (_isTapped)
+                  Positioned(
+                    top: 40.0,
+                    right: 10.0,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Show a dialog to confirm the deletion
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                  dialogBackgroundColor: Colors.white),
+                              child: AlertDialog(
+                                title: const Text('Delete Task'),
+                                content: const Text(
+                                    'Are you sure you want to delete this task?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('Delete'),
+                                    onPressed: () {
+                                      deleteTask();
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      15), // Change this value to adjust the corner radius
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors
+                            .red, // change the color to red to indicate a delete action
                       ),
                     ),
                   ),
@@ -417,6 +476,7 @@ class _TaskCardState extends State<TaskCard> {
     DateTime now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
     if (schedule == "daily") {
+      widget.task.isMeantForToday = true;
       widget.task.isStreakContinued = now.isBefore(nextCompletionDate);
       if (widget.task.isStreakContinued && widget.task.isCompleted) {
         if (!completedDates.contains(today)) {
@@ -491,6 +551,7 @@ class _TaskCardState extends State<TaskCard> {
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     } else if (schedule == "weekly") {
+      widget.task.isMeantForToday = true;
       widget.task.isStreakContinued = now.isBefore(nextCompletionDate);
       if (widget.task.isStreakContinued && widget.task.isCompleted) {
         if (!completedDates.contains(today)) {
@@ -539,21 +600,17 @@ class _TaskCardState extends State<TaskCard> {
             calculateNextCompletionDate(schedule, DateTime.now());
       }
     }
+
+    updateTaskHiveBox();
   }
 
-  //TODO: Remove Print Statements before release
   void _completionResetHandler() {
     if (widget.task.isCompleted &&
         !(completedDates.contains(DateTime(DateTime.now().year,
             DateTime.now().month, DateTime.now().day, 0, 0, 0)))) {
-      print("resetting completion");
-      print(completedDates);
-      print(widget.task.isCompleted);
       widget.task.isCompleted = false;
-    } else {
-      print("No Reset");
-      print(widget.task.isCompleted);
     }
+    updateTaskHiveBox();
   }
 
   DateTime calculateNextCompletionDate(
@@ -590,11 +647,12 @@ class _TaskCardState extends State<TaskCard> {
       case 'weekly':
         final currentDate = DateTime.now();
         final currentDay = currentDate.weekday;
-        final daysUntilNextMonday = (8 - currentDay) % 7;
-        final nextMonday = currentDate.add(Duration(days: daysUntilNextMonday));
-        final nextMondayAtMidnight =
-            DateTime(nextMonday.year, nextMonday.month, nextMonday.day);
-        return nextMondayAtMidnight;
+        final daysUntilNextDay =
+            (7 - (currentDay - getDayOfWeek(startOfWeek))) % 7;
+        final nextDay = currentDate.add(Duration(days: daysUntilNextDay));
+        final nextDayAtMidnight =
+            DateTime(nextDay.year, nextDay.month, nextDay.day);
+        return nextDayAtMidnight;
 
       case 'monthly':
         if (previousCompletionDate.month == 12) {
@@ -660,5 +718,43 @@ class _TaskCardState extends State<TaskCard> {
     }
 
     return shiftedArray;
+  }
+
+  void updateTaskHiveBox() {
+    // Convert DateTime objects back into their ISO8601 string form
+    widget.task.previousDate = previousDate.toIso8601String();
+    widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
+    widget.task.completedDates =
+        completedDates.map((date) => date.toIso8601String()).toList();
+
+    // Update the task in the Hive box
+    final box = Hive.box<Task>('tasks');
+    box.put(widget.task.key, widget.task);
+  }
+
+  void deleteTask() async {
+    final box = Hive.box<Task>('tasks');
+    await box.delete(widget.task.key);
+  }
+
+  int getDayOfWeek(String day) {
+    switch (day.toLowerCase()) {
+      case "monday":
+        return 1;
+      case "tuesday":
+        return 2;
+      case "wednesday":
+        return 3;
+      case "thursday":
+        return 4;
+      case "friday":
+        return 5;
+      case "saturday":
+        return 6;
+      case "sunday":
+        return 7;
+      default:
+        throw ArgumentError("Invalid day of the week: $day");
+    }
   }
 }

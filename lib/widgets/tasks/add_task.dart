@@ -27,7 +27,6 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   String _selectedOption = 'Daily';
   int _timesPerMonth = 1;
   int _timesPerWeek = 1;
-  String _schedule = "";
 
   @override
   Widget build(BuildContext context) {
@@ -321,13 +320,13 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                 false, // default values for properties not included in the form
             streakCount: 0,
             longestStreak: 0,
-            isMeantForToday: false,
+            isMeantForToday: true,
             currentCycleCompletions: 0,
             last30DaysDates: [],
             completionCount30days: 0,
             completedDates: [],
-            previousDate: DateTime.now().toIso8601String(),
-            nextCompletionDate: DateTime.now().toIso8601String(),
+            previousDate: getMidnightIso8601String(),
+            nextCompletionDate: getMidnightIso8601String(),
             isStreakContinued: false,
           );
 
@@ -455,5 +454,12 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
     setState(() {
       updateSelectedOption();
     });
+  }
+
+  String getMidnightIso8601String() {
+    DateTime now = DateTime.now();
+    DateTime midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
+    String iso8601String = midnight.toIso8601String();
+    return iso8601String;
   }
 }

@@ -14,62 +14,28 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   List<String> selectedTags = [];
   ValueNotifier<String> selectedSchedule = ValueNotifier<String>('Daily');
+  final GlobalKey<AnimalBuilderState> _animalBuilderKey = GlobalKey();
 
-  Future<Box<Task>> _openBox() async {
-    final box = await Hive.openBox<Task>('tasks');
-    return box;
+  String getMidnightIso8601String() {
+    DateTime now = DateTime.now();
+    DateTime midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
+    String iso8601String = midnight.toIso8601String();
+    return iso8601String;
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void _createTaskButton() async {
-    final result = await showModalBottomSheet<Map<String, dynamic>>(
+  void _createTaskButton() {
+    showModalBottomSheet<Map<String, dynamic>>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => const AddTaskSheet(),
     );
-    if (result != null) {
-      final newTask = Task(
-        title: result['title'],
-        tag: result['tag'],
-        schedule: result['schedule'],
-        daysOfWeek: result['daysOfWeek'],
-        biDaily: result['biDaily'],
-        weekly: result['weekly'],
-        monthly: result['monthly'],
-        timesPerMonth: result['timesPerMonth'],
-        timesPerWeek: result['timesPerWeek'],
-        isCompleted:
-            false, // default values for properties not included in the form
-        streakCount: 0,
-        longestStreak: 0,
-        isMeantForToday: false,
-        currentCycleCompletions: 0,
-        last30DaysDates: [],
-        completionCount30days: 0,
-        completedDates: [],
-        previousDate: DateTime.now().toIso8601String(),
-        nextCompletionDate: DateTime.now().toIso8601String(),
-        isStreakContinued: false,
-      );
-
-      final box = Hive.box<Task>('tasks');
-      await box.add(newTask);
-    }
-  }
-
-  List<String> getAllTags(Box<Task> box) {
-    final allTags = Set<String>();
-    for (var task in box.values) {
-      allTags.add(task.tag);
-    }
-    return allTags.toList();
   }
 
   List<Task> getFilteredTagTasks(
@@ -92,50 +58,79 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  double getTaskCompletionPercent(String schedule) {
+    // Get the 'tasks' box
+    final box = Hive.box<Task>('tasks');
+
+    // Get all tasks of the specified schedule
+    final tasks =
+        box.values.where((task) => task.schedule == schedule).toList();
+
+    // Check if there are no tasks of the specified schedule
+    if (tasks.isEmpty) {
+      return 0.0;
+    }
+
+    // Get all completed tasks of the specified schedule
+    final completedTasks =
+        tasks.where((task) => task.isCompleted == true).toList();
+
+    // Calculate the percent of completed tasks
+    final completionPercent = completedTasks.length / tasks.length;
+
+    return completionPercent;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Box<Task>>(
       future: Hive.openBox<Task>('tasks'),
       builder: (BuildContext context, AsyncSnapshot<Box<Task>> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError)
+          if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
-          else {
+          } else {
             final box = snapshot.data!;
-            return StreamBuilder(
-              stream: box.watch(), // watch for changes in the box
-              builder: (context, snapshot) {
-                return Scaffold(
-                  appBar: CustomAppBar(
-                    onAddTaskPressed: _createTaskButton,
-                    selectedSchedule: selectedSchedule,
-                    onUpdateSelectedTags: updateSelectedTags,
-                    tasks: box.values.toList(),
+            return Column(
+              children: <Widget>[
+                Expanded(
+                  child: StreamBuilder(
+                    stream: box.watch(),
+                    builder: (context, snapshot) {
+                      return Scaffold(
+                        appBar: CustomAppBar(
+                          onAddTaskPressed: _createTaskButton,
+                          selectedSchedule: selectedSchedule,
+                          onUpdateSelectedTags: updateSelectedTags,
+                          tasks: box.values.toList(),
+                        ),
+                        body: ListView(
+                          children: [
+                            ValueListenableBuilder<String>(
+                              valueListenable: selectedSchedule,
+                              builder: (context, value, child) {
+                                return GridView.count(
+                                  key: ValueKey(box.values.length),
+                                  crossAxisCount: 2,
+                                  shrinkWrap: true,
+                                  children:
+                                      getFilteredTagTasks(selectedSchedule, box)
+                                          .map((task) => TaskCard(task: task))
+                                          .toList(),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  body: ListView(
-                    children: [
-                      // Other widgets go here...
-                      ValueListenableBuilder<String>(
-                        valueListenable: selectedSchedule,
-                        builder: (context, value, child) {
-                          return GridView.count(
-                            key: ValueKey(box.values.length),
-                            crossAxisCount: 2,
-                            shrinkWrap: true,
-                            children: getFilteredTagTasks(selectedSchedule, box)
-                                .map((task) => TaskCard(task: task))
-                                .toList(),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
+                ),
+              ],
             );
           }
         } else {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
       },
     );
