@@ -79,6 +79,7 @@ class _TaskCardState extends State<TaskCard> {
         onLongPress: !widget.task.isCompleted && !_isTapped
             ? () {
                 setState(() {
+                  print("Pressed and Held");
                   updatePiecesInformation();
                   widget.task.isCompleted = true;
                   _streakAndStatsHandler(schedule);
@@ -254,7 +255,7 @@ class _TaskCardState extends State<TaskCard> {
                                   widget.task.schedule =
                                       editedTaskData['schedule'];
                                   isCompletedFalse(schedule);
-                                  updateTaskHiveBox();
+                                  updateTaskSchema();
                                 });
                               },
                             );
@@ -430,6 +431,7 @@ class _TaskCardState extends State<TaskCard> {
       if (widget.task.isStreakContinued && widget.task.isCompleted) {
         if (!completedDates.contains(today)) {
           completedDates.add(today);
+          print("added");
           widget.task.last30DaysDates = _getLast30DaysDates();
           widget.task.completionCount30days =
               _getCompletionCount(widget.task.last30DaysDates);
@@ -440,12 +442,14 @@ class _TaskCardState extends State<TaskCard> {
           previousDate = today;
           nextCompletionDate =
               calculateNextCompletionDate(schedule, previousDate);
+          updateTaskSchema();
         }
       }
       if (!widget.task.isStreakContinued) {
         widget.task.streakCount = 0;
         nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
+        updateTaskSchema();
       }
     } else if (schedule == "custom") {
       //Requires further testing
@@ -459,6 +463,7 @@ class _TaskCardState extends State<TaskCard> {
         if (!completedDates.contains(today)) {
           if (widget.task.isMeantForToday) {
             completedDates.add(today);
+            print("added3");
             widget.task.last30DaysDates = _getLast30DaysDates();
             widget.task.completionCount30days =
                 _getCompletionCount(widget.task.last30DaysDates);
@@ -469,6 +474,7 @@ class _TaskCardState extends State<TaskCard> {
             previousDate = today;
             nextCompletionDate =
                 calculateNextCompletionDate(schedule, previousDate);
+            updateTaskSchema();
           }
         }
       }
@@ -482,6 +488,7 @@ class _TaskCardState extends State<TaskCard> {
       if (widget.task.isStreakContinued && widget.task.isCompleted) {
         if (!completedDates.contains(today)) {
           completedDates.add(today);
+          print("added2");
           widget.task.last30DaysDates = _getLast30DaysDates();
           widget.task.completionCount30days =
               _getCompletionCount(widget.task.last30DaysDates);
@@ -492,12 +499,14 @@ class _TaskCardState extends State<TaskCard> {
           previousDate = today;
           nextCompletionDate =
               calculateNextCompletionDate(schedule, previousDate);
+          updateTaskSchema();
         }
       }
       if (!widget.task.isStreakContinued) {
         widget.task.streakCount = 0;
         nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
+        updateTaskSchema();
       }
     } else if (schedule == "weekly") {
       widget.task.isMeantForToday = true;
@@ -506,7 +515,10 @@ class _TaskCardState extends State<TaskCard> {
         if (!completedDates.contains(today)) {
           _getCompletionCount(widget.task.last30DaysDates);
           widget.task.currentCycleCompletions++;
+          print("Incrementing cycle comps");
+          updateTaskSchema();
           if (widget.task.currentCycleCompletions < widget.task.timesPerWeek) {
+            print("Returning");
             return;
           }
           completedDates.add(today);
@@ -517,6 +529,7 @@ class _TaskCardState extends State<TaskCard> {
           previousDate = today;
           nextCompletionDate =
               calculateNextCompletionDate(schedule, previousDate);
+          updateTaskSchema();
         }
       }
       if (!widget.task.isStreakContinued) {
@@ -526,14 +539,23 @@ class _TaskCardState extends State<TaskCard> {
       }
     } else if (schedule == "monthly") {
       widget.task.isStreakContinued = now.isBefore(nextCompletionDate);
+      if (widget.task.isCompleted) {
+        print("Set to Completed");
+      }
       if (widget.task.isStreakContinued && widget.task.isCompleted) {
+        print("completedDates: $completedDates");
         if (!completedDates.contains(today)) {
+          print("We in here: $completedDates");
           _getCompletionCount(widget.task.last30DaysDates);
           widget.task.currentCycleCompletions++;
+          print("cycle comps${widget.task.currentCycleCompletions}");
+          print("times per month${widget.task.timesPerMonth}");
+          updateTaskSchema();
           if (widget.task.currentCycleCompletions < widget.task.timesPerMonth) {
             return;
           }
           completedDates.add(today);
+          print("added1");
           widget.task.last30DaysDates = _getLast30DaysDates();
           widget.task.completionCount30days = widget.task.streakCount++;
           widget.task.longestStreak =
@@ -541,16 +563,16 @@ class _TaskCardState extends State<TaskCard> {
           previousDate = today;
           nextCompletionDate =
               calculateNextCompletionDate(schedule, previousDate);
+          updateTaskSchema();
         }
       }
       if (!widget.task.isStreakContinued) {
         widget.task.streakCount = 0;
         nextCompletionDate =
             calculateNextCompletionDate(schedule, DateTime.now());
+        updateTaskSchema();
       }
     }
-
-    updateTaskHiveBox();
   }
 
   void _completionResetHandler() {
@@ -558,8 +580,8 @@ class _TaskCardState extends State<TaskCard> {
         !(completedDates.contains(DateTime(DateTime.now().year,
             DateTime.now().month, DateTime.now().day, 0, 0, 0)))) {
       widget.task.isCompleted = false;
+      updateTaskSchema();
     }
-    updateTaskHiveBox();
   }
 
   DateTime calculateNextCompletionDate(
@@ -669,16 +691,15 @@ class _TaskCardState extends State<TaskCard> {
     return shiftedArray;
   }
 
-  void updateTaskHiveBox() async {
+  void updateTaskSchema() {
     // // Convert DateTime objects back into their ISO8601 string form
-    // widget.task.previousDate = previousDate.toIso8601String();
-    // widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
-    // widget.task.completedDates =
-    //     completedDates.map((date) => date.toIso8601String()).toList();
+    widget.task.previousDate = previousDate.toIso8601String();
+    widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
+    widget.task.completedDates =
+        completedDates.map((date) => date.toIso8601String()).toList();
 
-    // // Update the task in the Hive box
-    // final box = Hive.box<Task>('tasks');
-    // await box.put(widget.task.key, widget.task);
+    //saves Task to TaskSchema
+    widget.service.saveTask(widget.task);
   }
 
   void updatePiecesInformation() async {

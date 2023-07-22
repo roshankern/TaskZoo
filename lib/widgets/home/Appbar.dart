@@ -7,9 +7,9 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback onAddTaskPressed;
   final ValueNotifier<String> selectedSchedule;
   final Function(List<String>) onUpdateSelectedTags;
-  final List<Task> tasks;
+  Stream<List<Task>> tasks;
 
-  const CustomAppBar({
+  CustomAppBar({
     Key? key,
     required this.onAddTaskPressed,
     required this.selectedSchedule,
@@ -43,63 +43,70 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      elevation: 0,
-      title: Row(
-        children: [
-          Row(
-            children: [
-              CircleButton(
-                key: ValueKey('D-${selectedIndex == 0}'), // add ValueKey
-                label: 'D',
-                isSelected: selectedIndex == 0,
-                onTap: () => selectButton(0),
-              ),
-              const SizedBox(width: 8),
-              CircleButton(
-                key: ValueKey('W-${selectedIndex == 1}'),
-                label: 'W',
-                isSelected: selectedIndex == 1,
-                onTap: () => selectButton(1),
-              ),
-              const SizedBox(width: 8),
-              CircleButton(
-                key: ValueKey('M-${selectedIndex == 2}'),
-                label: 'M',
-                isSelected: selectedIndex == 2,
-                onTap: () => selectButton(2),
-              ),
-            ],
-          ),
-          const Spacer(),
-          IconButton(
-            iconSize: appBarSize / 1.5,
-            icon: const Icon(Icons.keyboard_control),
-            color: Theme.of(context).indicatorColor,
-            onPressed: () {
-              showTagDropdown(context, selectedTags);
-            },
-          ),
-          Container(
-            width: 1,
-            height: appBarSize,
-            color: Theme.of(context).indicatorColor,
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-          ),
-          IconButton(
-            iconSize: appBarSize / 1.5,
-            icon: const Icon(Icons.add),
-            color: Theme.of(context).indicatorColor,
-            onPressed: widget.onAddTaskPressed,
-          ),
-        ],
-      ),
+    return StreamBuilder<List<Task>>(
+      stream: widget.tasks,
+      builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          final tasks = snapshot.data ?? [];
+          return AppBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            title: Row(
+              children: [
+                CircleButton(
+                  key: ValueKey('D-${selectedIndex == 0}'), // add ValueKey
+                  label: 'D',
+                  isSelected: selectedIndex == 0,
+                  onTap: () => selectButton(0),
+                ),
+                const SizedBox(width: 8),
+                CircleButton(
+                  key: ValueKey('W-${selectedIndex == 1}'),
+                  label: 'W',
+                  isSelected: selectedIndex == 1,
+                  onTap: () => selectButton(1),
+                ),
+                const SizedBox(width: 8),
+                CircleButton(
+                  key: ValueKey('M-${selectedIndex == 2}'),
+                  label: 'M',
+                  isSelected: selectedIndex == 2,
+                  onTap: () => selectButton(2),
+                ),
+                const Spacer(),
+                IconButton(
+                  iconSize: appBarSize / 1.5,
+                  icon: const Icon(Icons.keyboard_control),
+                  color: Theme.of(context).indicatorColor,
+                  onPressed: () {
+                    showTagDropdown(
+                        context, selectedTags, tasks); // Pass tasks here
+                  },
+                ),
+                Container(
+                  width: 1,
+                  height: appBarSize,
+                  color: Theme.of(context).indicatorColor,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+                IconButton(
+                    iconSize: appBarSize / 1.5,
+                    icon: const Icon(Icons.add),
+                    color: Theme.of(context).indicatorColor,
+                    onPressed: widget.onAddTaskPressed)
+              ],
+            ),
+          );
+        } else {
+          return CircularProgressIndicator(); // Loading indicator
+        }
+      },
     );
   }
 
-  void showTagDropdown(BuildContext context, List<String> selectedTags) {
-    final List<String> allTags = getAllTags();
+  void showTagDropdown(
+      BuildContext context, List<String> selectedTags, List<Task> tasks) {
+    final List<String> allTags = getAllTags(tasks);
     bool hasTasks = allTags.isNotEmpty;
 
     showModalBottomSheet(
@@ -214,10 +221,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
     );
   }
 
-  List<String> getAllTags() {
+  List<String> getAllTags(List<Task> tasks) {
     final Set<String> allTags = Set<String>();
 
-    for (var task in widget.tasks) {
+    for (var task in tasks) {
       allTags.add(task.tag);
     }
 

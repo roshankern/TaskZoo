@@ -53,19 +53,21 @@ class _HomePageState extends State<HomePage>
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CustomAppBar(
           onAddTaskPressed: _createTaskButton,
           selectedSchedule: selectedSchedule,
           onUpdateSelectedTags: updateSelectedTags,
-          tasks: [],
+          tasks: widget.service.getAllTasks(),
         ),
         body: ValueListenableBuilder<String>(
           valueListenable: selectedSchedule,
           builder: (context, value, child) {
             return StreamBuilder<List<Task>>(
-              stream: widget.service.getTasksBySchedule(value),
+              stream: widget.service
+                  .filterTasksByScheduleAndSelectedTags(value, selectedTags),
               builder:
                   (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
                 if (snapshot.hasData) {
