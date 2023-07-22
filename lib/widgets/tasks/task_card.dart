@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hive/hive.dart';
+import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
 import 'package:taskzoo/widgets/tasks/rear_task_card_item.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
@@ -11,8 +11,10 @@ String startOfWeek = "Monday";
 
 class TaskCard extends StatefulWidget {
   final Task task;
+  final IsarService service;
 
-  TaskCard({Key? key, required this.task}) : super(key: key);
+  TaskCard({Key? key, required this.task, required this.service})
+      : super(key: key);
 
   @override
   _TaskCardState createState() => _TaskCardState();
@@ -46,29 +48,6 @@ class _TaskCardState extends State<TaskCard> {
         _getCompletionCount(widget.task.last30DaysDates);
   }
 
-  void printTaskCountsAndCompletionPercents() {
-    // Define the schedules
-    final schedules = ['Daily', 'Weekly', 'Monthly'];
-
-    // Get the 'tasks' box
-    final box = Hive.box<Task>('tasks');
-
-    // Iterate over the schedules
-    for (final schedule in schedules) {
-      // Get all tasks of the current schedule
-      final tasks =
-          box.values.where((task) => task.schedule == schedule).toList();
-
-      // Get all completed tasks of the current schedule
-      final completedTasks =
-          tasks.where((task) => task.isCompleted == true).toList();
-
-      // Calculate the percent of completed tasks
-      final completionPercent =
-          tasks.isEmpty ? 0.0 : completedTasks.length / tasks.length;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     String schedule = determineFrequency(
@@ -88,8 +67,6 @@ class _TaskCardState extends State<TaskCard> {
 
     //Handles Weekly/Monthly completions
     _setCompletionStatus(schedule);
-
-    printTaskCountsAndCompletionPercents();
 
     return Padding(
       padding: const EdgeInsets.all(15.0),
@@ -693,31 +670,30 @@ class _TaskCardState extends State<TaskCard> {
   }
 
   void updateTaskHiveBox() async {
-    // Convert DateTime objects back into their ISO8601 string form
-    widget.task.previousDate = previousDate.toIso8601String();
-    widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
-    widget.task.completedDates =
-        completedDates.map((date) => date.toIso8601String()).toList();
+    // // Convert DateTime objects back into their ISO8601 string form
+    // widget.task.previousDate = previousDate.toIso8601String();
+    // widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
+    // widget.task.completedDates =
+    //     completedDates.map((date) => date.toIso8601String()).toList();
 
-    // Update the task in the Hive box
-    final box = Hive.box<Task>('tasks');
-    await box.put(widget.task.key, widget.task);
+    // // Update the task in the Hive box
+    // final box = Hive.box<Task>('tasks');
+    // await box.put(widget.task.key, widget.task);
   }
 
   void updatePiecesInformation() async {
     // Get the current value of totalAnimalPieces from the box
-    final box = Hive.box('animalPieceInformation');
-    int currentValue = box.get('totalAnimalPieces', defaultValue: 0);
-    int newValue = currentValue + 1;
+    // final box = Hive.box('animalPieceInformation');
+    // int currentValue = box.get('totalAnimalPieces', defaultValue: 0);
+    // int newValue = currentValue + 1;
 
-    widget.task.piecesObtained += 1;
-    // Update the box with the new value
-    await box.put('totalAnimalPieces', newValue);
+    // widget.task.piecesObtained += 1;
+    // // Update the box with the new value
+    // await box.put('totalAnimalPieces', newValue);
   }
 
   void deleteTask() async {
-    final box = Hive.box<Task>('tasks');
-    await box.delete(widget.task.key);
+    widget.service.deleteTask(widget.task);
   }
 
   int getDayOfWeek(String day) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
+import 'package:taskzoo/widgets/isar_service.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -9,7 +9,8 @@ const unselectedColor = Color.fromRGBO(175, 210, 210, 1);
 const lineColor = Color.fromRGBO(140, 146, 146, 1);
 
 class AddTaskSheet extends StatefulWidget {
-  const AddTaskSheet({Key? key}) : super(key: key);
+  final IsarService service;
+  const AddTaskSheet(this.service, {Key? key}) : super(key: key);
 
   @override
   _AddTaskSheetState createState() => _AddTaskSheetState();
@@ -306,7 +307,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
           // create a new Task object with your form data
-          Task newTask = Task(
+          final newTask = Task(
             title: _titleController.text,
             tag: _tagController.text,
             schedule: getPageState(_daysOfWeek, _biDaily, _weekly, _monthly),
@@ -330,11 +331,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             isStreakContinued: false,
             piecesObtained: 0,
           );
+          // add the new Task object to the database
+          widget.service.saveTask(newTask);
 
-          // add the new task to the Hive box
-          var box = Hive.box<Task>('tasks');
-          // add the new task to the Hive box
-          await box.add(newTask);
           // then navigate back
           Navigator.pop(context);
         }

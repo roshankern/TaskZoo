@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:isar/isar.dart';
 
 import 'package:taskzoo/pages/home_page.dart';
 import 'package:taskzoo/pages/zoo_page.dart';
@@ -12,7 +11,7 @@ import 'package:taskzoo/pages/settings_page.dart';
 import 'package:taskzoo/widgets/home/navbar.dart';
 
 import 'package:taskzoo/notifiers/zoo_notifier.dart';
-import 'package:taskzoo/widgets/tasks/task.dart';
+import 'package:taskzoo/widgets/isar_service.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -20,37 +19,6 @@ const lineColor = const Color(0xff8c9292);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final appDocumentDirectory =
-      await path_provider.getApplicationDocumentsDirectory();
-  Hive.init(appDocumentDirectory.path);
-
-  Hive.registerAdapter<Task>(TaskAdapter());
-
-  try {
-    // Open the 'tasks' box
-    if (Hive.isBoxOpen('tasks')) {
-      await Hive.box('tasks').close();
-    }
-    await Hive.openBox<Task>('tasks');
-
-    // Open the 'settings' box
-    if (Hive.isBoxOpen('settings')) {
-      await Hive.box('settings').close();
-    }
-    var settingsBox = await Hive.openBox('settings');
-
-    if (Hive.isBoxOpen('animalPieceInformation')) {
-      await Hive.box('animalPieceInformation').close();
-    }
-    var animalBox = await Hive.openBox('animalPieceInformation');
-
-    // Check if the settings keys exist, if not, put the default values
-    checkAndSetDefaultSettings(settingsBox);
-    setAnimalDefaults(animalBox);
-  } catch (e) {
-    print('Failed to open box: $e');
-  }
 
   runApp(const MyApp());
 }
@@ -77,15 +45,16 @@ class MyApp extends StatelessWidget {
         //dialogBackgroundColor is for extras, selections & containers
         dialogBackgroundColor: Colors.black,
       ),
-      home: const MyHomePage(title: 'TaskZoo Task Page'),
+      home: MyHomePage(title: 'TaskZoo Task Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
+  final IsarService service = IsarService();
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -111,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomePage(),
+      HomePage(service: widget.service),
       ChangeNotifierProvider(
         create: (context) => ZooNotifier(),
         child: const ZooPage(),
@@ -143,19 +112,5 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
-  }
-}
-
-void checkAndSetDefaultSettings(Box<dynamic> settingsBox) {
-  // Check if the settings keys exist, if not, put the default values
-  if (!settingsBox.containsKey('weekdayStart')) {
-    settingsBox.put('weekdayStart', 'Monday');
-  }
-}
-
-void setAnimalDefaults(Box<dynamic> animalBox) {
-  // Check if the animal keys exist, if not, put the default values
-  if (!animalBox.containsKey('totalAnimalPieces')) {
-    animalBox.put('totalAnimalPieces', 0);
   }
 }
