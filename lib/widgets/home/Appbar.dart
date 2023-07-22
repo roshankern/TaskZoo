@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/tasks/task_card.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:taskzoo/widgets/tasks/task.dart';
 
 const double appBarSize = 40.0;
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback onAddTaskPressed;
-  final Function(String) onSelectSchedule;
+  final ValueNotifier<String> selectedSchedule;
   final Function(List<String>) onUpdateSelectedTags;
-  final List<TaskCard> tasks;
+  Stream<List<Task>> tasks;
 
-  const CustomAppBar({
+  CustomAppBar({
     Key? key,
     required this.onAddTaskPressed,
-    required this.onSelectSchedule,
+    required this.selectedSchedule,
     required this.onUpdateSelectedTags,
     required this.tasks,
   }) : super(key: key);
@@ -33,71 +32,81 @@ class _CustomAppBarState extends State<CustomAppBar> {
     setState(() {
       selectedIndex = index;
       if (index == 0) {
-        widget.onSelectSchedule('Daily');
+        widget.selectedSchedule.value = 'Daily';
       } else if (index == 1) {
-        widget.onSelectSchedule('Weekly');
+        widget.selectedSchedule.value = 'Weekly';
       } else if (index == 2) {
-        widget.onSelectSchedule('Monthly');
+        widget.selectedSchedule.value = 'Monthly';
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      elevation: 0,
-      title: Row(
-        children: [
-          Row(
-            children: [
-              CircleButton(
-                label: 'D',
-                isSelected: selectedIndex == 0,
-                onTap: () => selectButton(0),
-              ),
-              const SizedBox(width: 8),
-              CircleButton(
-                label: 'W',
-                isSelected: selectedIndex == 1,
-                onTap: () => selectButton(1),
-              ),
-              const SizedBox(width: 8),
-              CircleButton(
-                label: 'M',
-                isSelected: selectedIndex == 2,
-                onTap: () => selectButton(2),
-              ),
-            ],
-          ),
-          const Spacer(),
-          IconButton(
-            iconSize: appBarSize / 1.5,
-            icon: const Icon(Icons.keyboard_control),
-            color: Theme.of(context).indicatorColor,
-            onPressed: () {
-              showTagDropdown(context, selectedTags);
-            },
-          ),
-          Container(
-            width: 1,
-            height: appBarSize,
-            color: Theme.of(context).indicatorColor,
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-          ),
-          IconButton(
-            iconSize: appBarSize / 1.5,
-            icon: const Icon(Icons.add),
-            color: Theme.of(context).indicatorColor,
-            onPressed: widget.onAddTaskPressed,
-          ),
-        ],
-      ),
+    return StreamBuilder<List<Task>>(
+      stream: widget.tasks,
+      builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          final tasks = snapshot.data ?? [];
+          return AppBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            title: Row(
+              children: [
+                CircleButton(
+                  key: ValueKey('D-${selectedIndex == 0}'), // add ValueKey
+                  label: 'D',
+                  isSelected: selectedIndex == 0,
+                  onTap: () => selectButton(0),
+                ),
+                const SizedBox(width: 8),
+                CircleButton(
+                  key: ValueKey('W-${selectedIndex == 1}'),
+                  label: 'W',
+                  isSelected: selectedIndex == 1,
+                  onTap: () => selectButton(1),
+                ),
+                const SizedBox(width: 8),
+                CircleButton(
+                  key: ValueKey('M-${selectedIndex == 2}'),
+                  label: 'M',
+                  isSelected: selectedIndex == 2,
+                  onTap: () => selectButton(2),
+                ),
+                const Spacer(),
+                IconButton(
+                  iconSize: appBarSize / 1.5,
+                  icon: const Icon(Icons.keyboard_control),
+                  color: Theme.of(context).indicatorColor,
+                  onPressed: () {
+                    showTagDropdown(
+                        context, selectedTags, tasks); // Pass tasks here
+                  },
+                ),
+                Container(
+                  width: 1,
+                  height: appBarSize,
+                  color: Theme.of(context).indicatorColor,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+                IconButton(
+                    iconSize: appBarSize / 1.5,
+                    icon: const Icon(Icons.add),
+                    color: Theme.of(context).indicatorColor,
+                    onPressed: widget.onAddTaskPressed)
+              ],
+            ),
+          );
+        } else {
+          return CircularProgressIndicator(); // Loading indicator
+        }
+      },
     );
   }
 
-  void showTagDropdown(BuildContext context, List<String> selectedTags) {
-    final List<String> allTags = getAllTags();
+  void showTagDropdown(
+      BuildContext context, List<String> selectedTags, List<Task> tasks) {
+    final List<String> allTags = getAllTags(tasks);
     bool hasTasks = allTags.isNotEmpty;
 
     showModalBottomSheet(
@@ -212,10 +221,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
     );
   }
 
-  List<String> getAllTags() {
+  List<String> getAllTags(List<Task> tasks) {
     final Set<String> allTags = Set<String>();
 
-    for (var task in widget.tasks) {
+    for (var task in tasks) {
       allTags.add(task.tag);
     }
 
@@ -229,10 +238,11 @@ class CircleButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const CircleButton({
+    Key? key, // Add key parameter
     required this.label,
     required this.isSelected,
     required this.onTap,
-  });
+  }) : super(key: key); // Pass key to superclass
 
   @override
   Widget build(BuildContext context) {
@@ -247,17 +257,13 @@ class CircleButton extends StatelessWidget {
             color: Theme.of(context).dialogBackgroundColor,
             width: 1,
           ),
-          color: isSelected
-              ? Theme.of(context).dialogBackgroundColor
-              : Theme.of(context).primaryColor,
+          color: isSelected ? Colors.black : Colors.white,
         ),
         child: Center(
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected
-                  ? Colors.white
-                  : Theme.of(context).dialogBackgroundColor,
+              color: isSelected ? Colors.white : Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),

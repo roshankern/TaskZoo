@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:taskzoo/widgets/tasks/task.dart';
+import 'package:taskzoo/widgets/isar_service.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -7,7 +9,8 @@ const unselectedColor = Color.fromRGBO(175, 210, 210, 1);
 const lineColor = Color.fromRGBO(140, 146, 146, 1);
 
 class AddTaskSheet extends StatefulWidget {
-  const AddTaskSheet({Key? key}) : super(key: key);
+  final IsarService service;
+  const AddTaskSheet(this.service, {Key? key}) : super(key: key);
 
   @override
   _AddTaskSheetState createState() => _AddTaskSheetState();
@@ -25,7 +28,6 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   String _selectedOption = 'Daily';
   int _timesPerMonth = 1;
   int _timesPerWeek = 1;
-  String _schedule = "";
 
   @override
   Widget build(BuildContext context) {
@@ -302,20 +304,38 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 32.0),
       ),
       child: const Text('Add Task'),
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          final taskData = {
-            'title': _titleController.text,
-            'tag': _tagController.text,
-            'daysOfWeek': _daysOfWeek,
-            'biDaily': _biDaily,
-            'weekly': _weekly,
-            'monthly': _monthly,
-            'timesPerWeek': _timesPerWeek,
-            'timesPerMonth': _timesPerMonth,
-            'schedule': getPageState(_daysOfWeek, _biDaily, _weekly, _monthly)
-          };
-          Navigator.pop(context, taskData);
+          // create a new Task object with your form data
+          final newTask = Task(
+            title: _titleController.text,
+            tag: _tagController.text,
+            schedule: getPageState(_daysOfWeek, _biDaily, _weekly, _monthly),
+            daysOfWeek: _daysOfWeek,
+            biDaily: _biDaily,
+            weekly: _weekly,
+            monthly: _monthly,
+            timesPerMonth: _timesPerMonth,
+            timesPerWeek: _timesPerWeek,
+            isCompleted:
+                false, // default values for properties not included in the form
+            streakCount: 0,
+            longestStreak: 0,
+            isMeantForToday: true,
+            currentCycleCompletions: 0,
+            last30DaysDates: [],
+            completionCount30days: 0,
+            completedDates: [],
+            previousDate: getMidnightIso8601String(),
+            nextCompletionDate: getMidnightIso8601String(),
+            isStreakContinued: false,
+            piecesObtained: 0,
+          );
+          // add the new Task object to the database
+          widget.service.saveTask(newTask);
+
+          // then navigate back
+          Navigator.pop(context);
         }
       },
     );
@@ -343,7 +363,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             ),
             Text(
               '$_timesPerWeek',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             IconButton(
               icon: const Icon(Icons.add),
@@ -381,7 +401,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             ),
             Text(
               '$_timesPerMonth',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             IconButton(
               icon: const Icon(Icons.add),
@@ -434,5 +454,12 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
     setState(() {
       updateSelectedOption();
     });
+  }
+
+  String getMidnightIso8601String() {
+    DateTime now = DateTime.now();
+    DateTime midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
+    String iso8601String = midnight.toIso8601String();
+    return iso8601String;
   }
 }

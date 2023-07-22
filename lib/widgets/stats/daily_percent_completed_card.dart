@@ -16,7 +16,7 @@ class DailyPercentCompletedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10,0,10,0),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.all(15.0),
@@ -31,24 +31,29 @@ class DailyPercentCompletedCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  const Text(
                     'percent tasks completed',
                     style: TextStyle(
                       fontSize: 12,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   CustomPaint(
                     size: Size(barWidth * data.length, barHeight + 10),
-                    painter: BarChartPainter(data, barWidth, barHeight, MediaQuery.of(context).size.width-30-20-30, taskPercentGoal),
+                    painter: BarChartPainter(
+                        data,
+                        barWidth,
+                        barHeight,
+                        MediaQuery.of(context).size.width - 30 - 20 - 30,
+                        taskPercentGoal),
                   ),
                 ],
               ),
             ),
             Container(
               height: barHeight + 40,
-              child: Column(
+              child: const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Align(
@@ -91,7 +96,8 @@ class BarChartPainter extends CustomPainter {
   final double strokeWidth = 2.0;
   final double taskPercentGoal;
 
-  BarChartPainter(this.data, this.barWidth, this.barHeight, this.availableWidth, this.taskPercentGoal); 
+  BarChartPainter(this.data, this.barWidth, this.barHeight, this.availableWidth,
+      this.taskPercentGoal);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -99,10 +105,10 @@ class BarChartPainter extends CustomPainter {
     double totalBarWidth = barWidth * data.length;
 
     // Total available width for the spaces
-    double totalSpacingWidth = availableWidth - totalBarWidth; 
+    double totalSpacingWidth = availableWidth - totalBarWidth;
 
     // Width of each space
-    double spaceWidth = totalSpacingWidth / (data.length - 1); 
+    double spaceWidth = totalSpacingWidth / (data.length - 1);
 
     var textPainter = TextPainter(
       textDirection: TextDirection.ltr,
@@ -112,7 +118,7 @@ class BarChartPainter extends CustomPainter {
     int i = 0;
     for (var entry in data.entries) {
       double actualBarHeight = maxBarHeight * entry.value;
-      double left = i * (barWidth + spaceWidth); 
+      double left = i * (barWidth + spaceWidth);
       double top = maxBarHeight - actualBarHeight;
 
       var backgroundRect = RRect.fromRectAndRadius(
@@ -139,7 +145,7 @@ class BarChartPainter extends CustomPainter {
       // Draw label
       textPainter.text = TextSpan(
         text: entry.key[0].toLowerCase(),
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.black,
           fontSize: 12,
         ),
@@ -158,10 +164,12 @@ class BarChartPainter extends CustomPainter {
 
     // Draw dashed line
     double goalLineTop = maxBarHeight - (maxBarHeight * taskPercentGoal);
-    double goalLineWidth = ((i-1) * (barWidth + spaceWidth)) + 5;  // Calculate the rightmost edge of the last bar
+    double goalLineWidth = ((i - 1) * (barWidth + spaceWidth)) +
+        5; // Calculate the rightmost edge of the last bar
     canvas.save();
     canvas.translate(0, goalLineTop);
-    DashedLinePainter().paint(canvas, Size(goalLineWidth, 0));  // Use goalLineWidth instead of availableWidth
+    DashedLinePainter().paint(canvas,
+        Size(goalLineWidth, 0)); // Use goalLineWidth instead of availableWidth
     canvas.restore();
   }
 

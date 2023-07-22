@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:isar/isar.dart';
 
 import 'package:taskzoo/pages/home_page.dart';
 import 'package:taskzoo/pages/zoo_page.dart';
@@ -9,12 +11,15 @@ import 'package:taskzoo/pages/settings_page.dart';
 import 'package:taskzoo/widgets/home/navbar.dart';
 
 import 'package:taskzoo/notifiers/zoo_notifier.dart';
+import 'package:taskzoo/widgets/isar_service.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
 const lineColor = const Color(0xff8c9292);
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -40,15 +45,16 @@ class MyApp extends StatelessWidget {
         //dialogBackgroundColor is for extras, selections & containers
         dialogBackgroundColor: Colors.black,
       ),
-      home: const MyHomePage(title: 'TaskZoo Task Page'),
+      home: MyHomePage(title: 'TaskZoo Task Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
+  final IsarService service = IsarService();
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -74,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomePage(),
+      HomePage(service: widget.service),
       ChangeNotifierProvider(
         create: (context) => ZooNotifier(),
         child: const ZooPage(),
