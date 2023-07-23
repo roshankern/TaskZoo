@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:isar/isar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:taskzoo/pages/home_page.dart';
 import 'package:taskzoo/pages/zoo_page.dart';
@@ -12,6 +11,7 @@ import 'package:taskzoo/widgets/home/navbar.dart';
 
 import 'package:taskzoo/notifiers/zoo_notifier.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
+import 'package:taskzoo/widgets/preference_service.dart';
 
 const maxCharLimit = 20;
 const selectedColor = Colors.black;
@@ -19,6 +19,8 @@ const lineColor = const Color(0xff8c9292);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  addDefaultTotalCollectedPieces();
 
   runApp(const MyApp());
 }
@@ -55,6 +57,7 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
   final IsarService service = IsarService();
+  PreferenceService preferenceService = PreferenceService();
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -80,7 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomePage(service: widget.service),
+      HomePage(
+          service: widget.service, preferenceService: widget.preferenceService),
       ChangeNotifierProvider(
         create: (context) => ZooNotifier(),
         child: const ZooPage(),
@@ -112,5 +116,15 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
+  }
+}
+
+Future<void> addDefaultTotalCollectedPieces() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  // Check if the preference "totalCollectedPieces" exists
+  if (!prefs.containsKey('totalCollectedPieces')) {
+    // If it doesn't exist, add it with the default value of 0
+    await prefs.setInt('totalCollectedPieces', 0);
   }
 }

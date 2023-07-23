@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
 import 'package:taskzoo/widgets/tasks/rear_task_card_item.dart';
@@ -704,13 +705,8 @@ class _TaskCardState extends State<TaskCard> {
 
   void updatePiecesInformation() async {
     // Get the current value of totalAnimalPieces from the box
-    // final box = Hive.box('animalPieceInformation');
-    // int currentValue = box.get('totalAnimalPieces', defaultValue: 0);
-    // int newValue = currentValue + 1;
-
-    // widget.task.piecesObtained += 1;
-    // // Update the box with the new value
-    // await box.put('totalAnimalPieces', newValue);
+    incrementTotalCollectedPieces();
+    widget.task.piecesObtained += 1;
   }
 
   void deleteTask() async {
@@ -737,4 +733,11 @@ class _TaskCardState extends State<TaskCard> {
         throw ArgumentError("Invalid day of the week: $day");
     }
   }
+}
+
+Future<void> incrementTotalCollectedPieces() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
+  int newTotalCollectedPieces = currentTotalCollectedPieces + 1;
+  await prefs.setInt('totalCollectedPieces', newTotalCollectedPieces);
 }
