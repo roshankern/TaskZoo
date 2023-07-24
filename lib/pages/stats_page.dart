@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/stats/pieces_progress_card.dart';
+
+import 'package:taskzoo/widgets/stats/current_productivity_card.dart';
+
 import 'package:taskzoo/widgets/stats/daily_percent_completed_card.dart';
 import 'package:taskzoo/widgets/stats/month_total_tasks_completed_card.dart';
 
@@ -68,28 +70,40 @@ class StatsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            PiecesProgressCard(
-              piecesCollected: 15,
-              totalPieces: 20,
-              circularProgressDiameter:
-                  MediaQuery.of(context).size.height * prop1,
-              circularProgressStroke: 20,
-              outlineStrokeWidth: 2,
+            Container(
+              height: 10,
             ),
-            DailyPercentCompletedCard(
-              data: dailyPercentCompletedTestData,
-              barWidth: 15,
-              barHeight: MediaQuery.of(context).size.height * prop2,
-              taskPercentGoal: 0.6,
+            Expanded(
+              child: CurrentProductivityCard(
+                currentProductivity: 0.75,
+                circularProgressStroke: 20,
+                outlineStrokeWidth: 2,
+              ),
             ),
-            MonthTotalTasksCompletedCard(
-              data: monthTotalCompletedTestData,
-              height: MediaQuery.of(context).size.height * prop3,
+            Container(
+              height: 10,
+            ),
+            Expanded(
+              child: DailyPercentCompletedCard(
+                data: dailyPercentCompletedTestData,
+                barWidth: 20,
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Expanded(
+              child: MonthTotalTasksCompletedCard(
+                data: monthTotalCompletedTestData,
+              ),
+            ),
+            Container(
+              height: 10,
             ),
           ]),
       bottomNavigationBar: BottomAppBar(
         height: 50,
-        color: Theme.of(context).unselectedWidgetColor,
+        color: Theme.of(context).primaryColor,
         child: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
