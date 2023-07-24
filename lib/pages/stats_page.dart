@@ -84,8 +84,9 @@ class StatsPage extends StatelessWidget {
               height: 10,
             ),
             Expanded(
-              child: Container(
-                color: Colors.amber,
+              child: DailyPercentCompletedCard(
+                data: dailyPercentCompletedTestData,
+                barWidth: 15,
               ),
             ),
             Container(
@@ -131,12 +132,6 @@ class StatsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            DailyPercentCompletedCard(
-              data: dailyPercentCompletedTestData,
-              barWidth: 15,
-              barHeight: MediaQuery.of(context).size.height * prop2,
-              taskPercentGoal: 0.6,
-            ),
             MonthTotalTasksCompletedCard(
               data: monthTotalCompletedTestData,
               height: MediaQuery.of(context).size.height * prop3,
