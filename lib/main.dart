@@ -87,7 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
           service: widget.service, preferenceService: widget.preferenceService),
       ChangeNotifierProvider(
         create: (context) => ZooNotifier(),
-        child: const ZooPage(),
+        child: ZooPage(
+          preferenceService: widget.preferenceService,
+        ),
       ),
     ];
     return Scaffold(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
+import 'package:taskzoo/widgets/preference_service.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
 import 'package:taskzoo/widgets/tasks/rear_task_card_item.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
@@ -13,8 +14,13 @@ String startOfWeek = "Monday";
 class TaskCard extends StatefulWidget {
   final Task task;
   final IsarService service;
+  final PreferenceService preferenceService;
 
-  TaskCard({Key? key, required this.task, required this.service})
+  TaskCard(
+      {Key? key,
+      required this.task,
+      required this.service,
+      required this.preferenceService})
       : super(key: key);
 
   @override
@@ -733,11 +739,11 @@ class _TaskCardState extends State<TaskCard> {
         throw ArgumentError("Invalid day of the week: $day");
     }
   }
-}
 
-Future<void> incrementTotalCollectedPieces() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
-  int newTotalCollectedPieces = currentTotalCollectedPieces + 1;
-  await prefs.setInt('totalCollectedPieces', newTotalCollectedPieces);
+  Future<void> incrementTotalCollectedPieces() async {
+    SharedPreferences prefs = widget.preferenceService.prefs;
+    int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
+    int newTotalCollectedPieces = currentTotalCollectedPieces + 1;
+    widget.preferenceService.setTotalCollectedPieces(newTotalCollectedPieces);
+  }
 }

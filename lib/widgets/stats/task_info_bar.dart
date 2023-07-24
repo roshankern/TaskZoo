@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:taskzoo/widgets/tasks/rear_task_card_item.dart';
 
 class RearTaskCard extends StatelessWidget {
-  final List<StreamTaskCardIcon> icons;
+  final List<StreamBuilder<int>> icons; // Change the type to StreamBuilder<int>
 
   const RearTaskCard({Key? key, required this.icons}) : super(key: key);
 
@@ -17,47 +18,9 @@ class RearTaskCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: icons,
+          children: icons, // Build each StreamBuilder widget in the list
         ),
       ),
-    );
-  }
-}
-
-class StreamTaskCardIcon extends StatelessWidget {
-  final Icon icon;
-  final Stream<int> stream;
-
-  StreamTaskCardIcon({
-    Key? key,
-    required this.icon,
-    required this.stream,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<int>(
-      stream: stream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return CircularProgressIndicator();
-        } else {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              icon,
-              const SizedBox(width: 8.0),
-              Text(
-                snapshot.data.toString(),
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.grey,
-                ),
-              ),
-            ],
-          );
-        }
-      },
     );
   }
 }

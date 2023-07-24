@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:taskzoo/widgets/preference_service.dart';
 
 import 'package:taskzoo/widgets/zoo/Appbar.dart';
 import 'package:taskzoo/widgets/zoo/BackgroundImage.dart';
@@ -12,7 +13,9 @@ import 'package:taskzoo/models/biomes_model.dart';
 import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 class ZooPage extends StatefulWidget {
-  const ZooPage({Key? key}) : super(key: key);
+  final PreferenceService preferenceService;
+
+  const ZooPage({Key? key, required this.preferenceService}) : super(key: key);
 
   @override
   _ZooPageState createState() => _ZooPageState();
@@ -57,8 +60,8 @@ class _ZooPageState extends State<ZooPage> {
           );
         } else {
           return Scaffold(
-            backgroundColor: HexColor(snapshot
-                        .data!.biomes[zooNotifier.currentBiome].primaryColor),
+            backgroundColor: HexColor(
+                snapshot.data!.biomes[zooNotifier.currentBiome].primaryColor),
             extendBody: true,
             extendBodyBehindAppBar: true,
             appBar: CustomAppBar(biomesData: snapshot.data!),
@@ -68,7 +71,9 @@ class _ZooPageState extends State<ZooPage> {
                 BackgroundImage(
                     imagePath: snapshot
                         .data!.biomes[zooNotifier.currentBiome].backgroundPath),
-                ZooBody(biomesData: snapshot.data!),
+                ZooBody(
+                    biomesData: snapshot.data!,
+                    preferenceService: widget.preferenceService),
               ],
             ),
           );

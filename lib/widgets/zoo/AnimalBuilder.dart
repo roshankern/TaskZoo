@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskzoo/widgets/preference_service.dart';
 
 class AnimalBuilder extends StatefulWidget {
-  AnimalBuilder({required this.svgPath, required this.backgroundColor, Key? key}) : super(key: key);
-
   final String svgPath;
   final Color backgroundColor;
+  final PreferenceService preferenceService;
+  AnimalBuilder(
+      {required this.svgPath,
+      required this.backgroundColor,
+      Key? key,
+      required this.preferenceService})
+      : super(key: key);
 
   @override
   State<AnimalBuilder> createState() => AnimalBuilderState();
@@ -27,45 +34,64 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     svgDataFuture = loadSvgData(widget.svgPath);
   }
 
+  Future<void> decrementTotalCollectedPieces() async {
+    SharedPreferences prefs = widget.preferenceService.prefs;
+    int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
+    int newTotalCollectedPieces = currentTotalCollectedPieces;
+    if (currentTotalCollectedPieces > 0) {
+      newTotalCollectedPieces = currentTotalCollectedPieces - 1;
+      print(
+          "AnimalBuilder: decremented piece count -> $newTotalCollectedPieces");
+    } else {
+      print("AnimalBuilder: Piece count 0 -> $currentTotalCollectedPieces");
+    }
+    widget.preferenceService.setTotalCollectedPieces(newTotalCollectedPieces);
+  }
+
   void addShape() {
-    setState(() {
-      _numShapes += 50;
-    });
+    SharedPreferences prefs = widget.preferenceService.prefs;
+    int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
+    if (currentTotalCollectedPieces > 0) {
+      setState(() {
+        _numShapes += 5;
+      });
+      decrementTotalCollectedPieces();
+    }
   }
 
   String getBuilderSvg(String originalSvg, int numShapes) {
-  // Define a regular expression that matches the SVG root element
-  final rootRegex = RegExp(r'<svg[^>]*>', multiLine: true);
+    // Define a regular expression that matches the SVG root element
+    final rootRegex = RegExp(r'<svg[^>]*>', multiLine: true);
 
-  // Find the SVG root element
-  final rootMatch = rootRegex.firstMatch(originalSvg);
-  if (rootMatch == null) {
-    throw Exception('No SVG root element found');
-  }
-  final rootElement = originalSvg.substring(rootMatch.start, rootMatch.end);
-
-  // Define a regular expression that matches the shape elements
-  final shapeRegex = RegExp(r'<path[^>]*?>', multiLine: true);
-
-  // Find the shape elements
-  final shapeMatches = shapeRegex.allMatches(originalSvg).toList();
-
-  // Modify the shapes based on their index
-  final modifiedShapes = shapeMatches.map((match) {
-    String shape = originalSvg.substring(match.start, match.end);
-
-    if (shapeMatches.indexOf(match) >= numShapes) {
-      // For shapes after the first n (_numShapes), change their fill and stroke to gray
-      shape = shape.replaceAll(RegExp(r'fill="[^"]*"'), 'fill="#000000"');
-      shape = shape.replaceAll(RegExp(r'stroke="[^"]*"'), 'stroke="#000000"');
+    // Find the SVG root element
+    final rootMatch = rootRegex.firstMatch(originalSvg);
+    if (rootMatch == null) {
+      throw Exception('No SVG root element found');
     }
+    final rootElement = originalSvg.substring(rootMatch.start, rootMatch.end);
 
-    return shape;
-  }).join('\n');
+    // Define a regular expression that matches the shape elements
+    final shapeRegex = RegExp(r'<path[^>]*?>', multiLine: true);
 
-  // Return the new SVG string
-  return '$rootElement\n$modifiedShapes\n</svg>';
-}
+    // Find the shape elements
+    final shapeMatches = shapeRegex.allMatches(originalSvg).toList();
+
+    // Modify the shapes based on their index
+    final modifiedShapes = shapeMatches.map((match) {
+      String shape = originalSvg.substring(match.start, match.end);
+
+      if (shapeMatches.indexOf(match) >= numShapes) {
+        // For shapes after the first n (_numShapes), change their fill and stroke to gray
+        shape = shape.replaceAll(RegExp(r'fill="[^"]*"'), 'fill="#000000"');
+        shape = shape.replaceAll(RegExp(r'stroke="[^"]*"'), 'stroke="#000000"');
+      }
+
+      return shape;
+    }).join('\n');
+
+    // Return the new SVG string
+    return '$rootElement\n$modifiedShapes\n</svg>';
+  }
 
   int countPathsInSvg(String svgData) {
     // Define a regular expression that matches the path elements

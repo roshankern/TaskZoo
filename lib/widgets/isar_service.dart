@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:taskzoo/widgets/zoo/animalpieces.dart';
 
 class IsarService {
   late Future<Isar> db;
@@ -13,7 +14,7 @@ class IsarService {
     final dir = await getApplicationDocumentsDirectory();
     if (Isar.instanceNames.isEmpty) {
       return await Isar.open(
-        [TaskSchema],
+        [TaskSchema, AnimalPiecesSchema],
         inspector: true,
         directory: dir.path,
       );
@@ -44,11 +45,55 @@ class IsarService {
     }
   }
 
+  Stream<int> countAllTasks() async* {
+    final isar = await db;
+
+    // Initial task count
+    yield await isar.tasks.where().findAll().then((tasks) => tasks.length);
+
+    // Watch for changes in the tasks and yield the updated count
+    await for (var _ in isar.tasks.where().watch()) {
+      yield await isar.tasks.where().findAll().then((tasks) => tasks.length);
+    }
+  }
+
+  Stream<int> countAllCompletedTasks() async* {
+    // Listen to the stream of tasks obtained from getAllTasks()
+    await for (var tasks in getAllTasks()) {
+      // When the stream emits new data, update the completedTaskCount
+      yield await tasks.where((task) => task.isCompleted).length;
+    }
+  }
+
+  Stream<int> countTasks(String schedule, List<String> selectedTags) async* {
+    // Watch for changes in the tasks and yield the updated count
+    await for (var tasks
+        in filterTasksByScheduleAndSelectedTags(schedule, selectedTags)) {
+      yield tasks.length;
+    }
+  }
+
+  Stream<int> countCompletedTasks(
+      String schedule, List<String> selectedTags) async* {
+    // Listen to the stream of tasks obtained from getAllTasks()
+    await for (var tasks
+        in filterTasksByScheduleAndSelectedTags(schedule, selectedTags)) {
+      // When the stream emits new data, update the completedTaskCount
+      yield tasks.where((task) => task.isCompleted).length;
+    }
+  }
+
   //If Task id not found in Schema Table, it will be added else replace value
   Future<void> saveTask(Task task) async {
     final isar = await db;
     //Return type int -> id of the inserted object
     isar.writeTxnSync<int>(() => isar.tasks.putSync(task));
+  }
+
+  Future<void> saveAnimalPieces(AnimalPieces tuple) async {
+    final isar = await db;
+    //Return type int -> id of the inserted object
+    isar.writeTxnSync<int>(() => isar.animalPieces.putSync(tuple));
   }
 
   Stream<List<Task>> filterTasksByScheduleAndSelectedTags(

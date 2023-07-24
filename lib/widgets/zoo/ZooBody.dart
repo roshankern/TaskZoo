@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:taskzoo/widgets/preference_service.dart';
 
 import 'package:taskzoo/widgets/zoo/AnimalBuilder.dart';
 
@@ -10,8 +11,9 @@ import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 class ZooBody extends StatelessWidget {
   final Biomes biomesData;
+  final PreferenceService preferenceService;
 
-  ZooBody({required this.biomesData});
+  ZooBody({required this.biomesData, required this.preferenceService});
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +40,11 @@ class ZooBody extends StatelessWidget {
       ),
       itemBuilder: (BuildContext context, int index) {
         return AnimalBuilder(
-            key: ValueKey(animals[index].svgPath),
-            svgPath: animals[index].svgPath,
-            backgroundColor: animalCardColor);
+          key: ValueKey(animals[index].svgPath),
+          svgPath: animals[index].svgPath,
+          backgroundColor: animalCardColor,
+          preferenceService: preferenceService,
+        );
       },
     );
   }
