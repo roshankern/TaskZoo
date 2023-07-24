@@ -86,15 +86,15 @@ class StatsPage extends StatelessWidget {
             Expanded(
               child: DailyPercentCompletedCard(
                 data: dailyPercentCompletedTestData,
-                barWidth: 15,
+                barWidth: 20,
               ),
             ),
             Container(
               height: 10,
             ),
             Expanded(
-              child: Container(
-                color: Colors.blue,
+              child: MonthTotalTasksCompletedCard(
+                data: monthTotalCompletedTestData,
               ),
             ),
             Container(
@@ -104,42 +104,6 @@ class StatsPage extends StatelessWidget {
       bottomNavigationBar: BottomAppBar(
         height: 50,
         color: Theme.of(context).primaryColor,
-        child: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-    );
-
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        toolbarHeight: appBarSize,
-        title: IconButton(
-          iconSize: appBarSize / 1.5,
-          icon: const Icon(Icons.keyboard_control),
-          color: Theme.of(context).indicatorColor,
-          onPressed: () {
-            // Perform settings action
-          },
-        ),
-      ),
-      body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            MonthTotalTasksCompletedCard(
-              data: monthTotalCompletedTestData,
-              height: MediaQuery.of(context).size.height * prop3,
-            ),
-          ]),
-      bottomNavigationBar: BottomAppBar(
-        height: 50,
-        color: Theme.of(context).unselectedWidgetColor,
         child: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {

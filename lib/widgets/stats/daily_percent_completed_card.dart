@@ -27,7 +27,7 @@ class DailyPercentCompletedCard extends StatelessWidget {
             const Text(
               'percent tasks completed',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
               ),
               textAlign: TextAlign.center,
             ),
@@ -41,7 +41,7 @@ class DailyPercentCompletedCard extends StatelessWidget {
                       data,
                       barWidth,
                       constraints.maxHeight,
-                      MediaQuery.of(context).size.width - 60,
+                      MediaQuery.of(context).size.width - 55,
                     ),
                   );
                 },
@@ -68,7 +68,7 @@ class BarChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    double maxBarHeight = barHeight - 25;
+    double maxBarHeight = barHeight - 20;
     double totalBarWidth = barWidth * data.length;
 
     // Total available width for the spaces
@@ -122,7 +122,7 @@ class BarChartPainter extends CustomPainter {
         canvas,
         Offset(
           left + barWidth / 2 - textPainter.width / 2,
-          size.height - textPainter.height - 5,
+          size.height - textPainter.height,
         ),
       );
 
