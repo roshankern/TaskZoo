@@ -96,7 +96,7 @@ class CurrentProductivityCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '75%',
+                            '${(currentProductivity * 100).toStringAsFixed(0)}%',
                             style: TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold,
