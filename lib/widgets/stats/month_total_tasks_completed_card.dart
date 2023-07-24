@@ -41,7 +41,7 @@ class MonthTotalTasksCompletedCard extends StatelessWidget {
               border: Border.all(color: Colors.black, width: 2.0),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
+              borderRadius: BorderRadius.circular(15.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -50,7 +50,7 @@ class MonthTotalTasksCompletedCard extends StatelessWidget {
                     child: Text(
                       'total tasks completed',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                       ),
                       textAlign: TextAlign.center,
                     ),
