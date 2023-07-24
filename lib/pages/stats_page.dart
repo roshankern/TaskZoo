@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:taskzoo/widgets/stats/pieces_progress_card.dart';
+
+import 'package:taskzoo/widgets/stats/current_productivity_card.dart';
+
 import 'package:taskzoo/widgets/stats/daily_percent_completed_card.dart';
 import 'package:taskzoo/widgets/stats/month_total_tasks_completed_card.dart';
 
@@ -68,14 +70,67 @@ class StatsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            PiecesProgressCard(
-              piecesCollected: 15,
-              totalPieces: 20,
-              circularProgressDiameter:
-                  MediaQuery.of(context).size.height * prop1,
-              circularProgressStroke: 20,
-              outlineStrokeWidth: 2,
+            Container(
+              height: 10,
             ),
+            Expanded(
+              child: CurrentProductivityCard(
+                currentProductivity: 0.75,
+                circularProgressStroke: 20,
+                outlineStrokeWidth: 2,
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.amber,
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.blue,
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+          ]),
+      bottomNavigationBar: BottomAppBar(
+        height: 50,
+        color: Theme.of(context).primaryColor,
+        child: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        toolbarHeight: appBarSize,
+        title: IconButton(
+          iconSize: appBarSize / 1.5,
+          icon: const Icon(Icons.keyboard_control),
+          color: Theme.of(context).indicatorColor,
+          onPressed: () {
+            // Perform settings action
+          },
+        ),
+      ),
+      body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
             DailyPercentCompletedCard(
               data: dailyPercentCompletedTestData,
               barWidth: 15,
