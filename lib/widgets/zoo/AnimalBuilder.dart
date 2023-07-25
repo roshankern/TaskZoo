@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/preference_service.dart';
+import 'package:taskzoo/widgets/zoo/animalpieces.dart';
 
 class AnimalBuilder extends StatefulWidget {
   final String svgPath;
   final Color backgroundColor;
   final PreferenceService preferenceService;
+  final IsarService service;
   AnimalBuilder(
       {required this.svgPath,
       required this.backgroundColor,
       Key? key,
-      required this.preferenceService})
+      required this.preferenceService,
+      required this.service})
       : super(key: key);
 
   @override
@@ -29,9 +33,20 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   }
 
   @override
+  @override
   void initState() {
     super.initState();
     svgDataFuture = loadSvgData(widget.svgPath);
+    initializeState();
+  }
+
+  Future<void> initializeState() async {
+    _numShapes = await getShapesFromBox();
+    print("Num Shapes: $_numShapes");
+  }
+
+  Future<int> getShapesFromBox() async {
+    return await widget.service.getNumShapesFromAnimalPieces(widget.svgPath);
   }
 
   Future<void> decrementTotalCollectedPieces() async {
@@ -45,6 +60,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     } else {
       print("AnimalBuilder: Piece count 0 -> $currentTotalCollectedPieces");
     }
+    print(widget.svgPath);
     widget.preferenceService.setTotalCollectedPieces(newTotalCollectedPieces);
   }
 
@@ -56,7 +72,16 @@ class AnimalBuilderState extends State<AnimalBuilder> {
         _numShapes += 5;
       });
       decrementTotalCollectedPieces();
+      AnimalPieces animalUpdate = AnimalPieces(
+          id: getSvgPathId(), pieces: _numShapes, animalName: widget.svgPath);
+      widget.service.saveAnimalPieces(animalUpdate);
     }
+  }
+
+  int getSvgPathId() {
+    // Use the hashCode method to convert the SVG path into an integer ID
+    int id = widget.svgPath.hashCode.abs();
+    return id;
   }
 
   String getBuilderSvg(String originalSvg, int numShapes) {

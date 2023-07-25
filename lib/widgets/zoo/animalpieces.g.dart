@@ -33,34 +33,7 @@ const AnimalPiecesSchema = CollectionSchema(
   deserialize: _animalPiecesDeserialize,
   deserializeProp: _animalPiecesDeserializeProp,
   idName: r'id',
-  indexes: {
-    r'animalName': IndexSchema(
-      id: -4526056967538600938,
-      name: r'animalName',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'animalName',
-          type: IndexType.hash,
-          caseSensitive: true,
-        )
-      ],
-    ),
-    r'pieces': IndexSchema(
-      id: -4053813176391248480,
-      name: r'pieces',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'pieces',
-          type: IndexType.value,
-          caseSensitive: false,
-        )
-      ],
-    )
-  },
+  indexes: {},
   links: {},
   embeddedSchemas: {},
   getId: _animalPiecesGetId,
@@ -139,14 +112,6 @@ extension AnimalPiecesQueryWhereSort
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
-
-  QueryBuilder<AnimalPieces, AnimalPieces, QAfterWhere> anyPieces() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'pieces'),
-      );
-    });
-  }
 }
 
 extension AnimalPiecesQueryWhere
@@ -213,141 +178,6 @@ extension AnimalPiecesQueryWhere
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<AnimalPieces, AnimalPieces, QAfterWhereClause> animalNameEqualTo(
-      String animalName) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'animalName',
-        value: [animalName],
-      ));
-    });
-  }
-
-  QueryBuilder<AnimalPieces, AnimalPieces, QAfterWhereClause>
-      animalNameNotEqualTo(String animalName) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'animalName',
-              lower: [],
-              upper: [animalName],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'animalName',
-              lower: [animalName],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'animalName',
-              lower: [animalName],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'animalName',
-              lower: [],
-              upper: [animalName],
-              includeUpper: false,
-            ));
-      }
-    });
-  }
-
-  QueryBuilder<AnimalPieces, AnimalPieces, QAfterWhereClause> piecesEqualTo(
-      int pieces) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'pieces',
-        value: [pieces],
-      ));
-    });
-  }
-
-  QueryBuilder<AnimalPieces, AnimalPieces, QAfterWhereClause> piecesNotEqualTo(
-      int pieces) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'pieces',
-              lower: [],
-              upper: [pieces],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'pieces',
-              lower: [pieces],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'pieces',
-              lower: [pieces],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'pieces',
-              lower: [],
-              upper: [pieces],
-              includeUpper: false,
-            ));
-      }
-    });
-  }
-
-  QueryBuilder<AnimalPieces, AnimalPieces, QAfterWhereClause> piecesGreaterThan(
-    int pieces, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'pieces',
-        lower: [pieces],
-        includeLower: include,
-        upper: [],
-      ));
-    });
-  }
-
-  QueryBuilder<AnimalPieces, AnimalPieces, QAfterWhereClause> piecesLessThan(
-    int pieces, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'pieces',
-        lower: [],
-        upper: [pieces],
-        includeUpper: include,
-      ));
-    });
-  }
-
-  QueryBuilder<AnimalPieces, AnimalPieces, QAfterWhereClause> piecesBetween(
-    int lowerPieces,
-    int upperPieces, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'pieces',
-        lower: [lowerPieces],
-        includeLower: includeLower,
-        upper: [upperPieces],
         includeUpper: includeUpper,
       ));
     });

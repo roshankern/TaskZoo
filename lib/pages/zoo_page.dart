@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/preference_service.dart';
 
 import 'package:taskzoo/widgets/zoo/Appbar.dart';
@@ -14,8 +15,11 @@ import 'package:taskzoo/notifiers/zoo_notifier.dart';
 
 class ZooPage extends StatefulWidget {
   final PreferenceService preferenceService;
+  final IsarService service;
 
-  const ZooPage({Key? key, required this.preferenceService}) : super(key: key);
+  const ZooPage(
+      {Key? key, required this.preferenceService, required this.service})
+      : super(key: key);
 
   @override
   _ZooPageState createState() => _ZooPageState();
@@ -73,7 +77,8 @@ class _ZooPageState extends State<ZooPage> {
                         .data!.biomes[zooNotifier.currentBiome].backgroundPath),
                 ZooBody(
                     biomesData: snapshot.data!,
-                    preferenceService: widget.preferenceService),
+                    preferenceService: widget.preferenceService,
+                    service: widget.service),
               ],
             ),
           );

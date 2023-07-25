@@ -30,13 +30,6 @@ class _HomePageState extends State<HomePage>
   List<String> selectedTags = [];
   ValueNotifier<String> selectedSchedule = ValueNotifier<String>('Daily');
 
-  String getMidnightIso8601String() {
-    DateTime now = DateTime.now();
-    DateTime midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
-    String iso8601String = midnight.toIso8601String();
-    return iso8601String;
-  }
-
   void _createTaskButton() {
     showModalBottomSheet<Map<String, dynamic>>(
       context: context,

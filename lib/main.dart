@@ -57,7 +57,7 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
   final IsarService service = IsarService();
-  PreferenceService preferenceService = PreferenceService();
+  final PreferenceService preferenceService = PreferenceService();
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -89,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         create: (context) => ZooNotifier(),
         child: ZooPage(
           preferenceService: widget.preferenceService,
+          service: widget.service,
         ),
       ),
     ];

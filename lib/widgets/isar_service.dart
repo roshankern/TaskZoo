@@ -83,6 +83,28 @@ class IsarService {
     }
   }
 
+  Future<int> getNumShapesFromAnimalPieces(String svgPath) async {
+    final isar = await db;
+    int svgPathId = svgPath.hashCode.abs();
+
+    // Find the AnimalPieces item with the matching ID
+    AnimalPieces? animalPieces = await isar.animalPieces
+        .where()
+        .filter()
+        .idEqualTo(svgPathId)
+        .findFirst();
+
+    // If the AnimalPieces item exists, set the _numShapes variable to its 'pieces' value
+    if (animalPieces != null) {
+      animalPieces.pieces;
+      return animalPieces.pieces;
+      // Return the updated _numShapes value
+    } else {
+      // If the AnimalPieces item does not exist, return 0 or any other appropriate default value
+      return 0;
+    }
+  }
+
   //If Task id not found in Schema Table, it will be added else replace value
   Future<void> saveTask(Task task) async {
     final isar = await db;
