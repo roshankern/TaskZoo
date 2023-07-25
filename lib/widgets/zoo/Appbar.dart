@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:dimensions_theme/dimensions_theme.dart';
 
 import 'package:taskzoo/misc/biomes_model.dart';
 
@@ -37,28 +38,20 @@ class _CustomAppBarState extends State<CustomAppBar> {
             width: 35.0, // adjust as needed
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: zooNotifier.currentBiome == iconIndex
-                  ? Colors.black
-                  : Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: zooNotifier.currentBiome == iconIndex
-                      ? Colors.black
-                      : Colors.white,
-                  spreadRadius: 4,
-                  blurRadius: 5,
-                ),
-              ],
+              color: Theme.of(context).cardColor,
+              border: Border.all(
+                color: zooNotifier.currentBiome == iconIndex
+                    ? Colors.black
+                    : Colors.white,
+                width: Dimensions.of(context).borderWidths.medium, // adjust width as needed
+              ),
             ),
             child: FittedBox(
               child: IconButton(
                 icon: SvgPicture.asset(
                   currentBiomeIcon.svgPath,
                   colorFilter: ColorFilter.mode(
-                      zooNotifier.currentBiome == iconIndex
-                          ? Colors.white
-                          : Colors.black,
-                      BlendMode.srcIn),
+                      Theme.of(context).indicatorColor, BlendMode.srcIn),
                 ),
                 onPressed: () {
                   zooNotifier.changeBiome(iconIndex);
