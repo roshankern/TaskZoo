@@ -18,16 +18,16 @@ class DailyPercentCompletedCard extends StatelessWidget {
         padding: const EdgeInsets.all(15.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
-          color: Theme.of(context).primaryColor,
-          border: Border.all(color: Colors.black, width: 2.0),
+          color: Theme.of(context).cardColor,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'percent tasks completed',
+            Text(
+              'Percent Tasks Completed',
               style: TextStyle(
                 fontSize: 16,
+                  color: Theme.of(context).indicatorColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -36,14 +36,14 @@ class DailyPercentCompletedCard extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return CustomPaint(
-                    size: Size(barWidth * data.length, constraints.maxHeight),
-                    painter: BarChartPainter(
-                      data,
-                      barWidth,
-                      constraints.maxHeight,
-                      MediaQuery.of(context).size.width - 55,
-                    ),
-                  );
+                      size: Size(barWidth * data.length, constraints.maxHeight),
+                      painter: BarChartPainter(
+                        context: context,
+                        data: data,
+                        barWidth: barWidth,
+                        barHeight: constraints.maxHeight,
+                        availableWidth: MediaQuery.of(context).size.width - 55,
+                      ));
                 },
               ),
             ),
@@ -55,16 +55,23 @@ class DailyPercentCompletedCard extends StatelessWidget {
 }
 
 class BarChartPainter extends CustomPainter {
+  final BuildContext context;
   final Map<String, double> data;
   final double barWidth;
   final double availableWidth; // Total available width
-  final Color barColor = Colors.black;
-  final Color backgroundBarColor = Colors.grey;
-  final double cornerRadius = 8.0;
-  final double strokeWidth = 2.0;
   final double barHeight;
+  final double cornerRadius;
+  final double strokeWidth;
 
-  BarChartPainter(this.data, this.barWidth, this.barHeight, this.availableWidth);
+  BarChartPainter({
+    required this.context,
+    required this.data,
+    required this.barWidth,
+    required this.barHeight,
+    required this.availableWidth,
+    this.cornerRadius = 8.0,
+    this.strokeWidth = 2.0,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -93,7 +100,7 @@ class BarChartPainter extends CustomPainter {
         Radius.circular(cornerRadius),
       );
 
-      var paint = Paint()..color = barColor;
+      var paint = Paint()..color = Theme.of(context).indicatorColor;
       var rect = RRect.fromRectAndRadius(
         Rect.fromLTWH(left, top, barWidth, actualBarHeight),
         Radius.circular(cornerRadius),
@@ -101,7 +108,7 @@ class BarChartPainter extends CustomPainter {
 
       // Draw background
       var backgroundStrokePaint = Paint()
-        ..color = backgroundBarColor
+        ..color = Theme.of(context).dividerColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth;
       canvas.drawRRect(backgroundRect, backgroundStrokePaint);
@@ -111,9 +118,9 @@ class BarChartPainter extends CustomPainter {
 
       // Draw label
       textPainter.text = TextSpan(
-        text: entry.key[0].toLowerCase(),
-        style: const TextStyle(
-          color: Colors.black,
+        text: entry.key[0].toUpperCase(),
+        style: TextStyle(
+          color: Theme.of(context).indicatorColor,
           fontSize: 12,
         ),
       );

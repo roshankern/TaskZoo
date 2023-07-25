@@ -9,13 +9,11 @@ import 'package:taskzoo/pages/settings_page.dart';
 
 import 'package:taskzoo/widgets/home/navbar.dart';
 
-import 'package:taskzoo/notifiers/zoo_notifier.dart';
+import 'package:taskzoo/misc/zoo_notifier.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/preference_service.dart';
 
 const maxCharLimit = 20;
-const selectedColor = Colors.black;
-const lineColor = const Color(0xff8c9292);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,18 +32,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TaskZoo',
       theme: ThemeData(
-        //primaryColor is for items when selected
-        primaryColor: Colors.white,
-        //scaffoldBackgroundColor is for the background
-        scaffoldBackgroundColor: Colors.white,
-        //unslectedWidgetColor is for icons when unselected
-        unselectedWidgetColor: Color.fromARGB(255, 201, 201, 201),
-        //dividerColor is for the lines
-        dividerColor: lineColor,
-        //IndicatorColor is for Icons
+        brightness: Brightness.light,
+        // darker white that is background of all pages besides zoo
+        scaffoldBackgroundColor: Color.fromARGB(255, 245, 245, 245),
+        // solid white that is color of any card
+        cardColor: Colors.white,
+        // black color for icons
         indicatorColor: Colors.black,
-        //dialogBackgroundColor is for extras, selections & containers
-        dialogBackgroundColor: Colors.black,
+        // gray color used throughout the app
+        dividerColor: Color.fromARGB(255, 123, 123, 123),
       ),
       home: MyHomePage(title: 'TaskZoo Task Page'),
     );
