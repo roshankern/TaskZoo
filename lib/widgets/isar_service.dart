@@ -316,6 +316,12 @@ class IsarService {
         break;
     }
 
+    // print(dateTime.toIso8601String() +
+    //     "  - Day -> " +
+    //     dateTime.weekday.toString() +
+    //     " - " +
+    //     weekday);
+
     return weekday;
   }
 
@@ -332,7 +338,7 @@ class IsarService {
     for (int encodedDate in encodedDates) {
       DailyCompletionEntry? entry = await isar.dailyCompletionEntrys
           .where()
-          .idEqualTo(encodedDate)
+          .idEqualTo(encodedDate - 1)
           .findFirst();
 
       //String key = formatDateToMonthDay(decodedDates[i]);
@@ -342,6 +348,8 @@ class IsarService {
       completionData[key] = completionPercent;
       i += 1;
     }
+
+    print(completionData);
 
     // Yield the completion data map
     yield completionData;
