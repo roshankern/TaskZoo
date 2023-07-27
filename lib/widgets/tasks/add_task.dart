@@ -41,7 +41,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                 Text(
+                Text(
                   'Add a New Task',
                   style: TextStyle(
                     fontSize: 24,
@@ -167,7 +167,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                   child: Text(
                     ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i],
                     style: TextStyle(
-                        color: _daysOfWeek[i] ? Theme.of(context).cardColor : Theme.of(context).indicatorColor),
+                        color: _daysOfWeek[i]
+                            ? Theme.of(context).cardColor
+                            : Theme.of(context).indicatorColor),
                   ),
                 ),
                 selected: _daysOfWeek[i],
@@ -329,6 +331,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
           );
           // add the new Task object to the database
           widget.service.saveTask(newTask);
+          addCompletionCountEntry();
 
           // then navigate back
           Navigator.pop(context);
@@ -457,5 +460,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
     DateTime midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
     String iso8601String = midnight.toIso8601String();
     return iso8601String;
+  }
+
+  void addCompletionCountEntry() {
+    widget.service.updateDailyCompletionEntry(false);
   }
 }

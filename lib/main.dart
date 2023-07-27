@@ -48,8 +48,7 @@ class MyApp extends StatelessWidget {
         dividerColor: Color.fromARGB(255, 123, 123, 123),
 
         // set theme data for icons
-        iconTheme:
-            IconThemeData(size: 24),
+        iconTheme: IconThemeData(size: 24),
 
         extensions: [
           // the Dimensions extension allows us to use inset/radii/border with like a theme
@@ -123,8 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      index == 0 ? const StatsPage() : const SettingsPage()),
+                  builder: (context) => index == 0
+                      ? StatsPage(service: widget.service)
+                      : const SettingsPage()),
             );
           } else {
             _pageController.jumpToPage(index - 1);

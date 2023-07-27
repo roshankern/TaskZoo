@@ -44,7 +44,6 @@ class AnimalBuilderState extends State<AnimalBuilder> {
 
   Future<void> initializeState() async {
     _numShapes = await getShapesFromBox();
-    print("Num Shapes: $_numShapes");
   }
 
   Future<int> getShapesFromBox() async {
@@ -154,7 +153,8 @@ class AnimalBuilderState extends State<AnimalBuilder> {
           child: Container(
             padding: EdgeInsets.all(Dimensions.of(context).insets.smaller),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(Dimensions.of(context).radii.medium),
+              borderRadius:
+                  BorderRadius.circular(Dimensions.of(context).radii.medium),
               color: widget.backgroundColor,
             ),
             child: SvgPicture.string(

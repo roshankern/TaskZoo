@@ -269,6 +269,7 @@ class _TaskCardState extends State<TaskCard> {
                 setState(() {
                   updatePiecesInformation();
                   widget.task.isCompleted = true;
+                  addCompletionCountEntry();
                   _streakAndStatsHandler(schedule);
                 });
               }
@@ -331,7 +332,7 @@ class _TaskCardState extends State<TaskCard> {
     } else if (hours > 0) {
       return "$hours hours left";
     } else {
-      return "$minutes minutes left";
+      return "$minutes min left";
     }
   }
 
@@ -693,10 +694,20 @@ class _TaskCardState extends State<TaskCard> {
     }
   }
 
+  DateTime getTodayAtMidnight() {
+    DateTime now = DateTime.now();
+    DateTime todayAtMidnight = DateTime(now.year, now.month, now.day);
+    return todayAtMidnight;
+  }
+
   Future<void> incrementTotalCollectedPieces() async {
     SharedPreferences prefs = widget.preferenceService.prefs;
     int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
     int newTotalCollectedPieces = currentTotalCollectedPieces + 1;
     widget.preferenceService.setTotalCollectedPieces(newTotalCollectedPieces);
+  }
+
+  void addCompletionCountEntry() {
+    widget.service.updateDailyCompletionEntry(true);
   }
 }
