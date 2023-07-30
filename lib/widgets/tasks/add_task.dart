@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskzoo/widgets/notifications/notifications_selector.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
 
@@ -17,10 +18,14 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   final _titleController = TextEditingController();
   final _tagController = TextEditingController();
   final List<bool> _daysOfWeek = List.filled(7, false);
+  List<bool> notificationsDays = List.filled(7, false);
+  TimeOfDay selectedTime = TimeOfDay.now();
   bool _biDaily = false;
   bool _weekly = false;
   bool _monthly = false;
-  bool _isExpanded = false;
+  bool enableNotifications = false;
+  bool _isOptionsExpanded = false;
+  bool _isNotificationsExpanded = false;
   String _selectedOption = 'Daily';
   int _timesPerMonth = 1;
   int _timesPerWeek = 1;
@@ -60,8 +65,15 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                   elevation: 1,
                   expandedHeaderPadding: const EdgeInsets.all(0),
                   dividerColor: Colors.transparent,
-                  expansionCallback: (int index, bool isExpanded) =>
-                      setState(() => _isExpanded = !isExpanded),
+                  expansionCallback: (int index, bool isExpanded) {
+                    setState(() {
+                      if (index == 0) {
+                        _isOptionsExpanded = !isExpanded;
+                      } else if (index == 1) {
+                        _isNotificationsExpanded = !isExpanded;
+                      }
+                    });
+                  },
                   children: [
                     ExpansionPanel(
                       headerBuilder: (BuildContext context, bool isExpanded) {
@@ -82,11 +94,37 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                           if (_weekly) _buildDaysPerWeekSelector(),
                           Divider(color: Theme.of(context).dividerColor),
                           _buildMonthlySwitch(),
-                          if (_monthly) _buildDaysPerMonthSelector()
+                          if (_monthly) _buildDaysPerMonthSelector(),
                         ],
                       ),
-                      isExpanded: _isExpanded,
+                      isExpanded: _isOptionsExpanded,
                     ),
+                    ExpansionPanel(
+                      headerBuilder: (BuildContext context, bool isExpanded) {
+                        return const ListTile(
+                          title: Text('Notifications',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                        );
+                      },
+                      body: Column(
+                        children: [
+                          NotificationsWidget(
+                            onEnableNotificationsChanged:
+                                (localEnableNotifications,
+                                    localSelectedWeekdays, notiTime) {
+                              // Call this function whenever the enableNotifications state changes
+                              setState(() {
+                                enableNotifications = localEnableNotifications;
+                                notificationsDays = localSelectedWeekdays;
+                                selectedTime = notiTime;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                      isExpanded: _isNotificationsExpanded,
+                    )
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -135,6 +173,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
       ),
       validator: (value) {
+        if (!notificationsDays.contains(true) && enableNotifications) {
+          return 'Please select at least one day for notifications or disable them.';
+        }
         if (value == null || value.isEmpty) {
           return 'Please enter a $label';
         }
@@ -328,10 +369,19 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             nextCompletionDate: getMidnightIso8601String(),
             isStreakContinued: false,
             piecesObtained: 0,
+            notificationDays: notificationsDays,
+            notificationTime: selectedTime.toString(),
+            notificationsEnabled: enableNotifications,
           );
           // add the new Task object to the database
           widget.service.saveTask(newTask);
           addCompletionCountEntry();
+          print("Notifications variables" +
+              enableNotifications.toString() +
+              "|" +
+              notificationsDays.toString() +
+              "|" +
+              selectedTime.toString());
 
           // then navigate back
           Navigator.pop(context);

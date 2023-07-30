@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:taskzoo/widgets/notifications/active_notifications.dart';
 import 'package:taskzoo/widgets/stats/dailycompletions.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +17,12 @@ class IsarService {
     final dir = await getApplicationDocumentsDirectory();
     if (Isar.instanceNames.isEmpty) {
       return await Isar.open(
-        [TaskSchema, AnimalPiecesSchema, DailyCompletionEntrySchema],
+        [
+          TaskSchema,
+          AnimalPiecesSchema,
+          DailyCompletionEntrySchema,
+          ActiveNotificationsSchema
+        ],
         inspector: true,
         directory: dir.path,
       );
@@ -251,7 +258,7 @@ class IsarService {
 
   //Function used to support stats Stream
   String formatDateToMonthDay(String isoString) {
-    DateTime dateTime = DateTime.parse(isoString);
+    DateTime dateTime = DateTime.parse(isoString).toLocal();
     String formattedDate = "${dateTime.month}/${dateTime.day}";
     return formattedDate;
   }
@@ -264,7 +271,7 @@ class IsarService {
   }
 
   List<int> getEncodedDatesForPast7Days() {
-    DateTime now = DateTime.now();
+    DateTime now = DateTime.now().toLocal();
     List<int> encodedDates = [];
 
     for (int i = 0; i < 7; i++) {
@@ -277,7 +284,7 @@ class IsarService {
   }
 
   List<String> getDecodedDatesForPast7Days() {
-    DateTime now = DateTime.now();
+    DateTime now = DateTime.now().toLocal();
     List<String> encodedDates = [];
 
     for (int i = 0; i < 7; i++) {
@@ -289,7 +296,7 @@ class IsarService {
   }
 
   String getWeekday(String isoString) {
-    DateTime dateTime = DateTime.parse(isoString);
+    DateTime dateTime = DateTime.parse(isoString).toLocal();
     String weekday = '';
 
     switch (dateTime.weekday) {
@@ -315,13 +322,6 @@ class IsarService {
         weekday = 'Sunday';
         break;
     }
-
-    // print(dateTime.toIso8601String() +
-    //     "  - Day -> " +
-    //     dateTime.weekday.toString() +
-    //     " - " +
-    //     weekday);
-
     return weekday;
   }
 
@@ -353,5 +353,29 @@ class IsarService {
 
     // Yield the completion data map
     yield completionData;
+  }
+
+  //Add notification instance
+  Future<void> saveActiveNotificationForTask(
+      ActiveNotifications notification) async {
+    final isar = await db;
+    //Return type int -> id of the inserted object
+    isar.writeTxnSync<int>(
+        () => isar.activeNotifications.putSync(notification));
+  }
+
+  Future<Set<String>> getNotificationIdsForTaskID(int taskId) async {
+    final isar = await db;
+    ActiveNotifications? activeNotifications = await isar.activeNotifications
+        .where()
+        .taskidEqualTo(taskId)
+        .findFirst();
+
+    if (activeNotifications != null) {
+      return activeNotifications.notificationIds.toSet();
+    } else {
+      // If no matching taskid is found, return an empty set.
+      return Set<String>();
+    }
   }
 }

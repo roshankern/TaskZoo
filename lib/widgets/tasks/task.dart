@@ -15,6 +15,12 @@ class Task {
 
   List<bool> daysOfWeek;
 
+  List<bool> notificationDays;
+
+  String notificationTime;
+
+  bool notificationsEnabled;
+
   bool biDaily;
 
   bool weekly;
@@ -72,5 +78,8 @@ class Task {
     required this.nextCompletionDate,
     required this.isStreakContinued,
     required this.piecesObtained,
+    required this.notificationDays,
+    required this.notificationTime,
+    required this.notificationsEnabled,
   });
 }

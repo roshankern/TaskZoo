@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 
 import 'package:taskzoo/widgets/isar_service.dart';
+import 'package:taskzoo/widgets/notifications/notification_service.dart';
 import 'package:taskzoo/widgets/preference_service.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
@@ -247,6 +248,10 @@ class _TaskCardState extends State<TaskCard> {
 
     String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
 
+    //Set notifications
+    scheduleNotifications(widget.task.notificationDays, widget.task.id,
+        widget.task.notificationTime, widget.service);
+    printAllScheduledNotifications();
     //Reset completion
     _completionResetHandler();
 
