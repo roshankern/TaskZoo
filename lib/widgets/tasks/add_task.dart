@@ -376,12 +376,12 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
           // add the new Task object to the database
           widget.service.saveTask(newTask);
           addCompletionCountEntry();
-          print("Notifications variables" +
-              enableNotifications.toString() +
-              "|" +
-              notificationsDays.toString() +
-              "|" +
-              selectedTime.toString());
+          // print("Notifications variables" +
+          //     enableNotifications.toString() +
+          //     "|" +
+          //     notificationsDays.toString() +
+          //     "|" +
+          //     selectedTime.toString());
 
           // then navigate back
           Navigator.pop(context);

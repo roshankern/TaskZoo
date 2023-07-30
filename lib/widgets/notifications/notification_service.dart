@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/notifications/active_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -8,13 +10,37 @@ import 'package:timezone/data/latest.dart' as tz;
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+Future<void> initializeNotifications() async {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('app_icon');
+
+  final DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+    onDidReceiveLocalNotification: (id, title, body, payload) async {},
+  );
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+}
+
 Future<void> scheduleNotifications(
   List<bool> daysToSchedule,
   int taskId,
   String timeOfDayString,
+  String taskName,
   IsarService service,
 ) async {
   tz.initializeTimeZones();
+  final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(currentTimeZone));
+  initializeNotifications();
 
   // Convert the Stringified TimeOfDay to TimeOfDay object
   TimeOfDay timeOfDay = TimeOfDay(
@@ -30,6 +56,14 @@ Future<void> scheduleNotifications(
     timeOfDay.hour,
     timeOfDay.minute,
   );
+
+  // print('notificationTime: $notificationTime');
+
+  tz.TZDateTime tzNotificationTime =
+      tz.TZDateTime.from(notificationTime, tz.local);
+
+  // print('tzNotificationTime: $tzNotificationTime');
+  // print('tz.local: ${tz.local}');
 
   // Create a set to store the scheduled notification details
   Set<String> scheduledNotifications =
@@ -56,7 +90,7 @@ Future<void> scheduleNotifications(
       if (!scheduledNotifications.contains(notificationKey)) {
         // If a notification with the same key doesn't exist, schedule the notification
         await _scheduleNotificationForDay(
-            scheduledDateTime, notificationKey.hashCode.abs());
+            scheduledDateTime, notificationKey.hashCode.abs(), taskName);
         // Add the notification key to the set to mark it as scheduled
         scheduledNotifications.add(notificationKey);
         final activeNotifications = ActiveNotifications(
@@ -70,6 +104,7 @@ Future<void> scheduleNotifications(
 Future<void> _scheduleNotificationForDay(
   DateTime scheduledDateTime,
   int taskId,
+  String taskName,
 ) async {
   const channelId = 'channel_id';
   const channelName = 'Channel Name';
@@ -107,8 +142,8 @@ Future<void> _scheduleNotificationForDay(
   // Schedule the notification
   await flutterLocalNotificationsPlugin.zonedSchedule(
     taskId, // Use the taskId as the unique ID for the notification
-    'Scheduled Notification',
-    'This is a scheduled notification',
+    'TaskZoo Reminder',
+    'Time to complete task: $taskName',
     tz.TZDateTime.now(tz.local).add(difference),
     platformChannelSpecifics,
     uiLocalNotificationDateInterpretation:

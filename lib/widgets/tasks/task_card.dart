@@ -250,8 +250,8 @@ class _TaskCardState extends State<TaskCard> {
 
     //Set notifications
     scheduleNotifications(widget.task.notificationDays, widget.task.id,
-        widget.task.notificationTime, widget.service);
-    printAllScheduledNotifications();
+        widget.task.notificationTime, widget.task.title, widget.service);
+    //printAllScheduledNotifications();
     //Reset completion
     _completionResetHandler();
 
@@ -454,7 +454,6 @@ class _TaskCardState extends State<TaskCard> {
       if (widget.task.isStreakContinued && widget.task.isCompleted) {
         if (!completedDates.contains(today)) {
           completedDates.add(today);
-          print("added2");
           widget.task.last30DaysDates = _getLast30DaysDates();
           widget.task.completionCount30days =
               _getCompletionCount(widget.task.last30DaysDates);

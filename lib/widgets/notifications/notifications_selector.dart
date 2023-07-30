@@ -14,9 +14,6 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
   List<bool> _selectedWeekdays = List.generate(7, (index) => false);
   TimeOfDay _selectedTime = TimeOfDay.now();
   bool _enableNotifications = false;
-  bool _biDaily = false;
-  bool _weekly = false;
-  bool _monthly = false;
 
   void _selectWeekday(int index, bool value) {
     setState(() {
@@ -76,9 +73,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                 .subtract(Duration(days: DateTime.now().weekday - 1 + index));
             return ChoiceChip(
               label: Opacity(
-                opacity: _enableNotifications
-                    ? (_biDaily || _weekly || _monthly ? 0.5 : 1.0)
-                    : 0.5,
+                opacity: 1,
                 child: Text(
                   ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index],
                   style: TextStyle(
