@@ -11,6 +11,7 @@ import 'package:taskzoo/pages/settings_page.dart';
 import 'package:taskzoo/widgets/home/navbar.dart';
 
 import 'package:taskzoo/misc/zoo_notifier.dart';
+import 'package:taskzoo/misc/theme_notifier.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/preference_service.dart';
 
@@ -19,7 +20,12 @@ void main() async {
 
   addDefaultTotalCollectedPieces();
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeNotifier(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -28,12 +34,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
     return MaterialApp(
       title: 'TaskZoo',
 
       // getting info for how to do ThemeData at https://stackoverflow.com/questions/60232070/how-to-implement-dark-mode-and-light-mode-in-flutter
       theme: ThemeData(
-        // What brightness we are defining
+        // Light theme settings
         brightness: Brightness.light,
 
         // darker white that is background of all pages besides zoo
@@ -57,6 +65,34 @@ class MyApp extends StatelessWidget {
               borderWidths: BorderWidthDimensions.fromMedium(2)),
         ],
       ),
+
+      darkTheme: ThemeData(
+        // dark theme settings
+        brightness: Brightness.dark,
+
+        // solid black that is background of all pages besides zoo
+        scaffoldBackgroundColor: Colors.black,
+        // gray that is color of any card
+        cardColor: Color.fromARGB(255, 35, 35, 35),
+        // black color for icons
+        indicatorColor: Colors.white,
+        // gray color used throughout the app
+        dividerColor: Color.fromARGB(255, 123, 123, 123),
+
+        // set theme data for icons
+        iconTheme: IconThemeData(color: Colors.white, size: 24),
+
+        extensions: [
+          // the Dimensions extension allows us to use inset/radii/border with like a theme
+          // for our use case, we define the medium value as below and use this throughout the app
+          Dimensions(
+              insets: InsetDimensions.fromMedium(15),
+              radii: RadiusDimensions.fromMedium(15),
+              borderWidths: BorderWidthDimensions.fromMedium(2)),
+        ],
+      ),
+
+      themeMode: themeNotifier.currentTheme,
       home: MyHomePage(title: 'TaskZoo Task Page'),
     );
   }
