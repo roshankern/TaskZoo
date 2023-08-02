@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:taskzoo/widgets/notifications/active_notifications.dart';
 import 'package:taskzoo/widgets/stats/dailycompletions.dart';
@@ -349,8 +348,6 @@ class IsarService {
       i += 1;
     }
 
-    print(completionData);
-
     // Yield the completion data map
     yield completionData;
   }
@@ -362,6 +359,13 @@ class IsarService {
     //Return type int -> id of the inserted object
     isar.writeTxnSync<int>(
         () => isar.activeNotifications.putSync(notification));
+  }
+
+  Future<void> deleteActiveNotificationsForTaskEntry(int taskID) async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      await isar.activeNotifications.delete(taskID); // deletes based off of id
+    });
   }
 
   Future<Set<String>> getNotificationIdsForTaskID(int taskId) async {

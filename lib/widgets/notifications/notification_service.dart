@@ -96,9 +96,25 @@ Future<void> scheduleNotifications(
         final activeNotifications = ActiveNotifications(
             taskid: taskId, notificationIds: scheduledNotifications.toList());
         service.saveActiveNotificationForTask(activeNotifications);
+        print("After Scheduling Notification");
+        printAllScheduledNotifications();
       }
     }
   }
+}
+
+Future<void> deleteAllNotifications(int taskId, IsarService service) async {
+  print("Before Deleting All Notifications");
+  printAllScheduledNotifications();
+  Set<String> scheduledNotifications =
+      await service.getNotificationIdsForTaskID(taskId);
+  for (String notificationKey in scheduledNotifications) {
+    await flutterLocalNotificationsPlugin
+        .cancel(notificationKey.hashCode.abs());
+  }
+  service.deleteActiveNotificationsForTaskEntry(taskId);
+  print("After Deleting All Notifications");
+  printAllScheduledNotifications();
 }
 
 Future<void> _scheduleNotificationForDay(

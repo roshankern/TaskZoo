@@ -4,16 +4,38 @@ import 'package:flutter/cupertino.dart';
 class NotificationsWidget extends StatefulWidget {
   final Function(bool enableNotifications, List<bool> selectedWeekdays,
       TimeOfDay notiTime) onEnableNotificationsChanged;
-  const NotificationsWidget({required this.onEnableNotificationsChanged});
+  final bool? enableNotifications;
+  final List<bool>? selectedWeekdays;
+  final TimeOfDay? notiTime;
+
+  const NotificationsWidget({
+    required this.onEnableNotificationsChanged,
+    this.enableNotifications,
+    this.selectedWeekdays,
+    this.notiTime,
+  });
 
   @override
-  _NotificationsWidgetState createState() => _NotificationsWidgetState();
+  _NotificationsWidgetState createState() => _NotificationsWidgetState(
+        enableNotifications: enableNotifications,
+        selectedWeekdays: selectedWeekdays,
+        notiTime: notiTime,
+      );
 }
 
 class _NotificationsWidgetState extends State<NotificationsWidget> {
-  List<bool> _selectedWeekdays = List.generate(7, (index) => false);
-  TimeOfDay _selectedTime = TimeOfDay.now();
-  bool _enableNotifications = false;
+  List<bool> _selectedWeekdays;
+  TimeOfDay _selectedTime;
+  bool _enableNotifications;
+
+  _NotificationsWidgetState({
+    bool? enableNotifications,
+    List<bool>? selectedWeekdays,
+    TimeOfDay? notiTime,
+  })  : _enableNotifications = enableNotifications ?? false,
+        _selectedWeekdays =
+            selectedWeekdays ?? List.generate(7, (index) => false),
+        _selectedTime = notiTime ?? TimeOfDay.now();
 
   void _selectWeekday(int index, bool value) {
     setState(() {

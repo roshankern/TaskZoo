@@ -148,6 +148,7 @@ class _TaskCardState extends State<TaskCard> {
       children: [
         GestureDetector(
           onTap: () {
+            print(widget.task.notificationTime);
             showModalBottomSheet<Map<String, dynamic>>(
               context: context,
               backgroundColor: Colors.transparent,
@@ -161,6 +162,10 @@ class _TaskCardState extends State<TaskCard> {
                   monthly: widget.task.monthly,
                   timesPerWeek: widget.task.timesPerWeek,
                   timesPerMonth: widget.task.timesPerMonth,
+                  enableNotifications: widget.task.notificationsEnabled,
+                  notificationsDays: widget.task.notificationDays,
+                  selectedTime:
+                      parseTimeFromString(widget.task.notificationTime),
                   onUpdateTask: (editedTaskData) {
                     setState(() {
                       widget.task.title = editedTaskData['title'];
@@ -173,6 +178,19 @@ class _TaskCardState extends State<TaskCard> {
                       widget.task.timesPerMonth =
                           editedTaskData['timesPerMonth'];
                       widget.task.schedule = editedTaskData['schedule'];
+                      widget.task.notificationDays =
+                          editedTaskData['notificationsDays'];
+                      widget.task.notificationTime =
+                          editedTaskData['selectedTime'].toString();
+                      widget.task.notificationsEnabled =
+                          editedTaskData['notificationsEnabled'];
+                      deleteAllNotifications(widget.task.id, widget.service);
+                      scheduleNotifications(
+                          widget.task.notificationDays,
+                          widget.task.id,
+                          widget.task.notificationTime,
+                          widget.task.title,
+                          widget.service);
                       isCompletedFalse(schedule);
                       updateTaskSchema();
                     });
@@ -252,6 +270,7 @@ class _TaskCardState extends State<TaskCard> {
     scheduleNotifications(widget.task.notificationDays, widget.task.id,
         widget.task.notificationTime, widget.task.title, widget.service);
     //printAllScheduledNotifications();
+
     //Reset completion
     _completionResetHandler();
 
@@ -674,6 +693,7 @@ class _TaskCardState extends State<TaskCard> {
   }
 
   void deleteTask() async {
+    deleteAllNotifications(widget.task.id, widget.service);
     widget.service.deleteTask(widget.task);
   }
 
@@ -713,5 +733,12 @@ class _TaskCardState extends State<TaskCard> {
 
   void addCompletionCountEntry() {
     widget.service.updateDailyCompletionEntry(true);
+  }
+
+  TimeOfDay parseTimeFromString(String timeString) {
+    print("TimeString: $timeString");
+    int hour = int.parse(timeString.substring(10, 12));
+    int minute = int.parse(timeString.substring(13, 15));
+    return TimeOfDay(hour: hour, minute: minute);
   }
 }
