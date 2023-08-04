@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 
 import 'package:taskzoo/widgets/home/Appbar.dart';
-import 'package:taskzoo/widgets/preference_service.dart';
 import 'package:taskzoo/widgets/home/HomeStatsCard.dart';
 import 'package:taskzoo/widgets/tasks/add_task.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
@@ -13,9 +12,10 @@ import 'package:taskzoo/widgets/isar_service.dart';
 
 class HomePage extends StatefulWidget {
   final IsarService service;
-  final PreferenceService preferenceService;
-  HomePage({Key? key, required this.service, required this.preferenceService})
-      : super(key: key);
+  HomePage({
+    Key? key,
+    required this.service,
+  }) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage>
         children: [
           HomeStatsCard(
             totalCollectedPiecesStream:
-                widget.preferenceService.totalCollectedPiecesStream,
+                widget.service.totalCollectedPiecesStream(),
             countTasks: widget.service.countTasks,
             countCompletedTasks: widget.service.countCompletedTasks,
             selectedSchedule: selectedSchedule,
@@ -91,10 +91,9 @@ class _HomePageState extends State<HomePage>
                           children: tasks
                               .map(
                                 (task) => TaskCard(
-                                    task: task,
-                                    service: widget.service,
-                                    preferenceService:
-                                        widget.preferenceService),
+                                  task: task,
+                                  service: widget.service,
+                                ),
                               )
                               .toList(),
                         );
