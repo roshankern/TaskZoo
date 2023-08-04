@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:taskzoo/widgets/home/taskzoo_preferences.dart';
 import 'package:taskzoo/widgets/notifications/active_notifications.dart';
 import 'package:taskzoo/widgets/stats/dailycompletions.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
@@ -20,7 +21,8 @@ class IsarService {
           TaskSchema,
           AnimalPiecesSchema,
           DailyCompletionEntrySchema,
-          ActiveNotificationsSchema
+          ActiveNotificationsSchema,
+          TaskzooPreferencesSchema
         ],
         inspector: true,
         directory: dir.path,
@@ -381,5 +383,11 @@ class IsarService {
       // If no matching taskid is found, return an empty set.
       return Set<String>();
     }
+  }
+
+  Future<void> savePersonalPreferences(TaskzooPreferences preference) async {
+    final isar = await db;
+    //Return type int -> id of the inserted object
+    isar.writeTxnSync<int>(() => isar.taskzooPreferences.putSync(preference));
   }
 }
