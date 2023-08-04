@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 
 import 'package:taskzoo/widgets/isar_service.dart';
+import 'package:taskzoo/widgets/notifications/notification_service.dart';
 import 'package:taskzoo/widgets/preference_service.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
@@ -146,6 +147,7 @@ class _TaskCardState extends State<TaskCard> {
       children: [
         GestureDetector(
           onTap: () {
+            print(widget.task.notificationTime);
             showModalBottomSheet<Map<String, dynamic>>(
               context: context,
               backgroundColor: Colors.transparent,
@@ -159,6 +161,10 @@ class _TaskCardState extends State<TaskCard> {
                   monthly: widget.task.monthly,
                   timesPerWeek: widget.task.timesPerWeek,
                   timesPerMonth: widget.task.timesPerMonth,
+                  enableNotifications: widget.task.notificationsEnabled,
+                  notificationsDays: widget.task.notificationDays,
+                  selectedTime:
+                      parseTimeFromString(widget.task.notificationTime),
                   onUpdateTask: (editedTaskData) {
                     setState(() {
                       widget.task.title = editedTaskData['title'];
@@ -171,6 +177,19 @@ class _TaskCardState extends State<TaskCard> {
                       widget.task.timesPerMonth =
                           editedTaskData['timesPerMonth'];
                       widget.task.schedule = editedTaskData['schedule'];
+                      widget.task.notificationDays =
+                          editedTaskData['notificationsDays'];
+                      widget.task.notificationTime =
+                          editedTaskData['selectedTime'].toString();
+                      widget.task.notificationsEnabled =
+                          editedTaskData['notificationsEnabled'];
+                      deleteAllNotifications(widget.task.id, widget.service);
+                      scheduleNotifications(
+                          widget.task.notificationDays,
+                          widget.task.id,
+                          widget.task.notificationTime,
+                          widget.task.title,
+                          widget.service);
                       isCompletedFalse(schedule);
                       updateTaskSchema();
                     });
@@ -245,6 +264,11 @@ class _TaskCardState extends State<TaskCard> {
     );
 
     String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
+
+    //Set notifications
+    scheduleNotifications(widget.task.notificationDays, widget.task.id,
+        widget.task.notificationTime, widget.task.title, widget.service);
+    //printAllScheduledNotifications();
 
     //Reset completion
     _completionResetHandler();
@@ -448,7 +472,6 @@ class _TaskCardState extends State<TaskCard> {
       if (widget.task.isStreakContinued && widget.task.isCompleted) {
         if (!completedDates.contains(today)) {
           completedDates.add(today);
-          print("added2");
           widget.task.last30DaysDates = _getLast30DaysDates();
           widget.task.completionCount30days =
               _getCompletionCount(widget.task.last30DaysDates);
@@ -669,6 +692,7 @@ class _TaskCardState extends State<TaskCard> {
   }
 
   void deleteTask() async {
+    deleteAllNotifications(widget.task.id, widget.service);
     widget.service.deleteTask(widget.task);
   }
 
@@ -708,5 +732,12 @@ class _TaskCardState extends State<TaskCard> {
 
   void addCompletionCountEntry() {
     widget.service.updateDailyCompletionEntry(true);
+  }
+
+  TimeOfDay parseTimeFromString(String timeString) {
+    print("TimeString: $timeString");
+    int hour = int.parse(timeString.substring(10, 12));
+    int minute = int.parse(timeString.substring(13, 15));
+    return TimeOfDay(hour: hour, minute: minute);
   }
 }

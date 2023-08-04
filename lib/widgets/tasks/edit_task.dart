@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskzoo/widgets/notifications/notifications_selector.dart';
 
 const maxCharLimit = 20;
 
@@ -11,6 +12,9 @@ class EditTaskSheet extends StatefulWidget {
   final bool monthly;
   final int timesPerWeek;
   final int timesPerMonth;
+  final TimeOfDay selectedTime;
+  final bool enableNotifications;
+  final List<bool> notificationsDays;
   final Function(Map<String, dynamic>) onUpdateTask;
 
   const EditTaskSheet(
@@ -23,6 +27,9 @@ class EditTaskSheet extends StatefulWidget {
       required this.monthly,
       required this.timesPerWeek,
       required this.timesPerMonth,
+      required this.enableNotifications,
+      required this.notificationsDays,
+      required this.selectedTime,
       required this.onUpdateTask})
       : super(key: key);
 
@@ -35,14 +42,17 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
   final _titleController = TextEditingController();
   final _tagController = TextEditingController();
   List<bool> _daysOfWeek = List.generate(7, (_) => false);
+  List<bool> notificationsDays = List.generate(7, (_) => false);
+  TimeOfDay selectedTime = TimeOfDay.now();
+  bool _isNotificationsExpanded = false;
+  bool _enableNotifications = false;
   bool _biDaily = false;
   bool _weekly = false;
   bool _monthly = false;
-  bool _isExpanded = false;
+  bool _isOptionsExpanded = false;
   String _selectedOption = 'Daily';
   int _timesPerMonth = 1;
   int _timesPerWeek = 1;
-  String _schedule = "";
 
   @override
   void initState() {
@@ -55,6 +65,9 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
     _monthly = widget.monthly;
     _timesPerWeek = widget.timesPerWeek;
     _timesPerMonth = widget.timesPerMonth;
+    selectedTime = widget.selectedTime;
+    _enableNotifications = widget.enableNotifications;
+    notificationsDays = widget.notificationsDays;
     updateSelectedOption();
   }
 
@@ -93,8 +106,15 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
                   elevation: 1,
                   expandedHeaderPadding: const EdgeInsets.all(0),
                   dividerColor: Colors.transparent,
-                  expansionCallback: (int index, bool isExpanded) =>
-                      setState(() => _isExpanded = !isExpanded),
+                  expansionCallback: (int index, bool isExpanded) {
+                    setState(() {
+                      if (index == 0) {
+                        _isOptionsExpanded = !isExpanded;
+                      } else if (index == 1) {
+                        _isNotificationsExpanded = !isExpanded;
+                      }
+                    });
+                  },
                   children: [
                     ExpansionPanel(
                       headerBuilder: (BuildContext context, bool isExpanded) {
@@ -115,11 +135,40 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
                           if (_weekly) _buildDaysPerWeekSelector(),
                           Divider(color: Theme.of(context).dividerColor),
                           _buildMonthlySwitch(),
-                          if (_monthly) _buildDaysPerMonthSelector()
+                          if (_monthly) _buildDaysPerMonthSelector(),
                         ],
                       ),
-                      isExpanded: _isExpanded,
+                      isExpanded: _isOptionsExpanded,
                     ),
+                    ExpansionPanel(
+                      headerBuilder: (BuildContext context, bool isExpanded) {
+                        return const ListTile(
+                          title: Text('Notifications',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                        );
+                      },
+                      body: Column(
+                        children: [
+                          NotificationsWidget(
+                            notiTime: selectedTime,
+                            selectedWeekdays: notificationsDays,
+                            enableNotifications: _enableNotifications,
+                            onEnableNotificationsChanged:
+                                (localEnableNotifications,
+                                    localSelectedWeekdays, notiTime) {
+                              // Call this function whenever the enableNotifications state changes
+                              setState(() {
+                                _enableNotifications = localEnableNotifications;
+                                notificationsDays = localSelectedWeekdays;
+                                selectedTime = notiTime;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                      isExpanded: _isNotificationsExpanded,
+                    )
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -172,6 +221,9 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
         if (value == null || value.isEmpty) {
           return 'Please enter a $label';
         }
+        if (!notificationsDays.contains(true) && _enableNotifications) {
+          return 'Please select at least one day for notifications or disable them.';
+        }
         return null;
       },
     );
@@ -201,7 +253,9 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
                   child: Text(
                     ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i],
                     style: TextStyle(
-                        color: _daysOfWeek[i] ? Theme.of(context).cardColor : Theme.of(context).indicatorColor),
+                        color: _daysOfWeek[i]
+                            ? Theme.of(context).cardColor
+                            : Theme.of(context).indicatorColor),
                   ),
                 ),
                 selected: _daysOfWeek[i],
@@ -345,7 +399,10 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
             'monthly': _monthly,
             'timesPerWeek': _timesPerWeek,
             'timesPerMonth': _timesPerMonth,
-            'schedule': getPageState(_daysOfWeek, _biDaily, _weekly, _monthly)
+            'schedule': getPageState(_daysOfWeek, _biDaily, _weekly, _monthly),
+            'notificationsDays': notificationsDays,
+            'notificationsEnabled': _enableNotifications,
+            'selectedTime': selectedTime,
           };
           widget.onUpdateTask(
               taskData); // Call the callback function with updated task data

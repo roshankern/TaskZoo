@@ -15,10 +15,35 @@ import 'package:taskzoo/misc/theme_notifier.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/preference_service.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   addDefaultTotalCollectedPieces();
+  tz.initializeTimeZones();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings(
+          'app_icon'); // Replace 'app_icon' with the app's icon name also make sure to add the icon to android/app/src/main/res/drawable
+
+  final DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+    onDidReceiveLocalNotification: (id, title, body, payload) async {},
+  );
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   runApp(
     ChangeNotifierProvider(
@@ -45,16 +70,16 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
 
         // darker white that is background of all pages besides zoo
-        scaffoldBackgroundColor: Color.fromARGB(255, 245, 245, 245),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
         // solid white that is color of any card
         cardColor: Colors.white,
         // black color for icons
         indicatorColor: Colors.black,
         // gray color used throughout the app
-        dividerColor: Color.fromARGB(255, 123, 123, 123),
+        dividerColor: const Color.fromARGB(255, 123, 123, 123),
 
         // set theme data for icons
-        iconTheme: IconThemeData(size: 24),
+        iconTheme: const IconThemeData(size: 24),
 
         extensions: [
           // the Dimensions extension allows us to use inset/radii/border with like a theme

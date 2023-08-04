@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dimensions_theme/dimensions_theme.dart';
-
+import 'package:taskzoo/widgets/notifications/notifications_selector.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
 
@@ -19,91 +18,123 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   final _titleController = TextEditingController();
   final _tagController = TextEditingController();
   final List<bool> _daysOfWeek = List.filled(7, false);
+  List<bool> notificationsDays = List.filled(7, false);
+  TimeOfDay selectedTime = TimeOfDay.now();
   bool _biDaily = false;
   bool _weekly = false;
   bool _monthly = false;
-  bool _isExpanded = false;
+  bool enableNotifications = false;
+  bool _isOptionsExpanded = false;
+  bool _isNotificationsExpanded = false;
   String _selectedOption = 'Daily';
   int _timesPerMonth = 1;
   int _timesPerWeek = 1;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.only(
-      topLeft: Radius.circular(Dimensions.of(context).radii.largest),
-      topRight: Radius.circular(Dimensions.of(context).radii.largest),
-    ),
-    color: Theme.of(context).cardColor, // Set the background color for the container to mimic the Card's default color.
-  ),
-  child: Container(
-    height: MediaQuery.of(context).size.height,
-    width: MediaQuery.of(context).size.width,
-    padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-    child: SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              'New Task',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).indicatorColor,
-              ),
-            ),
-            SizedBox(height: Dimensions.of(context).insets.medium),
-            _buildSelectedOptionTextBox(),
-            SizedBox(height: Dimensions.of(context).insets.medium),
-            _buildTextField('Task Name', _titleController),
-            SizedBox(height: Dimensions.of(context).insets.medium),
-            _buildTextField('Tag Name', _tagController),
-            SizedBox(height: Dimensions.of(context).insets.medium),
-            ExpansionPanelList(
-              elevation: 1,
-              expandedHeaderPadding: const EdgeInsets.all(0),
-              dividerColor: Colors.transparent,
-              expansionCallback: (int index, bool isExpanded) =>
-                  setState(() => _isExpanded = !isExpanded),
-              children: [
-                ExpansionPanel(
-                  headerBuilder: (BuildContext context, bool isExpanded) {
-                    return const ListTile(
-                      title: Text('Additional Options',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                    );
-                  },
-                  body: Column(
-                    children: [
-                      _buildDaySelector(),
-                      Divider(color: Theme.of(context).dividerColor),
-            SizedBox(height: Dimensions.of(context).insets.medium),
-                      _buildBiDailySwitch(),
-                      Divider(color: Theme.of(context).dividerColor),
-                      _buildWeeklySwitch(),
-                      if (_weekly) _buildDaysPerWeekSelector(),
-                      Divider(color: Theme.of(context).dividerColor),
-                      _buildMonthlySwitch(),
-                      if (_monthly) _buildDaysPerMonthSelector()
-                    ],
+    return Card(
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25), topRight: Radius.circular(25))),
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  'Add a New Task',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).indicatorColor,
                   ),
-                  isExpanded: _isExpanded,
                 ),
+                const SizedBox(height: 16),
+                _buildSelectedOptionTextBox(),
+                const SizedBox(height: 16),
+                _buildTextField('Task Name', _titleController),
+                const SizedBox(height: 16),
+                _buildTextField('Tag Name', _tagController),
+                const SizedBox(height: 16),
+                ExpansionPanelList(
+                  elevation: 1,
+                  expandedHeaderPadding: const EdgeInsets.all(0),
+                  dividerColor: Colors.transparent,
+                  expansionCallback: (int index, bool isExpanded) {
+                    setState(() {
+                      if (index == 0) {
+                        _isOptionsExpanded = !isExpanded;
+                      } else if (index == 1) {
+                        _isNotificationsExpanded = !isExpanded;
+                      }
+                    });
+                  },
+                  children: [
+                    ExpansionPanel(
+                      headerBuilder: (BuildContext context, bool isExpanded) {
+                        return const ListTile(
+                          title: Text('Additional Options',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                        );
+                      },
+                      body: Column(
+                        children: [
+                          _buildDaySelector(),
+                          Divider(color: Theme.of(context).dividerColor),
+                          const SizedBox(height: 16),
+                          _buildBiDailySwitch(),
+                          Divider(color: Theme.of(context).dividerColor),
+                          _buildWeeklySwitch(),
+                          if (_weekly) _buildDaysPerWeekSelector(),
+                          Divider(color: Theme.of(context).dividerColor),
+                          _buildMonthlySwitch(),
+                          if (_monthly) _buildDaysPerMonthSelector(),
+                        ],
+                      ),
+                      isExpanded: _isOptionsExpanded,
+                    ),
+                    ExpansionPanel(
+                      headerBuilder: (BuildContext context, bool isExpanded) {
+                        return const ListTile(
+                          title: Text('Notifications',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                        );
+                      },
+                      body: Column(
+                        children: [
+                          NotificationsWidget(
+                            onEnableNotificationsChanged:
+                                (localEnableNotifications,
+                                    localSelectedWeekdays, notiTime) {
+                              // Call this function whenever the enableNotifications state changes
+                              setState(() {
+                                enableNotifications = localEnableNotifications;
+                                notificationsDays = localSelectedWeekdays;
+                                selectedTime = notiTime;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                      isExpanded: _isNotificationsExpanded,
+                    )
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _buildSubmitButton(context),
               ],
             ),
-            SizedBox(height: Dimensions.of(context).insets.medium),
-            _buildSubmitButton(context),
-          ],
+          ),
         ),
       ),
-    ),
-  ),
-);
-
+    );
   }
 
   Widget _buildSelectedOptionTextBox() {
@@ -143,6 +174,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
       ),
       validator: (value) {
+        if (!notificationsDays.contains(true) && enableNotifications) {
+          return 'Please select at least one day for notifications or disable them.';
+        }
         if (value == null || value.isEmpty) {
           return 'Please enter a $label';
         }
@@ -336,10 +370,19 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             nextCompletionDate: getMidnightIso8601String(),
             isStreakContinued: false,
             piecesObtained: 0,
+            notificationDays: notificationsDays,
+            notificationTime: selectedTime.toString(),
+            notificationsEnabled: enableNotifications,
           );
           // add the new Task object to the database
           widget.service.saveTask(newTask);
           addCompletionCountEntry();
+          // print("Notifications variables" +
+          //     enableNotifications.toString() +
+          //     "|" +
+          //     notificationsDays.toString() +
+          //     "|" +
+          //     selectedTime.toString());
 
           // then navigate back
           Navigator.pop(context);

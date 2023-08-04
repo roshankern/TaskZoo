@@ -77,48 +77,63 @@ const TaskSchema = CollectionSchema(
       name: r'nextCompletionDate',
       type: IsarType.string,
     ),
-    r'piecesObtained': PropertySchema(
+    r'notificationDays': PropertySchema(
       id: 12,
+      name: r'notificationDays',
+      type: IsarType.boolList,
+    ),
+    r'notificationTime': PropertySchema(
+      id: 13,
+      name: r'notificationTime',
+      type: IsarType.string,
+    ),
+    r'notificationsEnabled': PropertySchema(
+      id: 14,
+      name: r'notificationsEnabled',
+      type: IsarType.bool,
+    ),
+    r'piecesObtained': PropertySchema(
+      id: 15,
       name: r'piecesObtained',
       type: IsarType.long,
     ),
     r'previousDate': PropertySchema(
-      id: 13,
+      id: 16,
       name: r'previousDate',
       type: IsarType.string,
     ),
     r'schedule': PropertySchema(
-      id: 14,
+      id: 17,
       name: r'schedule',
       type: IsarType.string,
     ),
     r'streakCount': PropertySchema(
-      id: 15,
+      id: 18,
       name: r'streakCount',
       type: IsarType.long,
     ),
     r'tag': PropertySchema(
-      id: 16,
+      id: 19,
       name: r'tag',
       type: IsarType.string,
     ),
     r'timesPerMonth': PropertySchema(
-      id: 17,
+      id: 20,
       name: r'timesPerMonth',
       type: IsarType.long,
     ),
     r'timesPerWeek': PropertySchema(
-      id: 18,
+      id: 21,
       name: r'timesPerWeek',
       type: IsarType.long,
     ),
     r'title': PropertySchema(
-      id: 19,
+      id: 22,
       name: r'title',
       type: IsarType.string,
     ),
     r'weekly': PropertySchema(
-      id: 20,
+      id: 23,
       name: r'weekly',
       type: IsarType.bool,
     )
@@ -186,6 +201,8 @@ int _taskEstimateSize(
     }
   }
   bytesCount += 3 + object.nextCompletionDate.length * 3;
+  bytesCount += 3 + object.notificationDays.length;
+  bytesCount += 3 + object.notificationTime.length * 3;
   bytesCount += 3 + object.previousDate.length * 3;
   bytesCount += 3 + object.schedule.length * 3;
   bytesCount += 3 + object.tag.length * 3;
@@ -211,15 +228,18 @@ void _taskSerialize(
   writer.writeLong(offsets[9], object.longestStreak);
   writer.writeBool(offsets[10], object.monthly);
   writer.writeString(offsets[11], object.nextCompletionDate);
-  writer.writeLong(offsets[12], object.piecesObtained);
-  writer.writeString(offsets[13], object.previousDate);
-  writer.writeString(offsets[14], object.schedule);
-  writer.writeLong(offsets[15], object.streakCount);
-  writer.writeString(offsets[16], object.tag);
-  writer.writeLong(offsets[17], object.timesPerMonth);
-  writer.writeLong(offsets[18], object.timesPerWeek);
-  writer.writeString(offsets[19], object.title);
-  writer.writeBool(offsets[20], object.weekly);
+  writer.writeBoolList(offsets[12], object.notificationDays);
+  writer.writeString(offsets[13], object.notificationTime);
+  writer.writeBool(offsets[14], object.notificationsEnabled);
+  writer.writeLong(offsets[15], object.piecesObtained);
+  writer.writeString(offsets[16], object.previousDate);
+  writer.writeString(offsets[17], object.schedule);
+  writer.writeLong(offsets[18], object.streakCount);
+  writer.writeString(offsets[19], object.tag);
+  writer.writeLong(offsets[20], object.timesPerMonth);
+  writer.writeLong(offsets[21], object.timesPerWeek);
+  writer.writeString(offsets[22], object.title);
+  writer.writeBool(offsets[23], object.weekly);
 }
 
 Task _taskDeserialize(
@@ -242,15 +262,18 @@ Task _taskDeserialize(
     longestStreak: reader.readLong(offsets[9]),
     monthly: reader.readBool(offsets[10]),
     nextCompletionDate: reader.readString(offsets[11]),
-    piecesObtained: reader.readLong(offsets[12]),
-    previousDate: reader.readString(offsets[13]),
-    schedule: reader.readString(offsets[14]),
-    streakCount: reader.readLong(offsets[15]),
-    tag: reader.readString(offsets[16]),
-    timesPerMonth: reader.readLong(offsets[17]),
-    timesPerWeek: reader.readLong(offsets[18]),
-    title: reader.readString(offsets[19]),
-    weekly: reader.readBool(offsets[20]),
+    notificationDays: reader.readBoolList(offsets[12]) ?? [],
+    notificationTime: reader.readString(offsets[13]),
+    notificationsEnabled: reader.readBool(offsets[14]),
+    piecesObtained: reader.readLong(offsets[15]),
+    previousDate: reader.readString(offsets[16]),
+    schedule: reader.readString(offsets[17]),
+    streakCount: reader.readLong(offsets[18]),
+    tag: reader.readString(offsets[19]),
+    timesPerMonth: reader.readLong(offsets[20]),
+    timesPerWeek: reader.readLong(offsets[21]),
+    title: reader.readString(offsets[22]),
+    weekly: reader.readBool(offsets[23]),
   );
   return object;
 }
@@ -287,22 +310,28 @@ P _taskDeserializeProp<P>(
     case 11:
       return (reader.readString(offset)) as P;
     case 12:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBoolList(offset) ?? []) as P;
     case 13:
       return (reader.readString(offset)) as P;
     case 14:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 15:
       return (reader.readLong(offset)) as P;
     case 16:
       return (reader.readString(offset)) as P;
     case 17:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 18:
       return (reader.readLong(offset)) as P;
     case 19:
       return (reader.readString(offset)) as P;
     case 20:
+      return (reader.readLong(offset)) as P;
+    case 21:
+      return (reader.readLong(offset)) as P;
+    case 22:
+      return (reader.readString(offset)) as P;
+    case 23:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1412,6 +1441,242 @@ extension TaskQueryFilter on QueryBuilder<Task, Task, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterFilterCondition>
+      notificationDaysElementEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'notificationDays',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationDaysLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'notificationDays',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationDaysIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'notificationDays',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationDaysIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'notificationDays',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition>
+      notificationDaysLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'notificationDays',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition>
+      notificationDaysLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'notificationDays',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationDaysLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'notificationDays',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'notificationTime',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'notificationTime',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'notificationTime',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'notificationTime',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'notificationTime',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'notificationTime',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'notificationTime',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'notificationTime',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'notificationTime',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationTimeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'notificationTime',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> notificationsEnabledEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'notificationsEnabled',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterFilterCondition> piecesObtainedEqualTo(
       int value) {
     return QueryBuilder.apply(this, (query) {
@@ -2262,6 +2527,30 @@ extension TaskQuerySortBy on QueryBuilder<Task, Task, QSortBy> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterSortBy> sortByNotificationTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'notificationTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> sortByNotificationTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'notificationTime', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> sortByNotificationsEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'notificationsEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> sortByNotificationsEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'notificationsEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterSortBy> sortByPiecesObtained() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'piecesObtained', Sort.asc);
@@ -2492,6 +2781,30 @@ extension TaskQuerySortThenBy on QueryBuilder<Task, Task, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterSortBy> thenByNotificationTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'notificationTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> thenByNotificationTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'notificationTime', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> thenByNotificationsEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'notificationsEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> thenByNotificationsEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'notificationsEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterSortBy> thenByPiecesObtained() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'piecesObtained', Sort.asc);
@@ -2676,6 +2989,26 @@ extension TaskQueryWhereDistinct on QueryBuilder<Task, Task, QDistinct> {
     });
   }
 
+  QueryBuilder<Task, Task, QDistinct> distinctByNotificationDays() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'notificationDays');
+    });
+  }
+
+  QueryBuilder<Task, Task, QDistinct> distinctByNotificationTime(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'notificationTime',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Task, Task, QDistinct> distinctByNotificationsEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'notificationsEnabled');
+    });
+  }
+
   QueryBuilder<Task, Task, QDistinct> distinctByPiecesObtained() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'piecesObtained');
@@ -2811,6 +3144,24 @@ extension TaskQueryProperty on QueryBuilder<Task, Task, QQueryProperty> {
   QueryBuilder<Task, String, QQueryOperations> nextCompletionDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'nextCompletionDate');
+    });
+  }
+
+  QueryBuilder<Task, List<bool>, QQueryOperations> notificationDaysProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'notificationDays');
+    });
+  }
+
+  QueryBuilder<Task, String, QQueryOperations> notificationTimeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'notificationTime');
+    });
+  }
+
+  QueryBuilder<Task, bool, QQueryOperations> notificationsEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'notificationsEnabled');
     });
   }
 

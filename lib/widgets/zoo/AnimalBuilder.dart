@@ -56,12 +56,11 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     int newTotalCollectedPieces = currentTotalCollectedPieces;
     if (currentTotalCollectedPieces > 0) {
       newTotalCollectedPieces = currentTotalCollectedPieces - 1;
-      print(
-          "AnimalBuilder: decremented piece count -> $newTotalCollectedPieces");
+      //print("AnimalBuilder: decremented piece count -> $newTotalCollectedPieces");
     } else {
-      print("AnimalBuilder: Piece count 0 -> $currentTotalCollectedPieces");
+      //print("AnimalBuilder: Piece count 0 -> $currentTotalCollectedPieces");
     }
-    print(widget.svgPath);
+    //print(widget.svgPath);
     widget.preferenceService.setTotalCollectedPieces(newTotalCollectedPieces);
   }
 
