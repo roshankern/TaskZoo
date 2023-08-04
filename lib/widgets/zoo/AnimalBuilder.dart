@@ -5,19 +5,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 
 import 'package:taskzoo/widgets/isar_service.dart';
-import 'package:taskzoo/widgets/preference_service.dart';
 import 'package:taskzoo/widgets/zoo/animalpieces.dart';
 
 class AnimalBuilder extends StatefulWidget {
   final String svgPath;
   final Color backgroundColor;
-  final PreferenceService preferenceService;
+
   final IsarService service;
   AnimalBuilder(
       {required this.svgPath,
       required this.backgroundColor,
       Key? key,
-      required this.preferenceService,
       required this.service})
       : super(key: key);
 
@@ -51,8 +49,8 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   }
 
   Future<void> decrementTotalCollectedPieces() async {
-    SharedPreferences prefs = widget.preferenceService.prefs;
-    int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
+    int currentTotalCollectedPieces =
+        await widget.service.getTotalCollectedPieces();
     int newTotalCollectedPieces = currentTotalCollectedPieces;
     if (currentTotalCollectedPieces > 0) {
       newTotalCollectedPieces = currentTotalCollectedPieces - 1;
@@ -61,12 +59,13 @@ class AnimalBuilderState extends State<AnimalBuilder> {
       //print("AnimalBuilder: Piece count 0 -> $currentTotalCollectedPieces");
     }
     //print(widget.svgPath);
-    widget.preferenceService.setTotalCollectedPieces(newTotalCollectedPieces);
+
+    widget.service.setTotalCollectedPieces(newTotalCollectedPieces);
   }
 
-  void addShape() {
-    SharedPreferences prefs = widget.preferenceService.prefs;
-    int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
+  void addShape() async {
+    int currentTotalCollectedPieces =
+        await widget.service.getTotalCollectedPieces();
     if (currentTotalCollectedPieces > 0) {
       setState(() {
         _numShapes += 5;

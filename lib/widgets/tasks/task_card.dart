@@ -7,7 +7,6 @@ import 'package:dimensions_theme/dimensions_theme.dart';
 
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/notifications/notification_service.dart';
-import 'package:taskzoo/widgets/preference_service.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
 
@@ -16,14 +15,12 @@ String startOfWeek = "Monday";
 class TaskCard extends StatefulWidget {
   final Task task;
   final IsarService service;
-  final PreferenceService preferenceService;
 
-  TaskCard(
-      {Key? key,
-      required this.task,
-      required this.service,
-      required this.preferenceService})
-      : super(key: key);
+  TaskCard({
+    Key? key,
+    required this.task,
+    required this.service,
+  }) : super(key: key);
 
   @override
   _TaskCardState createState() => _TaskCardState();
@@ -216,21 +213,29 @@ class _TaskCardState extends State<TaskCard> {
               context: context,
               builder: (BuildContext context) {
                 return Theme(
-                  data: Theme.of(context)
-                      .copyWith(dialogBackgroundColor: Theme.of(context).cardColor),
+                  data: Theme.of(context).copyWith(
+                      dialogBackgroundColor: Theme.of(context).cardColor),
                   child: AlertDialog(
                     title: const Text('Delete Task'),
                     content: const Text(
                         'Are you sure you want to delete this task?'),
                     actions: <Widget>[
                       TextButton(
-                        child: Text('Cancel', style: TextStyle(color: Theme.of(context).indicatorColor),),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                              color: Theme.of(context).indicatorColor),
+                        ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                       ),
                       TextButton(
-                        child: Text('Delete', style: TextStyle(color: Theme.of(context).indicatorColor),),
+                        child: Text(
+                          'Delete',
+                          style: TextStyle(
+                              color: Theme.of(context).indicatorColor),
+                        ),
                         onPressed: () {
                           deleteTask();
                           Navigator.of(context).pop();
@@ -724,10 +729,10 @@ class _TaskCardState extends State<TaskCard> {
   }
 
   Future<void> incrementTotalCollectedPieces() async {
-    SharedPreferences prefs = widget.preferenceService.prefs;
-    int currentTotalCollectedPieces = prefs.getInt('totalCollectedPieces') ?? 0;
+    int currentTotalCollectedPieces =
+        await widget.service.getTotalCollectedPieces();
     int newTotalCollectedPieces = currentTotalCollectedPieces + 1;
-    widget.preferenceService.setTotalCollectedPieces(newTotalCollectedPieces);
+    widget.service.setTotalCollectedPieces(newTotalCollectedPieces);
   }
 
   void addCompletionCountEntry() {

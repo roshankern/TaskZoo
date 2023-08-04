@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 
 import 'package:taskzoo/pages/home_page.dart';
@@ -13,7 +12,6 @@ import 'package:taskzoo/widgets/home/navbar.dart';
 import 'package:taskzoo/misc/zoo_notifier.dart';
 import 'package:taskzoo/misc/theme_notifier.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
-import 'package:taskzoo/widgets/preference_service.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -21,7 +19,6 @@ import 'package:timezone/data/latest.dart' as tz;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  addDefaultTotalCollectedPieces();
   tz.initializeTimeZones();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -128,7 +125,6 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
   final IsarService service = IsarService();
-  final PreferenceService preferenceService = PreferenceService();
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -153,13 +149,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    widget.service.initalizeTotalCollectedPieces();
+
     final pages = [
-      HomePage(
-          service: widget.service, preferenceService: widget.preferenceService),
+      HomePage(service: widget.service),
       ChangeNotifierProvider(
         create: (context) => ZooNotifier(),
         child: ZooPage(
-          preferenceService: widget.preferenceService,
           service: widget.service,
         ),
       ),
@@ -191,15 +187,5 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
-  }
-}
-
-Future<void> addDefaultTotalCollectedPieces() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  // Check if the preference "totalCollectedPieces" exists
-  if (!prefs.containsKey('totalCollectedPieces')) {
-    // If it doesn't exist, add it with the default value of 0
-    await prefs.setInt('totalCollectedPieces', 0);
   }
 }

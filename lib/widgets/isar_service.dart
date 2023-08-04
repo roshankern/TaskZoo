@@ -32,6 +32,38 @@ class IsarService {
     return Future.value(Isar.getInstance());
   }
 
+  //ANIMAL PIECE INFO
+
+  Future<int> getNumShapesFromAnimalPieces(String svgPath) async {
+    final isar = await db;
+    int svgPathId = svgPath.hashCode.abs();
+
+    // Find the AnimalPieces item with the matching ID
+    AnimalPieces? animalPieces = await isar.animalPieces
+        .where()
+        .filter()
+        .idEqualTo(svgPathId)
+        .findFirst();
+
+    // If the AnimalPieces item exists, set the _numShapes variable to its 'pieces' value
+    if (animalPieces != null) {
+      animalPieces.pieces;
+      return animalPieces.pieces;
+      // Return the updated _numShapes value
+    } else {
+      // If the AnimalPieces item does not exist, return 0 or any other appropriate default value
+      return 0;
+    }
+  }
+
+  Future<void> saveAnimalPieces(AnimalPieces tuple) async {
+    final isar = await db;
+    //Return type int -> id of the inserted object
+    isar.writeTxnSync<int>(() => isar.animalPieces.putSync(tuple));
+  }
+
+  //TASK INFO
+
   Stream<List<Task>> listenToTasks() async* {
     final isar = await db;
     // Yield an initial event with the current state of the database
@@ -74,29 +106,6 @@ class IsarService {
     }
   }
 
-  Stream<double> percentTasksCompleted() async* {
-    // Get the stream of tasks
-    Stream<List<Task>> tasksStream = getAllTasks();
-
-    int totalTaskCount = 0;
-    int completedTaskCount = 0;
-
-    // Listen to the stream of tasks
-    await for (var tasks in tasksStream) {
-      // When the stream emits new data, update the totalTaskCount and completedTaskCount
-      totalTaskCount += tasks.length;
-      completedTaskCount += tasks.where((task) => task.isCompleted).length;
-
-      // Calculate the percentage and yield it
-      if (totalTaskCount == 0) {
-        yield 0;
-        continue;
-      }
-      double percentage = (completedTaskCount / totalTaskCount) * 100;
-      yield percentage;
-    }
-  }
-
   Stream<int> countTasks(String schedule, List<String> selectedTags) async* {
     // Watch for changes in the tasks and yield the updated count
     await for (var tasks
@@ -115,39 +124,11 @@ class IsarService {
     }
   }
 
-  Future<int> getNumShapesFromAnimalPieces(String svgPath) async {
-    final isar = await db;
-    int svgPathId = svgPath.hashCode.abs();
-
-    // Find the AnimalPieces item with the matching ID
-    AnimalPieces? animalPieces = await isar.animalPieces
-        .where()
-        .filter()
-        .idEqualTo(svgPathId)
-        .findFirst();
-
-    // If the AnimalPieces item exists, set the _numShapes variable to its 'pieces' value
-    if (animalPieces != null) {
-      animalPieces.pieces;
-      return animalPieces.pieces;
-      // Return the updated _numShapes value
-    } else {
-      // If the AnimalPieces item does not exist, return 0 or any other appropriate default value
-      return 0;
-    }
-  }
-
   //If Task id not found in Schema Table, it will be added else replace value
   Future<void> saveTask(Task task) async {
     final isar = await db;
     //Return type int -> id of the inserted object
     isar.writeTxnSync<int>(() => isar.tasks.putSync(task));
-  }
-
-  Future<void> saveAnimalPieces(AnimalPieces tuple) async {
-    final isar = await db;
-    //Return type int -> id of the inserted object
-    isar.writeTxnSync<int>(() => isar.animalPieces.putSync(tuple));
   }
 
   Stream<List<Task>> filterTasksByScheduleAndSelectedTags(
@@ -184,12 +165,37 @@ class IsarService {
     });
   }
 
+  //STATS AND INFO
+
   Future<void> saveDailyCompletionEntry(
       DailyCompletionEntry dailycompletion) async {
     final isar = await db;
     //Return type int -> id of the inserted object
     isar.writeTxnSync<int>(
         () => isar.dailyCompletionEntrys.putSync(dailycompletion));
+  }
+
+  Stream<double> percentTasksCompleted() async* {
+    // Get the stream of tasks
+    Stream<List<Task>> tasksStream = getAllTasks();
+
+    int totalTaskCount = 0;
+    int completedTaskCount = 0;
+
+    // Listen to the stream of tasks
+    await for (var tasks in tasksStream) {
+      // When the stream emits new data, update the totalTaskCount and completedTaskCount
+      totalTaskCount += tasks.length;
+      completedTaskCount += tasks.where((task) => task.isCompleted).length;
+
+      // Calculate the percentage and yield it
+      if (totalTaskCount == 0) {
+        yield 0;
+        continue;
+      }
+      double percentage = (completedTaskCount / totalTaskCount) * 100;
+      yield percentage;
+    }
   }
 
   Future<void> updateDailyCompletionEntry(bool shouldIncrement) async {
@@ -354,6 +360,8 @@ class IsarService {
     yield completionData;
   }
 
+  //NOTIFICATIONS
+
   //Add notification instance
   Future<void> saveActiveNotificationForTask(
       ActiveNotifications notification) async {
@@ -385,9 +393,72 @@ class IsarService {
     }
   }
 
+  //SETTINGS AND PREFERENCES
+
   Future<void> savePersonalPreferences(TaskzooPreferences preference) async {
     final isar = await db;
     //Return type int -> id of the inserted object
     isar.writeTxnSync<int>(() => isar.taskzooPreferences.putSync(preference));
+  }
+
+  Future<void> initalizeTotalCollectedPieces() async {
+    final isar = await db;
+    final int id = "totalCollectedPieces".hashCode.abs();
+
+    // Check if the entry with the given ID exists in the taskzooPreferences table
+    final existingPreference =
+        await isar.taskzooPreferences.where().taskidEqualTo(id).findFirst();
+
+    // If the entry doesn't exist, add a new entry with the ID and value of 0
+    if (existingPreference == null) {
+      final newPreference = TaskzooPreferences(taskid: id, value: 0);
+      isar.writeTxnSync<int>(
+          () => isar.taskzooPreferences.putSync(newPreference));
+    }
+  }
+
+  Future<int> getTotalCollectedPieces() async {
+    final isar = await db;
+    final int id = "totalCollectedPieces".hashCode.abs();
+
+    // Find the TaskZooPreference entry with the given ID
+    final preference =
+        await isar.taskzooPreferences.where().taskidEqualTo(id).findFirst();
+
+    // If the entry exists, return its value; otherwise, return null
+    return preference?.value ?? 0;
+  }
+
+  Future<void> setTotalCollectedPieces(int newTotalCollectedPieces) async {
+    final isar = await db;
+    final int id = "totalCollectedPieces".hashCode.abs();
+
+    // If the entry exists, update its value; otherwise, create a new entry
+    final newPreference =
+        TaskzooPreferences(taskid: id, value: newTotalCollectedPieces);
+    isar.writeTxnSync<int>(
+        () => isar.taskzooPreferences.putSync(newPreference));
+  }
+
+  Stream<List<TaskzooPreferences>> getTotalCollectedPreferencesHelper() async* {
+    final isar = await db;
+    // Yield an initial event with the current state of the database
+    final int id = "totalCollectedPieces".hashCode.abs();
+    yield await isar.taskzooPreferences.where().taskidEqualTo(id).findAll();
+
+    // Set up a watcher that yields new data every time something changes in the database
+    await for (var _ in isar.taskzooPreferences.where().watch()) {
+      yield await isar.taskzooPreferences.where().findAll();
+    }
+  }
+
+  Stream<int> totalCollectedPiecesStream() async* {
+    Stream<List<TaskzooPreferences>> preferencesStream =
+        getTotalCollectedPreferencesHelper();
+
+    await for (var prefs in preferencesStream) {
+      // When the stream emits new data, update the totalTaskCount and completedTaskCount
+      yield prefs.first.value;
+    }
   }
 }
