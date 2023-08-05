@@ -50,7 +50,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
 
   Future<void> decrementTotalCollectedPieces() async {
     int currentTotalCollectedPieces =
-        await widget.service.getTotalCollectedPieces();
+        await widget.service.getPreference("totalCollectedPieces");
     int newTotalCollectedPieces = currentTotalCollectedPieces;
     if (currentTotalCollectedPieces > 0) {
       newTotalCollectedPieces = currentTotalCollectedPieces - 1;
@@ -60,12 +60,13 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     }
     //print(widget.svgPath);
 
-    widget.service.setTotalCollectedPieces(newTotalCollectedPieces);
+    widget.service
+        .setPreference("totalCollectedPieces", newTotalCollectedPieces);
   }
 
   void addShape() async {
     int currentTotalCollectedPieces =
-        await widget.service.getTotalCollectedPieces();
+        await widget.service.getPreference("totalCollectedPieces");
     if (currentTotalCollectedPieces > 0) {
       setState(() {
         _numShapes += 5;

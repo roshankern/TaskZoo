@@ -417,21 +417,10 @@ class IsarService {
     }
   }
 
-  Future<int> getTotalCollectedPieces() async {
+  Future<void> setPreference(
+      String preference, int newTotalCollectedPieces) async {
     final isar = await db;
-    final int id = "totalCollectedPieces".hashCode.abs();
-
-    // Find the TaskZooPreference entry with the given ID
-    final preference =
-        await isar.taskzooPreferences.where().taskidEqualTo(id).findFirst();
-
-    // If the entry exists, return its value; otherwise, return null
-    return preference?.value ?? 0;
-  }
-
-  Future<void> setTotalCollectedPieces(int newTotalCollectedPieces) async {
-    final isar = await db;
-    final int id = "totalCollectedPieces".hashCode.abs();
+    final int id = preference.hashCode.abs();
 
     // If the entry exists, update its value; otherwise, create a new entry
     final newPreference =
@@ -440,10 +429,11 @@ class IsarService {
         () => isar.taskzooPreferences.putSync(newPreference));
   }
 
-  Stream<List<TaskzooPreferences>> getTotalCollectedPreferencesHelper() async* {
+  Stream<List<TaskzooPreferences>> getPreferencesStreamHelper(
+      String preference) async* {
     final isar = await db;
     // Yield an initial event with the current state of the database
-    final int id = "totalCollectedPieces".hashCode.abs();
+    final int id = preference.hashCode.abs();
     yield await isar.taskzooPreferences.where().taskidEqualTo(id).findAll();
 
     // Set up a watcher that yields new data every time something changes in the database
@@ -452,13 +442,76 @@ class IsarService {
     }
   }
 
-  Stream<int> totalCollectedPiecesStream() async* {
+  Stream<int> preferenceStream(String preference) async* {
     Stream<List<TaskzooPreferences>> preferencesStream =
-        getTotalCollectedPreferencesHelper();
+        getPreferencesStreamHelper(preference);
 
     await for (var prefs in preferencesStream) {
       // When the stream emits new data, update the totalTaskCount and completedTaskCount
-      yield prefs.first.value;
+      yield prefs
+          .where((setting) => setting.taskid == preference.hashCode.abs())
+          .first
+          .value;
     }
+  }
+
+  Future<void> initalizeThemeSetting() async {
+    final isar = await db;
+    final int id = "theme".hashCode.abs();
+
+    // Check if the entry with the given ID exists in the taskzooPreferences table
+    final existingPreference =
+        await isar.taskzooPreferences.where().taskidEqualTo(id).findFirst();
+
+    // If the entry doesn't exist, add a new entry with the ID and value of 0
+    if (existingPreference == null) {
+      final newPreference = TaskzooPreferences(taskid: id, value: 1);
+      isar.writeTxnSync<int>(
+          () => isar.taskzooPreferences.putSync(newPreference));
+    }
+  }
+
+  Future<void> initalizeHapticSetting() async {
+    final isar = await db;
+    final int id = "hapticFeedback".hashCode.abs();
+
+    // Check if the entry with the given ID exists in the taskzooPreferences table
+    final existingPreference =
+        await isar.taskzooPreferences.where().taskidEqualTo(id).findFirst();
+
+    // If the entry doesn't exist, add a new entry with the ID and value of 0
+    if (existingPreference == null) {
+      final newPreference = TaskzooPreferences(taskid: id, value: 1);
+      isar.writeTxnSync<int>(
+          () => isar.taskzooPreferences.putSync(newPreference));
+    }
+  }
+
+  Future<void> initalizeSoundSetting() async {
+    final isar = await db;
+    final int id = "sound".hashCode.abs();
+
+    // Check if the entry with the given ID exists in the taskzooPreferences table
+    final existingPreference =
+        await isar.taskzooPreferences.where().taskidEqualTo(id).findFirst();
+
+    // If the entry doesn't exist, add a new entry with the ID and value of 0
+    if (existingPreference == null) {
+      final newPreference = TaskzooPreferences(taskid: id, value: 1);
+      isar.writeTxnSync<int>(
+          () => isar.taskzooPreferences.putSync(newPreference));
+    }
+  }
+
+  Future<int> getPreference(String preferenceName) async {
+    final isar = await db;
+    final int id = preferenceName.hashCode.abs();
+
+    // Find the TaskZooPreference entry with the given ID
+    final preference =
+        await isar.taskzooPreferences.where().taskidEqualTo(id).findFirst();
+
+    // If the entry exists, return its value; otherwise, return null
+    return preference?.value ?? 0;
   }
 }

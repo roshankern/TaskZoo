@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage>
         children: [
           HomeStatsCard(
             totalCollectedPiecesStream:
-                widget.service.totalCollectedPiecesStream(),
+                widget.service.preferenceStream("totalCollectedPieces"),
             countTasks: widget.service.countTasks,
             countCompletedTasks: widget.service.countCompletedTasks,
             selectedSchedule: selectedSchedule,
