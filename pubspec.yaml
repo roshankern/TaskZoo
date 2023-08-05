@@ -52,6 +52,7 @@ dependencies:
   uuid: ^3.0.4
   timezone: ^0.9.2
   flutter_native_timezone: ^2.0.0
+  soundpool: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +86,7 @@ flutter:
     - assets/biomes_data/arctic/
     - assets/biomes_data/mountain/
     - assets/biomes_data/ocean/
+    - assets/TaskCompletion.wav
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

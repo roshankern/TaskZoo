@@ -2,20 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:provider/provider.dart';
+import 'package:taskzoo/misc/haptic_notifier.dart';
+import 'package:taskzoo/misc/sound_notifier.dart';
 
 import 'package:taskzoo/misc/theme_notifier.dart';
+import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/settings/app_icon_modal.dart';
 import 'package:taskzoo/widgets/settings/settings_option_widgets.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  final IsarService service;
+  final ThemeNotifier themeNotifier;
+  final HapticNotifier hapticNotifier;
+  final SoundNotifer soundNotifier;
+
+  const SettingsPage(
+      {Key? key,
+      required this.service,
+      required this.themeNotifier,
+      required this.hapticNotifier,
+      required this.soundNotifier})
+      : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   Widget _modalSettingsCard() {
     return Container(
         decoration: BoxDecoration(
@@ -36,7 +55,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   context: context,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(Dimensions.of(context).radii.largest),
+                      top:
+                          Radius.circular(Dimensions.of(context).radii.largest),
                     ),
                   ),
                   isScrollControlled: true,
@@ -70,8 +90,6 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _toggleSettingsCard() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-
     return Container(
         decoration: BoxDecoration(
           borderRadius:
@@ -85,9 +103,16 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsOptionWithToggle(
               leftIcon: Icons.tonality,
               optionText: 'Theme',
-              initialValue: themeNotifier.currentTheme == ThemeMode.light,
+              initialValue: widget.themeNotifier.currentTheme !=
+                  ThemeMode.light, // Using the result of the stream
               onToggleChanged: (bool value) {
-                themeNotifier.toggleTheme();
+                //Update Isar DB
+                widget.themeNotifier.toggleTheme();
+                widget.service.setPreference(
+                    "theme",
+                    (widget.themeNotifier.currentTheme == ThemeMode.light)
+                        ? 0
+                        : 1);
               },
             ),
             Container(
@@ -97,8 +122,10 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsOptionWithToggle(
               leftIcon: Icons.volume_up,
               optionText: 'Sounds',
-              initialValue: true,
+              initialValue: widget.soundNotifier.soundStatus != 0,
               onToggleChanged: (bool value) {
+                widget.soundNotifier.toggleSound();
+                widget.service.setPreference("sound", value ? 1 : 0);
                 print('Sounds toggled: $value');
               },
             ),
@@ -109,8 +136,11 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsOptionWithToggle(
               leftIcon: Icons.edgesensor_low,
               optionText: 'Haptics',
-              initialValue: true,
+              initialValue: widget.hapticNotifier.hapticValue != 0,
               onToggleChanged: (bool value) {
+                widget.hapticNotifier.toggleHaptic();
+                widget.service
+                    .setPreference("hapticFeedback", (value == true) ? 1 : 0);
                 print('Haptics toggled: $value');
               },
             ),
@@ -193,3 +223,5 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
+
+// Asynchronous function to fetch the preferenc

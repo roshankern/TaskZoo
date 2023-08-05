@@ -33,8 +33,6 @@ class HomeStatsCard extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 16, color: Theme.of(context).indicatorColor),
               )
-            else
-              const CircularProgressIndicator(),
           ],
         );
       },

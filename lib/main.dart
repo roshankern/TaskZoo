@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
+import 'package:taskzoo/misc/haptic_notifier.dart';
+import 'package:taskzoo/misc/sound_notifier.dart';
 
 import 'package:taskzoo/pages/home_page.dart';
 import 'package:taskzoo/pages/zoo_page.dart';
@@ -18,6 +20,7 @@ import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  printKey();
 
   tz.initializeTimeZones();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -43,9 +46,13 @@ void main() async {
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
-      child: MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => HapticNotifier()),
+        ChangeNotifierProvider(create: (_) => SoundNotifer())
+      ],
+      child: const MyApp(),
     ),
   );
 }
@@ -95,14 +102,14 @@ class MyApp extends StatelessWidget {
         // solid black that is background of all pages besides zoo
         scaffoldBackgroundColor: Colors.black,
         // gray that is color of any card
-        cardColor: Color.fromARGB(255, 35, 35, 35),
+        cardColor: const Color.fromARGB(255, 35, 35, 35),
         // black color for icons
         indicatorColor: Colors.white,
         // gray color used throughout the app
-        dividerColor: Color.fromARGB(255, 123, 123, 123),
+        dividerColor: const Color.fromARGB(255, 123, 123, 123),
 
         // set theme data for icons
-        iconTheme: IconThemeData(color: Colors.white, size: 24),
+        iconTheme: const IconThemeData(color: Colors.white, size: 24),
 
         extensions: [
           // the Dimensions extension allows us to use inset/radii/border with like a theme
@@ -133,12 +140,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _navBarIndex = 1;
   late PageController _pageController;
+  late ThemeNotifier themeNotifier;
+  late HapticNotifier hapticNotifier;
+  late SoundNotifer soundNotifier;
 
   @override
   void initState() {
     super.initState();
+    widget.service.initalizeTotalCollectedPieces();
+    widget.service.initalizeThemeSetting();
+    widget.service.initalizeHapticSetting();
+    widget.service.initalizeSoundSetting();
+
     _pageController =
         PageController(initialPage: _navBarIndex - 1); // Adjust the initialPage
+    themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    hapticNotifier = Provider.of<HapticNotifier>(context, listen: false);
+    soundNotifier = Provider.of<SoundNotifer>(context, listen: false);
+
+    setThemeNotifier(themeNotifier);
+    setHapticNotifier(hapticNotifier);
+    setSoundNotifier(soundNotifier);
   }
 
   @override
@@ -149,7 +171,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    widget.service.initalizeTotalCollectedPieces();
+    themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    hapticNotifier = Provider.of<HapticNotifier>(context, listen: false);
+    soundNotifier = Provider.of<SoundNotifer>(context, listen: false);
 
     final pages = [
       HomePage(service: widget.service),
@@ -179,7 +203,11 @@ class _MyHomePageState extends State<MyHomePage> {
               MaterialPageRoute(
                   builder: (context) => index == 0
                       ? StatsPage(service: widget.service)
-                      : const SettingsPage()),
+                      : SettingsPage(
+                          service: widget.service,
+                          themeNotifier: themeNotifier,
+                          hapticNotifier: hapticNotifier,
+                          soundNotifier: soundNotifier)),
             );
           } else {
             _pageController.jumpToPage(index - 1);
@@ -188,4 +216,42 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  Future<void> setThemeNotifier(ThemeNotifier themeNotifier) async {
+    bool darkMode =
+        await widget.service.getPreference("theme").then((value) => value != 0);
+    setState(() {
+      if (darkMode == true && themeNotifier.currentTheme == ThemeMode.light) {
+        themeNotifier.toggleTheme();
+      }
+    });
+  }
+
+  Future<void> setHapticNotifier(HapticNotifier hapticNotifier) async {
+    bool hapticEnabled = await widget.service
+        .getPreference("hapticFeedback")
+        .then((value) => value != 0);
+    setState(() {
+      if (hapticEnabled == true && hapticNotifier.hapticStatus == 0) {
+        hapticNotifier.toggleHaptic();
+      }
+    });
+  }
+
+  Future<void> setSoundNotifier(SoundNotifer soundNotifer) async {
+    bool soundEnabled =
+        await widget.service.getPreference("sound").then((value) => value != 0);
+    setState(() {
+      if (soundEnabled == true && soundNotifer.soundValue == 0) {
+        soundNotifer.toggleSound();
+      }
+    });
+  }
+}
+
+void printKey() {
+  print("theme: ${"theme".hashCode.abs()}");
+  print("hapticFeedback: ${"hapticFeedback".hashCode.abs()}");
+  print("totalCollectedPieces: ${"totalCollectedPieces".hashCode.abs()}");
+  print("sound: ${"sound".hashCode.abs()}");
 }

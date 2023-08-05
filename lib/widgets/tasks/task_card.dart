@@ -2,12 +2,13 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
+import 'package:flutter/services.dart';
 
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/notifications/notification_service.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
+import 'package:taskzoo/widgets/tasks/sound_player.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
 
 String startOfWeek = "Monday";
@@ -31,6 +32,7 @@ class _TaskCardState extends State<TaskCard> {
   late DateTime previousDate;
   late DateTime nextCompletionDate;
   late HashSet<DateTime> completedDates;
+  final SoundPlayer player = SoundPlayer();
 
   //Make modifications to previous date when storing data persistently
   @override
@@ -144,7 +146,6 @@ class _TaskCardState extends State<TaskCard> {
       children: [
         GestureDetector(
           onTap: () {
-            print(widget.task.notificationTime);
             showModalBottomSheet<Map<String, dynamic>>(
               context: context,
               backgroundColor: Colors.transparent,
@@ -297,6 +298,8 @@ class _TaskCardState extends State<TaskCard> {
                 setState(() {
                   updatePiecesInformation();
                   widget.task.isCompleted = true;
+                  hapticFeedback();
+                  completionSound();
                   addCompletionCountEntry();
                   _streakAndStatsHandler(schedule);
                 });
@@ -503,10 +506,8 @@ class _TaskCardState extends State<TaskCard> {
         if (!completedDates.contains(today)) {
           _getCompletionCount(widget.task.last30DaysDates);
           widget.task.currentCycleCompletions++;
-          print("Incrementing cycle comps");
           updateTaskSchema();
           if (widget.task.currentCycleCompletions < widget.task.timesPerWeek) {
-            print("Returning");
             return;
           }
           completedDates.add(today);
@@ -527,9 +528,7 @@ class _TaskCardState extends State<TaskCard> {
       }
     } else if (schedule == "monthly") {
       widget.task.isStreakContinued = now.isBefore(nextCompletionDate);
-      if (widget.task.isCompleted) {
-        print("Set to Completed");
-      }
+
       if (widget.task.isStreakContinued && widget.task.isCompleted) {
         print("completedDates: $completedDates");
         if (!completedDates.contains(today)) {
@@ -543,7 +542,6 @@ class _TaskCardState extends State<TaskCard> {
             return;
           }
           completedDates.add(today);
-          print("added1");
           widget.task.last30DaysDates = _getLast30DaysDates();
           widget.task.completionCount30days = widget.task.streakCount++;
           widget.task.longestStreak =
@@ -730,9 +728,27 @@ class _TaskCardState extends State<TaskCard> {
 
   Future<void> incrementTotalCollectedPieces() async {
     int currentTotalCollectedPieces =
-        await widget.service.getTotalCollectedPieces();
+        await widget.service.getPreference("totalCollectedPieces");
     int newTotalCollectedPieces = currentTotalCollectedPieces + 1;
-    widget.service.setTotalCollectedPieces(newTotalCollectedPieces);
+    widget.service
+        .setPreference("totalCollectedPieces", newTotalCollectedPieces);
+  }
+
+  Future<void> hapticFeedback() async {
+    bool hapticFeedbackEnabled = await widget.service
+        .getPreference("hapticFeedback")
+        .then((value) => value != 0);
+    if (hapticFeedbackEnabled) {
+      HapticFeedback.mediumImpact();
+    }
+  }
+
+  Future<void> completionSound() async {
+    bool soundEnabled =
+        await widget.service.getPreference("sound").then((value) => value != 0);
+    if (soundEnabled) {
+      player.playSound();
+    }
   }
 
   void addCompletionCountEntry() {
