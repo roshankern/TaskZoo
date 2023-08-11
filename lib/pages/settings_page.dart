@@ -60,20 +60,12 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                   isScrollControlled: true,
-                  builder: (BuildContext context) =>
-                      appIconModalContent(context),
+                  builder: (BuildContext context) {
+                    return AppIconModal(
+                        iconsDataPath: 'assets/icons_data.json');
+                  },
                 );
               },
-            ),
-            Container(
-              height: 1.0,
-              color: Theme.of(context).dividerColor,
-            ),
-            SettingsOptionWithIcon(
-              leftIcon: Icons.notifications,
-              optionText: 'Notifications',
-              rightActionIcon: Icons.expand_less,
-              onActionTap: () => print('Notifications icon pressed!'),
             ),
             Container(
               height: 1.0,
