@@ -189,3 +189,7 @@ Future<void> printAllScheduledNotifications() async {
     }
   }
 }
+
+Future<void> cancelAllNotifications() async {
+  await flutterLocalNotificationsPlugin.cancelAll();
+}

@@ -7,6 +7,7 @@ import 'package:taskzoo/misc/sound_notifier.dart';
 
 import 'package:taskzoo/misc/theme_notifier.dart';
 import 'package:taskzoo/widgets/isar_service.dart';
+import 'package:taskzoo/widgets/notifications/notification_service.dart';
 import 'package:taskzoo/widgets/settings/app_icon_modal.dart';
 import 'package:taskzoo/widgets/settings/settings_option_widgets.dart';
 
@@ -179,7 +180,7 @@ class _SettingsPageState extends State<SettingsPage> {
               leftIcon: Icons.delete,
               optionText: 'Clean Slate Protocol',
               rightActionIcon: Icons.chevron_right,
-              onActionTap: () => print('Clean icon pressed!'),
+              onActionTap: () => cleanSlateProtocol(),
             )
           ]),
         ));
@@ -213,6 +214,20 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
     );
+  }
+
+  void cleanSlateProtocol() async {
+    //Delete All Tasks
+    widget.service.deleteAllTasks();
+    //Delete and Unschedule Notifications
+    cancelAllNotifications();
+    //Delete all Animal Pieces
+    widget.service.deleteAllAnimalPieces();
+    //Delete all Daily Completion Entries - data for stats card
+    widget.service.deleteAllDailyCompletionEntries();
+    //Set the total number of pieces to zero
+    await widget.service.setPreference("totalCollectedPieces", 0);
+    print('Clean slate protocol completed!');
   }
 }
 

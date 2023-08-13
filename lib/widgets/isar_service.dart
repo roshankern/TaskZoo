@@ -421,12 +421,14 @@ class IsarService {
       String preference, int newTotalCollectedPieces) async {
     final isar = await db;
     final int id = preference.hashCode.abs();
+    print(preference.hashCode.abs());
 
-    // If the entry exists, update its value; otherwise, create a new entry
-    final newPreference =
-        TaskzooPreferences(taskid: id, value: newTotalCollectedPieces);
-    isar.writeTxnSync<int>(
-        () => isar.taskzooPreferences.putSync(newPreference));
+    // Use an asynchronous write transaction to update or add the entry
+    await isar.writeTxn<void>(() async {
+      final newPreference =
+          TaskzooPreferences(taskid: id, value: newTotalCollectedPieces);
+      await isar.taskzooPreferences.put(newPreference);
+    });
   }
 
   Stream<List<TaskzooPreferences>> getPreferencesStreamHelper(
@@ -465,7 +467,7 @@ class IsarService {
 
     // If the entry doesn't exist, add a new entry with the ID and value of 0
     if (existingPreference == null) {
-      final newPreference = TaskzooPreferences(taskid: id, value: 1);
+      final newPreference = TaskzooPreferences(taskid: id, value: 0);
       isar.writeTxnSync<int>(
           () => isar.taskzooPreferences.putSync(newPreference));
     }
@@ -513,5 +515,57 @@ class IsarService {
 
     // If the entry exists, return its value; otherwise, return null
     return preference?.value ?? 0;
+  }
+
+  Future<void> deleteAllTasks() async {
+    final isar = await db;
+
+    final tasks = isar.tasks; // Assuming you have a 'tasks' collection
+
+    // Open a write transaction
+    await isar.writeTxn(() async {
+      // Query for all objects of the type you want to delete
+      final allTasks = await tasks.where().findAll();
+
+      // Delete each object in the collection
+      for (var task in allTasks) {
+        await tasks.delete(task.id);
+      }
+    });
+  }
+
+  Future<void> deleteAllAnimalPieces() async {
+    final isar = await db;
+
+    final animals = isar.animalPieces; // Assuming you have a 'tasks' collection
+
+    // Open a write transaction
+    await isar.writeTxn(() async {
+      // Query for all objects of the type you want to delete
+      final allTasks = await animals.where().findAll();
+
+      // Delete each object in the collection
+      for (var animal in allTasks) {
+        await animals.delete(animal.id);
+      }
+    });
+  }
+
+  Future<void> deleteAllDailyCompletionEntries() async {
+    final isar = await db;
+
+    final completionEntries =
+        isar.dailyCompletionEntrys; // Assuming you have a 'tasks' collection
+
+    // Open a write transaction
+    await isar.writeTxn(() async {
+      // Query for all objects of the type you want to delete
+      final entries = await completionEntries.where().findAll();
+
+      // Delete each object in the collection
+      for (var entry in entries) {
+        await completionEntries.delete(entry.id);
+      }
+    });
   }
 }

@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage>
   void _createTaskButton() {
     showModalBottomSheet<Map<String, dynamic>>(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => AddTaskSheet(widget.service),
     );
