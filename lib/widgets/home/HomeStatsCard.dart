@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
+import 'package:animated_digit/animated_digit.dart';
 
 class HomeStatsCard extends StatelessWidget {
   final Stream<int> totalCollectedPiecesStream;
@@ -28,11 +29,12 @@ class HomeStatsCard extends StatelessWidget {
             icon,
             const SizedBox(width: 5.0),
             if (snapshot.hasData)
-              Text(
-                snapshot.data!.toString(),
-                style: TextStyle(
-                    fontSize: 16, color: Theme.of(context).indicatorColor),
-              )
+              AnimatedDigitWidget(
+                value: snapshot.data!,
+                textStyle:
+                    TextStyle(fontSize: 16, color: Theme.of(context).cardColor),
+                duration: const Duration(milliseconds: 400),
+              ),
           ],
         );
       },
