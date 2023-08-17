@@ -10,6 +10,7 @@ import 'package:taskzoo/widgets/notifications/notification_service.dart';
 import 'package:taskzoo/widgets/tasks/edit_task.dart';
 import 'package:taskzoo/widgets/tasks/sound_player.dart';
 import 'package:taskzoo/widgets/tasks/task.dart';
+import 'package:flip_card/flip_card.dart';
 
 String startOfWeek = "Monday";
 
@@ -65,12 +66,12 @@ class _TaskCardState extends State<TaskCard> {
         children: [
           Text(
             widget.task.title,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(
@@ -305,18 +306,30 @@ class _TaskCardState extends State<TaskCard> {
                 });
               }
             : null,
-        child: Container(
+        child: FlipCard(
+          fill: Fill.fillBack,
+          direction: FlipDirection.HORIZONTAL,
+          side: CardSide.FRONT,
+          front: Container(
             padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
             decoration: BoxDecoration(
               borderRadius:
                   BorderRadius.circular(Dimensions.of(context).radii.medium),
               color: Theme.of(context).cardColor,
             ),
-            child:
-                _isTapped ? _getCardBack(schedule) : _getCardFront(schedule)));
+            child: _getCardFront(schedule),
+          ),
+          back: Container(
+            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+            decoration: BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(Dimensions.of(context).radii.medium),
+              color: Theme.of(context).cardColor,
+            ),
+            child: _getCardBack(schedule),
+          ),
+        ));
   }
-
-  // Rest of the code remains the same...
 
   void isCompletedFalse(String schedule) {
     if (completedDates.isNotEmpty) {

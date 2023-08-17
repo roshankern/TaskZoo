@@ -53,6 +53,7 @@ dependencies:
   timezone: ^0.9.2
   flutter_native_timezone: ^2.0.0
   soundpool: ^2.3.0
+  flip_card: ^0.7.0
 
 dev_dependencies:
   flutter_test:

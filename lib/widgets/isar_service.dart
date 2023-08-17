@@ -421,7 +421,6 @@ class IsarService {
       String preference, int newTotalCollectedPieces) async {
     final isar = await db;
     final int id = preference.hashCode.abs();
-    print(preference.hashCode.abs());
 
     // Use an asynchronous write transaction to update or add the entry
     await isar.writeTxn<void>(() async {
