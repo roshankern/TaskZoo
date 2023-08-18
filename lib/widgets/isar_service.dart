@@ -114,6 +114,17 @@ class IsarService {
     }
   }
 
+  Stream<int> countTaskNotCompleted(
+      String schedule, List<String> selectedTags) async* {
+    // Watch for changes in the tasks
+    await for (var tasks
+        in filterTasksByScheduleAndSelectedTags(schedule, selectedTags)) {
+      // Calculate the count of not completed tasks
+      int count = tasks.where((task) => !task.isCompleted).length;
+      yield count; // Yield the updated count
+    }
+  }
+
   Stream<int> countCompletedTasks(
       String schedule, List<String> selectedTags) async* {
     // Listen to the stream of tasks obtained from getAllTasks()
