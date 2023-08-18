@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:taskzoo/widgets/onboarding/custom_nav_bar.dart';
 import 'package:taskzoo/widgets/onboarding/onboarding_page.dart';
+import 'package:taskzoo/widgets/onboarding/tutorial_task_cards.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -30,24 +31,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         topBackgroundColor: "#FFA06B",
         animalSvgPath: "assets/onboarding/llama.svg",
         content: [
-          const Text(
-            "Create tasks for goals that you want to achieve and filter by tags to keep everything organized.",
-            style: TextStyle(fontSize: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "Create tasks for goals that you want to achieve and filter by tags to keep everything organized.",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Icon(Icons.keyboard_control),
+            SvgPicture.asset("assets/custom_icons/filter.svg",
+                color: Theme.of(context).iconTheme.color,
+                semanticsLabel: 'Filter'),
             Container(
               width: 1,
               height: 40,
               color: Theme.of(context).indicatorColor,
               margin: EdgeInsets.symmetric(
-                  horizontal: Dimensions.of(context).insets.smaller),
+                  horizontal: Dimensions.of(context).insets.large),
             ),
-            const Icon(Icons.add),
+            SvgPicture.asset("assets/custom_icons/plus.svg",
+                color: Theme.of(context).iconTheme.color,
+                semanticsLabel: 'Plus'),
           ]),
-          const Text(
-            "Use daily, weekly, and monthly tasks to encourage productivity over different time periods.",
-            style: TextStyle(fontSize: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "Use daily, weekly, and monthly tasks to encourage productivity over different time periods.",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
@@ -59,7 +72,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   color: Theme.of(context).indicatorColor,
                   width: Dimensions.of(context).borderWidths.small,
                 ),
-                color: Theme.of(context).cardColor,
               ),
               child: Center(
                 child: Text(
@@ -126,19 +138,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         topBackgroundColor: "#45DAFF",
         animalSvgPath: "assets/onboarding/flamingo.svg",
         content: [
-          const Text(
-            "Hold down a task card to mark it as complete, or tap the task card to modify/delete the task.",
-            style: TextStyle(fontSize: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "Hold down a task card to mark it as complete, or tap the task card to modify/delete the task.",
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          SizedBox(
+            height: Dimensions.of(context).insets.medium,
           ),
           Container(
-            color: Theme.of(context).scaffoldBackgroundColor,
             padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [Text("Card front"), Text("Card back")],
+              children: [
+                Expanded(
+                    child:
+                        AspectRatio(aspectRatio: 1, child: HoldingTaskCard())),
+                SizedBox(width: Dimensions.of(context).insets.medium),
+                Expanded(
+                    child:
+                        AspectRatio(aspectRatio: 1, child: FlippingTaskCard())),
+              ],
             ),
-          )
+          ),
         ]);
 
     Widget onboarding_page_3 = OnboardingPage(
@@ -146,9 +171,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         topBackgroundColor: "#85FF91",
         animalSvgPath: "assets/onboarding/parrot.svg",
         content: [
-          const Text(
-            "Get rewarded with pieces every time you complete a task!",
-            style: TextStyle(fontSize: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "Get rewarded with pieces every time you complete a task!",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -158,9 +187,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Text("Number increase animation")
             ],
           ),
-          const Text(
-            "The amount of pieces you receive depends on how big a task you complete.",
-            style: TextStyle(fontSize: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "The amount of pieces you receive depends on how big a task you complete.",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
         ]);
 
@@ -169,17 +202,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         topBackgroundColor: "#FFEDA8",
         animalSvgPath: "assets/onboarding/lion.svg",
         content: [
-          const Text(
-            "Tapping an animal that is incomplete will use pieces to build that animal.",
-            style: TextStyle(fontSize: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "Tapping an animal that is incomplete will use pieces to build that animal.",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           SvgPicture.asset(
             "assets/onboarding/rat.svg",
             height: 175,
           ),
-          const Text(
-            "Once an animal is complete, it becomes part of your zoo!",
-            style: TextStyle(fontSize: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "Once an animal is complete, it becomes part of your zoo!",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
         ]);
 

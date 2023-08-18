@@ -71,9 +71,8 @@ class OnboardingPage extends StatelessWidget {
               flex: 5,
               child: Container(
                 color: Theme.of(context).cardColor,
-                padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
                 child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: content),
               ),

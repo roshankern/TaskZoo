@@ -1,10 +1,11 @@
 import 'dart:collection';
 import 'dart:math';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:flutter/services.dart';
+import 'package:progress_border/progress_border.dart';
 
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/notifications/notification_service.dart';
@@ -29,12 +30,18 @@ class TaskCard extends StatefulWidget {
   _TaskCardState createState() => _TaskCardState();
 }
 
-class _TaskCardState extends State<TaskCard> {
-  bool _isTapped = false;
+class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
   late DateTime previousDate;
   late DateTime nextCompletionDate;
   late HashSet<DateTime> completedDates;
   final SoundPlayer player = SoundPlayer();
+
+  late bool isFacingFront;
+  late FlipCardController _controller;
+
+  late AnimationController _progressController;
+  late AnimationController _pulseController;
+  late Animation<double> _borderWidth;
 
   //Make modifications to previous date when storing data persistently
   @override
@@ -56,6 +63,129 @@ class _TaskCardState extends State<TaskCard> {
     widget.task.last30DaysDates = _getLast30DaysDates();
     widget.task.completionCount30days =
         _getCompletionCount(widget.task.last30DaysDates);
+
+    _controller = FlipCardController();
+    isFacingFront = true;
+
+    _progressController = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
+
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+
+    _borderWidth = Tween<double>(begin: 2, end: 2).animate(_pulseController)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _progressController.reset();
+          _pulseController.reverse();
+        }
+      });
+
+    _progressController.addListener(() {
+      if (_progressController.value == 1.0) {
+        if (!widget.task.isCompleted && widget.task.isMeantForToday) {
+          setState(() {
+            String schedule = determineFrequency(
+              widget.task.daysOfWeek,
+              widget.task.biDaily,
+              widget.task.weekly,
+              widget.task.monthly,
+            );
+
+            updatePiecesInformation();
+            widget.task.isCompleted = true;
+            hapticFeedback();
+            completionSound();
+            addCompletionCountEntry();
+            _streakAndStatsHandler(schedule);
+          });
+        }
+
+        _pulseController.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _progressController.dispose();
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String schedule = determineFrequency(
+      widget.task.daysOfWeek,
+      widget.task.biDaily,
+      widget.task.weekly,
+      widget.task.monthly,
+    );
+
+    String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
+
+    //Set notifications
+    scheduleNotifications(widget.task.notificationDays, widget.task.id,
+        widget.task.notificationTime, widget.task.title, widget.service);
+    //printAllScheduledNotifications();
+
+    //Reset completion
+    _completionResetHandler();
+
+    //Handle setting and resetting stats based on the schedule
+    _streakAndStatsHandler(schedule);
+
+    //Handles Weekly/Monthly completions
+    _setCompletionStatus(schedule);
+
+    return GestureDetector(
+        onLongPressStart: (details) {
+          if (!widget.task.isCompleted &&
+              widget.task.isMeantForToday &&
+              isFacingFront) {
+            _progressController.animateTo(1);
+          }
+        },
+        onLongPressEnd: (details) {
+          if (!_progressController.isCompleted) {
+            _progressController.animateBack(0);
+          }
+        },
+        child: AnimatedBuilder(
+          animation: Listenable.merge([_progressController, _pulseController]),
+          builder: (context, child) {
+            return Container(
+                padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                      Dimensions.of(context).radii.medium),
+                  color: Theme.of(context).cardColor,
+                  border: ProgressBorder.all(
+                    color: Theme.of(context).indicatorColor,
+                    width: _borderWidth.value, // Use animated border width
+                    progress: _progressController.value,
+                    strokeAlign: BorderSide.strokeAlignCenter,
+                  ),
+                ),
+                child: FlipCard(
+                  controller: _controller,
+                  onFlip: () {
+                    isFacingFront = !isFacingFront;
+                  },
+                  fill: Fill.fillBack,
+                  direction: FlipDirection.HORIZONTAL,
+                  side: CardSide.FRONT,
+                  front: _getCardFront(schedule),
+                  back: _getCardBack(schedule),
+                ));
+          },
+        ));
+
+    //
   }
 
   Widget _getFrontTopInfo() {
@@ -101,28 +231,24 @@ class _TaskCardState extends State<TaskCard> {
 
     // if neither of the two above apply, we need to let the user know how much time/tasks they have left
 
-    return Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: Dimensions.of(context).insets.small),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SvgPicture.asset("assets/custom_icons/clock.svg",
+            color: Theme.of(context).iconTheme.color, semanticsLabel: 'Clock'),
+        SizedBox(width: Dimensions.of(context).insets.smaller),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SvgPicture.asset("assets/custom_icons/clock.svg",
-                color: Theme.of(context).iconTheme.color,
-                semanticsLabel: 'Clock'),
-            SizedBox(width: Dimensions.of(context).insets.smaller),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(_getTimeUntilNextCompletionDate()),
-                if (_setCompletionStatus(schedule) > 0)
-                  Text(
-                    '${_setCompletionStatus(schedule)} tasks left',
-                  ),
-              ],
-            ),
+            Text(_getTimeUntilNextCompletionDate()),
+            if (_setCompletionStatus(schedule) > 0)
+              Text(
+                '${_setCompletionStatus(schedule)} tasks left',
+              ),
           ],
-        ));
+        ),
+      ],
+    );
   }
 
   Widget _getCardFront(String schedule) {
@@ -144,193 +270,131 @@ class _TaskCardState extends State<TaskCard> {
   }
 
   Widget _getCardBack(schedule) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        GestureDetector(
-          onTap: () {
-            showModalBottomSheet<Map<String, dynamic>>(
-              context: context,
-              backgroundColor: Colors.transparent,
-              builder: (BuildContext context) {
-                return EditTaskSheet(
-                  title: widget.task.title,
-                  tag: widget.task.tag,
-                  daysOfWeek: widget.task.daysOfWeek,
-                  biDaily: widget.task.biDaily,
-                  weekly: widget.task.weekly,
-                  monthly: widget.task.monthly,
-                  timesPerWeek: widget.task.timesPerWeek,
-                  timesPerMonth: widget.task.timesPerMonth,
-                  enableNotifications: widget.task.notificationsEnabled,
-                  notificationsDays: widget.task.notificationDays,
-                  selectedTime:
-                      parseTimeFromString(widget.task.notificationTime),
-                  onUpdateTask: (editedTaskData) {
-                    setState(() {
-                      widget.task.title = editedTaskData['title'];
-                      widget.task.tag = editedTaskData['tag'];
-                      widget.task.daysOfWeek = editedTaskData['daysOfWeek'];
-                      widget.task.biDaily = editedTaskData['biDaily'];
-                      widget.task.weekly = editedTaskData['weekly'];
-                      widget.task.monthly = editedTaskData['monthly'];
-                      widget.task.timesPerWeek = editedTaskData['timesPerWeek'];
-                      widget.task.timesPerMonth =
-                          editedTaskData['timesPerMonth'];
-                      widget.task.schedule = editedTaskData['schedule'];
-                      widget.task.notificationDays =
-                          editedTaskData['notificationsDays'];
-                      widget.task.notificationTime =
-                          editedTaskData['selectedTime'].toString();
-                      widget.task.notificationsEnabled =
-                          editedTaskData['notificationsEnabled'];
-                      deleteAllNotifications(widget.task.id, widget.service);
-                      scheduleNotifications(
-                          widget.task.notificationDays,
-                          widget.task.id,
-                          widget.task.notificationTime,
-                          widget.task.title,
-                          widget.service);
-                      isCompletedFalse(schedule);
-                      updateTaskSchema();
-                    });
-                  },
-                );
-              },
-            );
-          },
-          child: SvgPicture.asset("assets/custom_icons/pencil.svg",
-              color: Theme.of(context).iconTheme.color,
-              semanticsLabel: 'Pencil'),
-        ),
-        SizedBox(width: Dimensions.of(context).insets.medium),
-        Container(
-          width: 1.0,
-          height: 40,
-          color: Theme.of(context).dividerColor,
-        ),
-        SizedBox(width: Dimensions.of(context).insets.medium),
-        GestureDetector(
-          onTap: () {
-            // Show a dialog to confirm the deletion
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Theme(
-                  data: Theme.of(context).copyWith(
-                      dialogBackgroundColor: Theme.of(context).cardColor),
-                  child: AlertDialog(
-                    title: const Text('Delete Task'),
-                    content: const Text(
-                        'Are you sure you want to delete this task?'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(
-                              color: Theme.of(context).indicatorColor),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius:
+            BorderRadius.circular(Dimensions.of(context).radii.medium),
+        color: Theme.of(context).cardColor,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet<Map<String, dynamic>>(
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) {
+                  return EditTaskSheet(
+                    title: widget.task.title,
+                    tag: widget.task.tag,
+                    daysOfWeek: widget.task.daysOfWeek,
+                    biDaily: widget.task.biDaily,
+                    weekly: widget.task.weekly,
+                    monthly: widget.task.monthly,
+                    timesPerWeek: widget.task.timesPerWeek,
+                    timesPerMonth: widget.task.timesPerMonth,
+                    enableNotifications: widget.task.notificationsEnabled,
+                    notificationsDays: widget.task.notificationDays,
+                    selectedTime:
+                        parseTimeFromString(widget.task.notificationTime),
+                    onUpdateTask: (editedTaskData) {
+                      setState(() {
+                        widget.task.title = editedTaskData['title'];
+                        widget.task.tag = editedTaskData['tag'];
+                        widget.task.daysOfWeek = editedTaskData['daysOfWeek'];
+                        widget.task.biDaily = editedTaskData['biDaily'];
+                        widget.task.weekly = editedTaskData['weekly'];
+                        widget.task.monthly = editedTaskData['monthly'];
+                        widget.task.timesPerWeek =
+                            editedTaskData['timesPerWeek'];
+                        widget.task.timesPerMonth =
+                            editedTaskData['timesPerMonth'];
+                        widget.task.schedule = editedTaskData['schedule'];
+                        widget.task.notificationDays =
+                            editedTaskData['notificationsDays'];
+                        widget.task.notificationTime =
+                            editedTaskData['selectedTime'].toString();
+                        widget.task.notificationsEnabled =
+                            editedTaskData['notificationsEnabled'];
+                        deleteAllNotifications(widget.task.id, widget.service);
+                        scheduleNotifications(
+                            widget.task.notificationDays,
+                            widget.task.id,
+                            widget.task.notificationTime,
+                            widget.task.title,
+                            widget.service);
+                        isCompletedFalse(schedule);
+                        updateTaskSchema();
+                      });
+                    },
+                  );
+                },
+              );
+            },
+            child: SvgPicture.asset("assets/custom_icons/pencil.svg",
+                color: Theme.of(context).iconTheme.color,
+                semanticsLabel: 'Pencil'),
+          ),
+          SizedBox(width: Dimensions.of(context).insets.medium),
+          Container(
+            width: 1.0,
+            height: 40,
+            color: Theme.of(context).dividerColor,
+          ),
+          SizedBox(width: Dimensions.of(context).insets.medium),
+          GestureDetector(
+            onTap: () {
+              // Show a dialog to confirm the deletion
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                        dialogBackgroundColor: Theme.of(context).cardColor),
+                    child: AlertDialog(
+                      title: const Text('Delete Task'),
+                      content: const Text(
+                          'Are you sure you want to delete this task?'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                                color: Theme.of(context).indicatorColor),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
                         ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      TextButton(
-                        child: Text(
-                          'Delete',
-                          style: TextStyle(
-                              color: Theme.of(context).indicatorColor),
+                        TextButton(
+                          child: Text(
+                            'Delete',
+                            style: TextStyle(
+                                color: Theme.of(context).indicatorColor),
+                          ),
+                          onPressed: () {
+                            deleteTask();
+                            Navigator.of(context).pop();
+                          },
                         ),
-                        onPressed: () {
-                          deleteTask();
-                          Navigator.of(context).pop();
-                        },
+                      ],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            Dimensions.of(context).radii.medium),
                       ),
-                    ],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          Dimensions.of(context).radii.medium),
                     ),
-                  ),
-                );
-              },
-            );
-          },
-          child: SvgPicture.asset("assets/custom_icons/trash.svg",
-              color: Theme.of(context).iconTheme.color,
-              semanticsLabel: 'Trash'),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    String schedule = determineFrequency(
-      widget.task.daysOfWeek,
-      widget.task.biDaily,
-      widget.task.weekly,
-      widget.task.monthly,
-    );
-
-    String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
-
-    //Set notifications
-    scheduleNotifications(widget.task.notificationDays, widget.task.id,
-        widget.task.notificationTime, widget.task.title, widget.service);
-    //printAllScheduledNotifications();
-
-    //Reset completion
-    _completionResetHandler();
-
-    //Handle setting and resetting stats based on the schedule
-    _streakAndStatsHandler(schedule);
-
-    //Handles Weekly/Monthly completions
-    _setCompletionStatus(schedule);
-
-    return GestureDetector(
-        onTap: () {
-          setState(() {
-            _isTapped = !_isTapped;
-          });
-        },
-        onLongPress: !widget.task.isCompleted &&
-                !_isTapped &&
-                widget.task.isMeantForToday
-            ? () {
-                setState(() {
-                  updatePiecesInformation();
-                  widget.task.isCompleted = true;
-                  hapticFeedback();
-                  completionSound();
-                  addCompletionCountEntry();
-                  _streakAndStatsHandler(schedule);
-                });
-              }
-            : null,
-        child: FlipCard(
-          fill: Fill.fillBack,
-          direction: FlipDirection.HORIZONTAL,
-          side: CardSide.FRONT,
-          front: Container(
-            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(Dimensions.of(context).radii.medium),
-              color: Theme.of(context).cardColor,
-            ),
-            child: _getCardFront(schedule),
+                  );
+                },
+              );
+            },
+            child: SvgPicture.asset("assets/custom_icons/trash.svg",
+                color: Theme.of(context).iconTheme.color,
+                semanticsLabel: 'Trash'),
           ),
-          back: Container(
-            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(Dimensions.of(context).radii.medium),
-              color: Theme.of(context).cardColor,
-            ),
-            child: _getCardBack(schedule),
-          ),
-        ));
+        ],
+      ),
+    );
   }
 
   void isCompletedFalse(String schedule) {
