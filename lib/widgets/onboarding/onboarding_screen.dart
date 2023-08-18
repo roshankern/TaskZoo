@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:taskzoo/misc/theme_notifier.dart';
 
 import 'package:taskzoo/widgets/onboarding/custom_nav_bar.dart';
+import 'package:taskzoo/widgets/onboarding/incrementing_item.dart';
 import 'package:taskzoo/widgets/onboarding/onboarding_page.dart';
 import 'package:taskzoo/widgets/onboarding/tutorial_task_cards.dart';
 import 'package:taskzoo/widgets/onboarding/tutorial_animal_builder.dart';
 
 class OnboardingScreen extends StatefulWidget {
+  final ThemeNotifier _themeNotifier;
+
+  OnboardingScreen(this._themeNotifier);
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
@@ -183,9 +187,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(FontAwesomeIcons.puzzlePiece),
+              SvgPicture.asset(
+                "assets/custom_icons/puzzle_piece.svg",
+                color: Theme.of(context).iconTheme.color,
+                semanticsLabel: 'Puzzle Piece',
+                width: 40.0,
+                height: 40.0,
+              ),
               SizedBox(width: Dimensions.of(context).insets.large),
-              Text("Number increase animation")
+              IncrementingDigitWidget(widget._themeNotifier),
             ],
           ),
           Padding(

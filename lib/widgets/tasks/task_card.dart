@@ -769,8 +769,36 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
 
   void updatePiecesInformation() async {
     // Get the current value of totalAnimalPieces from the box
-    incrementTotalCollectedPieces();
-    widget.task.piecesObtained += 1;
+    String schedule = determineFrequency(
+      widget.task.daysOfWeek,
+      widget.task.biDaily,
+      widget.task.weekly,
+      widget.task.monthly,
+    );
+    //     if (daysOfWeek.any((day) => day == true)) {
+    //   return 'custom';
+    // } else if (weekly) {
+    //   return 'weekly';
+    // } else if (monthly) {
+    //   return 'monthly';
+    // } else if (biDaily) {
+    //   return 'biDaily';
+    // } else {
+    //   return 'daily';
+    int increment = 1;
+
+    if (schedule == 'custom') {
+      increment = 2;
+    } else if (schedule == 'weekly') {
+      increment = 2;
+    } else if (schedule == 'monthly') {
+      increment = 3;
+    } else if (schedule == 'daily') {
+      increment = 1;
+    }
+
+    widget.task.piecesObtained += increment;
+    incrementTotalCollectedPieces(increment);
   }
 
   void deleteTask() async {
@@ -805,10 +833,10 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     return todayAtMidnight;
   }
 
-  Future<void> incrementTotalCollectedPieces() async {
+  Future<void> incrementTotalCollectedPieces(int pieceChange) async {
     int currentTotalCollectedPieces =
         await widget.service.getPreference("totalCollectedPieces");
-    int newTotalCollectedPieces = currentTotalCollectedPieces + 1;
+    int newTotalCollectedPieces = currentTotalCollectedPieces + pieceChange;
     widget.service
         .setPreference("totalCollectedPieces", newTotalCollectedPieces);
   }
