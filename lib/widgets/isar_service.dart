@@ -354,7 +354,7 @@ class IsarService {
     for (int encodedDate in encodedDates) {
       DailyCompletionEntry? entry = await isar.dailyCompletionEntrys
           .where()
-          .idEqualTo(encodedDate - 1)
+          .idEqualTo(encodedDate)
           .findFirst();
 
       //String key = formatDateToMonthDay(decodedDates[i]);
