@@ -49,7 +49,7 @@ class _SettingsPageState extends State<SettingsPage> {
               horizontal: Dimensions.of(context).insets.medium),
           child: Column(children: [
             SettingsOptionWithIcon(
-              leftIcon: Icons.public,
+              leftIconPath: "assets/custom_icons/help.svg",
               optionText: 'App Icon',
               rightActionIcon: Icons.expand_less,
               onActionTap: () {
@@ -74,7 +74,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).dividerColor,
             ),
             SettingsOptionWithIcon(
-              leftIcon: Icons.help_outline,
+              leftIconPath: "assets/custom_icons/help.svg",
               optionText: 'Help',
               rightActionIcon: Icons.expand_less,
               onActionTap: () {
@@ -99,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
               horizontal: Dimensions.of(context).insets.medium),
           child: Column(children: [
             SettingsOptionWithToggle(
-              leftIcon: Icons.tonality,
+              leftIconPath: "assets/custom_icons/theme.svg",
               optionText: 'Theme',
               initialValue: widget.themeNotifier.currentTheme !=
                   ThemeMode.light, // Using the result of the stream
@@ -118,7 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).dividerColor,
             ),
             SettingsOptionWithToggle(
-              leftIcon: Icons.volume_up,
+              leftIconPath: "assets/custom_icons/sound.svg",
               optionText: 'Sounds',
               initialValue: widget.soundNotifier.soundStatus != 0,
               onToggleChanged: (bool value) {
@@ -132,7 +132,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).dividerColor,
             ),
             SettingsOptionWithToggle(
-              leftIcon: Icons.edgesensor_low,
+              leftIconPath: "assets/custom_icons/haptic.svg",
               optionText: 'Haptics',
               initialValue: widget.hapticNotifier.hapticValue != 0,
               onToggleChanged: (bool value) {
@@ -161,7 +161,7 @@ class _SettingsPageState extends State<SettingsPage> {
               horizontal: Dimensions.of(context).insets.medium),
           child: Column(children: [
             SettingsOptionWithIcon(
-              leftIcon: Icons.send,
+              leftIconPath: "assets/custom_icons/share.svg",
               optionText: 'Share',
               rightActionIcon: Icons.chevron_right,
               onActionTap: () => Share.share(
@@ -172,7 +172,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).dividerColor,
             ),
             SettingsOptionWithIcon(
-              leftIcon: Icons.star_rate,
+              leftIconPath: "assets/custom_icons/rate.svg",
               optionText: 'Leave a Review',
               rightActionIcon: Icons.chevron_right,
               onActionTap: () => _inAppReview.requestReview(),
@@ -182,7 +182,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).dividerColor,
             ),
             SettingsOptionWithIcon(
-              leftIcon: Icons.delete,
+              leftIconPath: "assets/custom_icons/trash.svg",
               optionText: 'Clean Slate Protocol',
               rightActionIcon: Icons.chevron_right,
               onActionTap: () => showDialog(

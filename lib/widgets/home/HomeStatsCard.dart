@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:taskzoo/misc/theme_notifier.dart';
@@ -25,11 +26,28 @@ class HomeStatsCard extends StatefulWidget {
     required this.service,
   }) : super(key: key);
 
-  @override
-  _HomeStatsCardState createState() => _HomeStatsCardState();
-}
+  Widget _buildStreamWidget(Stream<int> stream, SvgPicture icon) {
+    return StreamBuilder<int>(
+      stream: stream,
+      builder: (context, snapshot) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            const SizedBox(width: 5.0),
+            if (snapshot.hasData)
+              AnimatedDigitWidget(
+                value: snapshot.data!,
+                textStyle: TextStyle(
+                    fontSize: 16, color: Theme.of(context).indicatorColor),
+                duration: const Duration(milliseconds: 400),
+              ),
+          ],
+        );
+      },
+    );
+  }
 
-class _HomeStatsCardState extends State<HomeStatsCard> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<String>(
@@ -50,17 +68,20 @@ class _HomeStatsCardState extends State<HomeStatsCard> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildStreamWidget(
-                  widget.totalCollectedPiecesStream,
-                  const Icon(FontAwesomeIcons.puzzlePiece),
-                ),
+                    totalCollectedPiecesStream,
+                    SvgPicture.asset("assets/custom_icons/puzzle_piece.svg",
+                        color: Theme.of(context).iconTheme.color,
+                        semanticsLabel: 'Puzzle Piece')),
                 _buildStreamWidget(
-                  widget.countTasks(value, widget.selectedTags),
-                  const Icon(FontAwesomeIcons.listCheck),
-                ),
+                    countTasks(value, selectedTags),
+                    SvgPicture.asset("assets/custom_icons/clock.svg",
+                        color: Theme.of(context).iconTheme.color,
+                        semanticsLabel: 'Clock')),
                 _buildStreamWidget(
-                  widget.countCompletedTasks(value, widget.selectedTags),
-                  const Icon(FontAwesomeIcons.check),
-                ),
+                    countCompletedTasks(value, selectedTags),
+                    SvgPicture.asset("assets/custom_icons/check.svg",
+                        color: Theme.of(context).iconTheme.color,
+                        semanticsLabel: 'Check')),
               ],
             ),
           ),
