@@ -1,32 +1,24 @@
+import 'dart:async';
+
+import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dimensions_theme/dimensions_theme.dart';
 
-import 'package:taskzoo/widgets/isar_service.dart';
-import 'package:taskzoo/widgets/zoo/animalpieces.dart';
-
-class AnimalBuilder extends StatefulWidget {
+class TutorialAnimalBuilder extends StatefulWidget {
   final String svgPath;
-  final Color backgroundColor;
 
-  final IsarService service;
-  AnimalBuilder(
-      {required this.svgPath,
-      required this.backgroundColor,
-      Key? key,
-      required this.service})
-      : super(key: key);
+  TutorialAnimalBuilder({required this.svgPath});
 
   @override
-  State<AnimalBuilder> createState() => AnimalBuilderState();
+  _TutorialAnimalBuilderState createState() => _TutorialAnimalBuilderState();
 }
 
-class AnimalBuilderState extends State<AnimalBuilder> {
+class _TutorialAnimalBuilderState extends State<TutorialAnimalBuilder> {
   int _numShapes = 0;
   late Future<String> svgDataFuture;
   int _totalNumShapes = 0;
+  late Timer _timer;
 
   Future<String> loadSvgData(String assetName) async {
     return await rootBundle.loadString(assetName);
@@ -36,51 +28,40 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   void initState() {
     super.initState();
     svgDataFuture = loadSvgData(widget.svgPath);
-    initializeState();
+
+    Future.delayed(Duration(seconds: 1), () {
+      _timer = Timer.periodic(Duration(milliseconds: 250), (Timer t) {
+        addShape();
+      });
+    });
   }
 
-  Future<void> initializeState() async {
-    _numShapes = await getShapesFromBox();
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
-  Future<int> getShapesFromBox() async {
-    return await widget.service.getNumShapesFromAnimalPieces(widget.svgPath);
-  }
+  void addShape() {
+    if (_numShapes >= _totalNumShapes) {
+      _timer.cancel(); // Cancel the existing timer
 
-  Future<void> decrementTotalCollectedPieces() async {
-    int currentTotalCollectedPieces =
-        await widget.service.getPreference("totalCollectedPieces");
-    int newTotalCollectedPieces = currentTotalCollectedPieces;
-    if (currentTotalCollectedPieces > 0) {
-      newTotalCollectedPieces = currentTotalCollectedPieces - 1;
-      //print("AnimalBuilder: decremented piece count -> $newTotalCollectedPieces");
+      // Introduce a delay of one second
+      Future.delayed(Duration(seconds: 2), () {
+        setState(() {
+          _numShapes = 0; // Reset the number of shapes
+        });
+
+        // Restart the timer after the delay
+        _timer = Timer.periodic(Duration(milliseconds: 250), (Timer t) {
+          addShape();
+        });
+      });
     } else {
-      //print("AnimalBuilder: Piece count 0 -> $currentTotalCollectedPieces");
-    }
-    //print(widget.svgPath);
-
-    widget.service
-        .setPreference("totalCollectedPieces", newTotalCollectedPieces);
-  }
-
-  void addShape() async {
-    int currentTotalCollectedPieces =
-        await widget.service.getPreference("totalCollectedPieces");
-    if (currentTotalCollectedPieces > 0) {
       setState(() {
         _numShapes += 5;
       });
-      decrementTotalCollectedPieces();
-      AnimalPieces animalUpdate = AnimalPieces(
-          id: getSvgPathId(), pieces: _numShapes, animalName: widget.svgPath);
-      widget.service.saveAnimalPieces(animalUpdate);
     }
-  }
-
-  int getSvgPathId() {
-    // Use the hashCode method to convert the SVG path into an integer ID
-    int id = widget.svgPath.hashCode.abs();
-    return id;
   }
 
   String getBuilderSvg(String originalSvg, int numShapes) {
@@ -146,22 +127,13 @@ class AnimalBuilderState extends State<AnimalBuilder> {
           return Text('Error: ${snapshot.error}');
         }
 
-        return GestureDetector(
-          onTap: addShape,
-          child: Container(
-            padding: EdgeInsets.all(Dimensions.of(context).insets.smaller),
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(Dimensions.of(context).radii.medium),
-              color: widget.backgroundColor,
-            ),
-            child: AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              child: SvgPicture.string(
-                svgData,
-                key: ValueKey<int>(_numShapes),
-              ),
-            ),
+        return AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          child: SvgPicture.string(
+            svgData,
+            height: 175,
+            key: ValueKey<int>(
+                _numShapes), // Unique key based on the number of shapes
           ),
         );
       },
