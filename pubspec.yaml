@@ -55,7 +55,6 @@ dependencies:
   soundpool: ^2.3.0
   flip_card: ^0.7.0
   animated_text_kit: ^4.2.2
-  animated_digit: ^3.2.1
   number_precision: ^2.0.2+1
 
 dev_dependencies:
