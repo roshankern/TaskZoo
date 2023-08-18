@@ -26,28 +26,11 @@ class HomeStatsCard extends StatefulWidget {
     required this.service,
   }) : super(key: key);
 
-  Widget _buildStreamWidget(Stream<int> stream, SvgPicture icon) {
-    return StreamBuilder<int>(
-      stream: stream,
-      builder: (context, snapshot) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            icon,
-            const SizedBox(width: 5.0),
-            if (snapshot.hasData)
-              AnimatedDigitWidget(
-                value: snapshot.data!,
-                textStyle: TextStyle(
-                    fontSize: 16, color: Theme.of(context).indicatorColor),
-                duration: const Duration(milliseconds: 400),
-              ),
-          ],
-        );
-      },
-    );
-  }
+  @override
+  _HomeStatsCardState createState() => _HomeStatsCardState();
+}
 
+class _HomeStatsCardState extends State<HomeStatsCard> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<String>(
@@ -68,17 +51,17 @@ class HomeStatsCard extends StatefulWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildStreamWidget(
-                    totalCollectedPiecesStream,
+                    widget.totalCollectedPiecesStream,
                     SvgPicture.asset("assets/custom_icons/puzzle_piece.svg",
                         color: Theme.of(context).iconTheme.color,
                         semanticsLabel: 'Puzzle Piece')),
                 _buildStreamWidget(
-                    countTasks(value, selectedTags),
+                    widget.countTasks(value, widget.selectedTags),
                     SvgPicture.asset("assets/custom_icons/clock.svg",
                         color: Theme.of(context).iconTheme.color,
                         semanticsLabel: 'Clock')),
                 _buildStreamWidget(
-                    countCompletedTasks(value, selectedTags),
+                    widget.countCompletedTasks(value, widget.selectedTags),
                     SvgPicture.asset("assets/custom_icons/check.svg",
                         color: Theme.of(context).iconTheme.color,
                         semanticsLabel: 'Check')),
@@ -90,7 +73,7 @@ class HomeStatsCard extends StatefulWidget {
     );
   }
 
-  Widget _buildStreamWidget(Stream<int> stream, Icon icon) {
+  Widget _buildStreamWidget(Stream<int> stream, SvgPicture icon) {
     return StreamBuilder<int>(
       stream: stream,
       builder: (context, snapshot) {
