@@ -96,16 +96,16 @@ Future<void> scheduleNotifications(
         final activeNotifications = ActiveNotifications(
             taskid: taskId, notificationIds: scheduledNotifications.toList());
         service.saveActiveNotificationForTask(activeNotifications);
-        print("After Scheduling Notification");
-        printAllScheduledNotifications();
+        // print("After Scheduling Notification");
+        // printAllScheduledNotifications();
       }
     }
   }
 }
 
 Future<void> deleteAllNotifications(int taskId, IsarService service) async {
-  print("Before Deleting All Notifications");
-  printAllScheduledNotifications();
+  // print("Before Deleting All Notifications");
+  // printAllScheduledNotifications();
   Set<String> scheduledNotifications =
       await service.getNotificationIdsForTaskID(taskId);
   for (String notificationKey in scheduledNotifications) {
@@ -113,8 +113,8 @@ Future<void> deleteAllNotifications(int taskId, IsarService service) async {
         .cancel(notificationKey.hashCode.abs());
   }
   service.deleteActiveNotificationsForTaskEntry(taskId);
-  print("After Deleting All Notifications");
-  printAllScheduledNotifications();
+  // print("After Deleting All Notifications");
+  // printAllScheduledNotifications();
 }
 
 Future<void> _scheduleNotificationForDay(
@@ -169,7 +169,7 @@ Future<void> _scheduleNotificationForDay(
   );
 
   // Print statement to show when the notification has been scheduled
-  print('Notification scheduled for taskId: $taskId, at: $scheduledDateTime');
+  // print('Notification scheduled for taskId: $taskId, at: $scheduledDateTime');
 }
 
 Future<void> printAllScheduledNotifications() async {
