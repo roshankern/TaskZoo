@@ -119,8 +119,8 @@
             },
             "animals": [
                 {
-                    "name": "Lion",
-                    "svgPath": "assets/biomes_data/savannah/lion.svg"
+                    "name": "Zebra",
+                    "svgPath": "assets/biomes_data/savannah/zebra.svg"
                 },
                 {
                     "name": "Elephant",
@@ -131,16 +131,16 @@
                     "svgPath": "assets/biomes_data/savannah/giraffe.svg"
                 },
                 {
-                    "name": "Zebra",
-                    "svgPath": "assets/biomes_data/savannah/zebra.svg"
-                },
-                {
                     "name": "Cheetah",
                     "svgPath": "assets/biomes_data/savannah/cheetah.svg"
                 },
                 {
-                    "name": "Wildebeest",
-                    "svgPath": "assets/biomes_data/savannah/wildebeest.svg"
+                    "name": "Rhino",
+                    "svgPath": "assets/biomes_data/savannah/rhino.svg"
+                },
+                {
+                    "name": "Lion",
+                    "svgPath": "assets/biomes_data/savannah/lion.svg"
                 }
             ]
         },
