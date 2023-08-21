@@ -147,7 +147,7 @@
         {
             "name": "swamp",
             "primaryColor": "#1C3D32",
-            "secondaryColor": "#89C091",
+            "secondaryColor": "#376052",
             "backgroundPath": "assets/biomes_data/swamp/swamp_background_midjourney.png",
             "icon": {
                 "name": "Wetland",
@@ -155,28 +155,28 @@
             },
             "animals": [
                 {
-                    "name": "Alligator",
-                    "svgPath": "assets/biomes_data/swamp/alligator.svg"
+                    "name": "Racoon",
+                    "svgPath": "assets/biomes_data/swamp/racoon.svg"
                 },
                 {
                     "name": "Frog",
                     "svgPath": "assets/biomes_data/swamp/frog.svg"
                 },
                 {
-                    "name": "Snapping Turtle",
-                    "svgPath": "assets/biomes_data/swamp/snapping_turtle.svg"
+                    "name": "Alligator",
+                    "svgPath": "assets/biomes_data/swamp/alligator.svg"
                 },
                 {
                     "name": "Heron",
                     "svgPath": "assets/biomes_data/swamp/heron.svg"
                 },
                 {
-                    "name": "Snake",
-                    "svgPath": "assets/biomes_data/swamp/snake.svg"
+                    "name": "Snapping Turtle",
+                    "svgPath": "assets/biomes_data/swamp/snapping_turtle.svg"
                 },
                 {
-                    "name": "Dragonfly",
-                    "svgPath": "assets/biomes_data/swamp/dragonfly.svg"
+                    "name": "Crayfish",
+                    "svgPath": "assets/biomes_data/swamp/crayfish.svg"
                 }
             ]
         }
