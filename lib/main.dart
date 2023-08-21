@@ -205,36 +205,43 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     ];
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _navBarIndex = index + 1;
-          });
-        },
-        children: pages,
-      ),
-      bottomNavigationBar: CustomNavBar(
-        currentIndex: _navBarIndex,
-        onTap: (index) {
-          if (index == 0 || index == 3) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => index == 0
-                      ? StatsPage(service: widget.service)
-                      : SettingsPage(
-                          service: widget.service,
-                          themeNotifier: themeNotifier,
-                          hapticNotifier: hapticNotifier,
-                          soundNotifier: soundNotifier)),
-            );
-          } else {
-            _pageController.jumpToPage(index - 1);
-          }
-        },
-      ),
-    );
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _navBarIndex = index + 1;
+            });
+          },
+          children: pages,
+        ),
+        bottomNavigationBar: AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          height: _navBarIndex == 1
+              ? 84.0
+              : 0, // assuming 60.0 is the height of your nav bar
+          child: (_navBarIndex == 1)
+              ? CustomNavBar(
+                  currentIndex: _navBarIndex,
+                  onTap: (index) {
+                    if (index == 0 || index == 3) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => index == 0
+                                ? StatsPage(service: widget.service)
+                                : SettingsPage(
+                                    service: widget.service,
+                                    themeNotifier: themeNotifier,
+                                    hapticNotifier: hapticNotifier,
+                                    soundNotifier: soundNotifier)),
+                      );
+                    } else {
+                      _pageController.jumpToPage(index - 1);
+                    }
+                  },
+                )
+              : null,
+        ));
   }
 
   Future<void> setThemeNotifier(ThemeNotifier themeNotifier) async {

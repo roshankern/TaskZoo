@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:taskzoo/misc/theme_notifier.dart';
