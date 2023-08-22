@@ -155,27 +155,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 horizontal: Dimensions.of(context).insets.medium),
             child: const Text(
               "Hold down a task card to mark it as complete, or tap the task card to modify/delete the task.",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 17),
             ),
           ),
           SizedBox(
             height: Dimensions.of(context).insets.medium,
           ),
           Container(
-            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: Row(
-              children: [
-                Expanded(
-                    child:
-                        AspectRatio(aspectRatio: 1, child: HoldingTaskCard())),
-                SizedBox(width: Dimensions.of(context).insets.medium),
-                Expanded(
-                    child:
-                        AspectRatio(aspectRatio: 1, child: FlippingTaskCard())),
-              ],
-            ),
-          ),
+              padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: SingleChildScrollView(
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: AspectRatio(
+                            aspectRatio: 1, child: HoldingTaskCard())),
+                    SizedBox(width: Dimensions.of(context).insets.medium),
+                    Expanded(
+                        child: AspectRatio(
+                            aspectRatio: 1, child: FlippingTaskCard())),
+                  ],
+                ),
+              )),
         ]);
 
     Widget onboarding_page_3 = OnboardingPage(
