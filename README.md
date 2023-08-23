@@ -13,19 +13,19 @@ TaskZoo is a delightful Flutter mobile application designed to make task managem
 - Customizable Art: Transition your animal SVGs from a basic black silhouette to colorful, custom artwork.
 - Reward System: Earn pieces to complete your animal SVGs by finishing tasks.
 # Screens
-# # TaskScreen
+## TaskScreen
 This is your main task hub. Tasks are organized by daily, weekly and monthly tasks. Here, you can:
 
 - Add new tasks.
 - Mark tasks as complete.
 - View pending and completed tasks at a glance.
 
-# Settings Screen
+## Settings Screen
 Customize your TaskZoo experience by managing app settings.
 - Customize themes and appearance.
 - Adjust notifications and reminders.
 
-# AnimalBuilder Screen
+## AnimalBuilder Screen
 A canvas of creativity and motivation:
 
 - View a list of SVG animals.
@@ -57,4 +57,4 @@ A canvas of creativity and motivation:
 ```flutter run```
 
 
-Happy tasking and enjoy building your digital zoo! 🐘🦒🐅
+### Happy tasking and enjoy building your digital zoo! 🐘🦒🐅
