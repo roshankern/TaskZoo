@@ -42,7 +42,7 @@ A canvas of creativity and motivation:
 
 1. Clone the Repository:
 
-```git clone https://github.com/your-username/taskzoo.git```
+```git clone https://github.com/Brotherswords/TaskZoo.git```
 
 2. Navigate to the Project Directory:
 
