@@ -43,6 +43,7 @@ A canvas of creativity and motivation:
 1. Clone the Repository:
 
 ```git clone https://github.com/your-username/taskzoo.git```
+
 2. Navigate to the Project Directory:
 
 ```cd taskzoo```
@@ -50,6 +51,7 @@ A canvas of creativity and motivation:
 3. Install Dependencies (Make sure flutter is installed go here for more on that - https://docs.flutter.dev/get-started/install):
 
 ```flutter pub get```
+
 4. Open a simulator or connect your device & run the app:
 
 ```flutter run```
