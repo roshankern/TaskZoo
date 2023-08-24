@@ -1,23 +1,22 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class TutorialAnimalBuilder extends StatefulWidget {
+class TestTutorialAnimalBuilder extends StatefulWidget {
   final String svgPath;
 
-  TutorialAnimalBuilder({required this.svgPath});
+  TestTutorialAnimalBuilder({required this.svgPath});
 
   @override
-  _TutorialAnimalBuilderState createState() => _TutorialAnimalBuilderState();
+  _TestTutorialAnimalBuilderState createState() =>
+      _TestTutorialAnimalBuilderState();
 }
 
-class _TutorialAnimalBuilderState extends State<TutorialAnimalBuilder> {
+class _TestTutorialAnimalBuilderState extends State<TestTutorialAnimalBuilder> {
   int _numShapes = 0;
   late Future<String> svgDataFuture;
   int _totalNumShapes = 0;
-  late Timer _timer;
 
   Future<String> loadSvgData(String assetName) async {
     return await rootBundle.loadString(assetName);
@@ -27,36 +26,10 @@ class _TutorialAnimalBuilderState extends State<TutorialAnimalBuilder> {
   void initState() {
     super.initState();
     svgDataFuture = loadSvgData(widget.svgPath);
-
-    Future.delayed(Duration(seconds: 1), () {
-      _timer = Timer.periodic(Duration(milliseconds: 250), (Timer t) {
-        addShape();
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
   }
 
   void addShape() {
-    if (_numShapes >= _totalNumShapes) {
-      _timer.cancel(); // Cancel the existing timer
-
-      // Introduce a delay of one second
-      Future.delayed(Duration(seconds: 2), () {
-        setState(() {
-          _numShapes = 0; // Reset the number of shapes
-        });
-
-        // Restart the timer after the delay
-        _timer = Timer.periodic(Duration(milliseconds: 250), (Timer t) {
-          addShape();
-        });
-      });
-    } else {
+    if (_numShapes < _totalNumShapes) {
       setState(() {
         _numShapes += 5;
       });
@@ -109,33 +82,36 @@ class _TutorialAnimalBuilderState extends State<TutorialAnimalBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: svgDataFuture,
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        // svg data starts with empty image (this wont change if no data is loaded)
-        String svgData =
-            '''<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>''';
+    return GestureDetector(
+      onTap: addShape, // Increment shapes on tap
+      child: FutureBuilder<String>(
+        future: svgDataFuture,
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          // svg data starts with an empty image (this won't change if no data is loaded)
+          String svgData =
+              '''<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>''';
 
-        if (snapshot.connectionState == ConnectionState.done) {
-          // get svg string data based on svg file and number of desired shapes
-          svgData = snapshot.data!;
-          // find total number of shapes so we can tell user how close they are to being complete with this shape
-          _totalNumShapes = countPathsInSvg(svgData);
-          svgData = getBuilderSvg(svgData, _numShapes);
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
+          if (snapshot.connectionState == ConnectionState.done) {
+            // get svg string data based on svg file and number of desired shapes
+            svgData = snapshot.data!;
+            // find the total number of shapes so we can tell the user how close they are to being complete with this shape
+            _totalNumShapes = countPathsInSvg(svgData);
+            svgData = getBuilderSvg(svgData, _numShapes);
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
 
-        return AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
-          child: SvgPicture.string(
-            svgData,
-            height: 175,
-            key: ValueKey<int>(
-                _numShapes), // Unique key based on the number of shapes
-          ),
-        );
-      },
+          return AnimatedSwitcher(
+            duration: Duration(milliseconds: 300),
+            child: SvgPicture.string(
+              svgData,
+              height: 175,
+              key: ValueKey<int>(
+                  _numShapes), // Unique key based on the number of shapes
+            ),
+          );
+        },
+      ),
     );
   }
 }

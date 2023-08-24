@@ -96,6 +96,7 @@ flutter:
     - assets/onboarding/
     - assets/custom_icons/
     - assets/splash_screen/
+    - assets/low_poly_curled_fox.svg
     - assets/TaskCompletion.wav
 
 flutter_native_splash:

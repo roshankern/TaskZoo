@@ -10,6 +10,7 @@ import 'package:taskzoo/pages/home_page.dart';
 import 'package:taskzoo/pages/zoo_page.dart';
 import 'package:taskzoo/pages/stats_page.dart';
 import 'package:taskzoo/pages/settings_page.dart';
+import 'package:taskzoo/pages/test_zoo_page.dart';
 
 import 'package:taskzoo/widgets/home/navbar.dart';
 
@@ -203,6 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
           service: widget.service,
         ),
       ),
+      ZooTestPage()
     ];
     return Scaffold(
         body: PageView(
