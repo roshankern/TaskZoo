@@ -1,6 +1,10 @@
 import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:taskzoo/widgets/zoo/test_animal_builder.dart';
+
+import 'dart:ui' as ui;
 
 class ZooTestPage extends StatelessWidget {
   @override
@@ -21,21 +25,53 @@ class ZooTestPage extends StatelessWidget {
 class ZooBody extends StatelessWidget {
   ZooBody();
 
+  final String svgAssetPath = "assets/racoon.svg";
+
+  Future<String> loadSvgData() async {
+    return await rootBundle.loadString(svgAssetPath);
+  }
+
+  Future<ui.Image> loadSvgImage() async {
+    String svgStringData = await loadSvgData();
+
+    PictureInfo pictureInfo =
+        await vg.loadPicture(SvgStringLoader(svgStringData), null);
+    ui.Image image = await pictureInfo.picture.toImage(1500, 1500);
+
+    return image;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // rest of the code
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-      itemCount: 10,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: Dimensions.of(context).insets.medium,
-        mainAxisSpacing: Dimensions.of(context).insets.medium,
-      ),
-      itemBuilder: (BuildContext context, int index) {
-        return TestTutorialAnimalBuilder(svgPath: "assets/racoon.svg");
+    return FutureBuilder<ui.Image>(
+      future: loadSvgImage(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          final svgImageData = snapshot.data!;
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+            itemCount: 10,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: Dimensions.of(context).insets.medium,
+              mainAxisSpacing: Dimensions.of(context).insets.medium,
+            ),
+            itemBuilder: (BuildContext context, int index) {
+              return RawImage(
+                // pass dart:ui.Image here
+                image: svgImageData,
+                width: 1000,
+                height: 1000,
+              );
+            },
+          );
+        }
       },
     );
   }

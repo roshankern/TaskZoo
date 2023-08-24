@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
@@ -23,6 +24,8 @@ import 'package:taskzoo/widgets/onboarding/onboarding_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
+  debugRepaintRainbowEnabled = true;
+
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
