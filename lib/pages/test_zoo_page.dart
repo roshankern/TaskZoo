@@ -35,8 +35,7 @@ class ZooBody extends StatelessWidget {
         mainAxisSpacing: Dimensions.of(context).insets.medium,
       ),
       itemBuilder: (BuildContext context, int index) {
-        return TestTutorialAnimalBuilder(
-            svgPath: "assets/low_poly_curled_fox.svg");
+        return TestTutorialAnimalBuilder(svgPath: "assets/racoon.svg");
       },
     );
   }
