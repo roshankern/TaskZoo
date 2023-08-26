@@ -95,6 +95,7 @@ class _HomePageState extends State<HomePage>
                           children: tasks
                               .map(
                                 (task) => TaskCard(
+                                  key: ValueKey(task.id),
                                   task: task,
                                   service: widget.service,
                                 ),

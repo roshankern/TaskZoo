@@ -103,7 +103,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ),
           );
         } else {
-          return CircularProgressIndicator(); // Loading indicator
+          return const CircularProgressIndicator(); // Loading indicator
         }
       },
     );
@@ -140,7 +140,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   Padding(
                     padding:
                         EdgeInsets.all(Dimensions.of(context).insets.medium),
-                    child: Text(
+                    child: const Text(
                       'Tags',
                       style: TextStyle(
                         fontSize: 20,
@@ -194,7 +194,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     Padding(
                       padding:
                           EdgeInsets.all(Dimensions.of(context).insets.medium),
-                      child: Text(
+                      child: const Text(
                         'Add Tasks To Filter By Tags',
                         style: TextStyle(
                           fontSize: 18,

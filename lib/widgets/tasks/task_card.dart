@@ -442,15 +442,16 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     final difference = nextCompletionDate.difference(now);
     // print(
     //     "${widget.task.title}: Now - ${now}, NextCompletionDate - ${nextCompletionDate}, Difference - ${difference}");
+    updateTaskSchema();
 
     final days = difference.inDays;
     final hours = difference.inHours % 24;
     final minutes = difference.inMinutes % 60;
 
-    if (days > 1) {
+    if (days > 2) {
       return "$days days left";
-    } else if (days == 1) {
-      return "1 day left";
+    } else if (days < 2 && days >= 1) {
+      return "$hours hours left";
     } else if (hours > 0) {
       return "$hours hours left";
     } else {
@@ -640,49 +641,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
       case 'biDaily':
         return previousCompletionDate.add(const Duration(days: 2));
       default:
-        print(
-            "NOTE in Task_card.dart: For {widget.task.schedule} ->  default case triggered");
         return previousCompletionDate.add(const Duration(days: 1));
     }
-  }
-
-  int _getNextValidDay(int currentDay, String startOfWeek) {
-    final daysOfWeek = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ];
-    final startDayIndex = daysOfWeek.indexOf(startOfWeek);
-    final nextValidDayIndex = (startDayIndex + 7 - currentDay) % 7;
-    return nextValidDayIndex;
-  }
-
-  int _getDaysToAdd(int currentDay, int nextValidDay) {
-    return nextValidDay >= currentDay
-        ? nextValidDay - currentDay
-        : (nextValidDay + 7) - currentDay;
-  }
-
-  DateTime _getStartOfWeek(DateTime date, String startOfWeek) {
-    final daysOfWeek = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ];
-    final startDayIndex = daysOfWeek.indexOf(startOfWeek);
-    final currentDayIndex = date.weekday - 1;
-    final daysToAdd = startDayIndex >= currentDayIndex
-        ? startDayIndex - currentDayIndex
-        : (startDayIndex + 7) - currentDayIndex;
-    return date.add(Duration(days: daysToAdd));
   }
 
   List<bool> shiftRight(List<bool> array, int n) {
@@ -758,12 +718,6 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     }
   }
 
-  DateTime getTodayAtMidnight() {
-    DateTime now = DateTime.now();
-    DateTime todayAtMidnight = DateTime(now.year, now.month, now.day);
-    return todayAtMidnight;
-  }
-
   Future<void> incrementTotalCollectedPieces(int pieceChange) async {
     int currentTotalCollectedPieces =
         await widget.service.getPreference("totalCollectedPieces");
@@ -794,7 +748,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
   }
 
   TimeOfDay parseTimeFromString(String timeString) {
-    print("TimeString: $timeString");
+    // print("TimeString: $timeString");
     int hour = int.parse(timeString.substring(10, 12));
     int minute = int.parse(timeString.substring(13, 15));
     return TimeOfDay(hour: hour, minute: minute);
