@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
 class NotificationsWidget extends StatefulWidget {
   final Function(bool enableNotifications, List<bool> selectedWeekdays,
@@ -36,12 +35,6 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
         _selectedWeekdays =
             selectedWeekdays ?? List.generate(7, (index) => false),
         _selectedTime = notiTime ?? TimeOfDay.now();
-
-  void _selectWeekday(int index, bool value) {
-    setState(() {
-      _selectedWeekdays[index] = value;
-    });
-  }
 
   void _selectTime(TimeOfDay time) {
     setState(() {
