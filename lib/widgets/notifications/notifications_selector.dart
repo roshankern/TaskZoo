@@ -61,7 +61,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
       children: [
         Row(
           children: [
-            Text(
+            const Text(
               'Enable Notifications:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
@@ -124,7 +124,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                         return Theme(
                           data: ThemeData.light().copyWith(
                             primaryColor: Colors.black,
-                            buttonTheme: ButtonThemeData(
+                            buttonTheme: const ButtonThemeData(
                               textTheme: ButtonTextTheme.primary,
                               buttonColor: Colors.black,
                             ),

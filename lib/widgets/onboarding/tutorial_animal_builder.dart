@@ -28,8 +28,8 @@ class _TutorialAnimalBuilderState extends State<TutorialAnimalBuilder> {
     super.initState();
     svgDataFuture = loadSvgData(widget.svgPath);
 
-    Future.delayed(Duration(seconds: 1), () {
-      _timer = Timer.periodic(Duration(milliseconds: 250), (Timer t) {
+    Future.delayed(const Duration(seconds: 1), () {
+      _timer = Timer.periodic(const Duration(milliseconds: 250), (Timer t) {
         addShape();
       });
     });
@@ -46,13 +46,13 @@ class _TutorialAnimalBuilderState extends State<TutorialAnimalBuilder> {
       _timer.cancel(); // Cancel the existing timer
 
       // Introduce a delay of one second
-      Future.delayed(Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 2), () {
         setState(() {
           _numShapes = 0; // Reset the number of shapes
         });
 
         // Restart the timer after the delay
-        _timer = Timer.periodic(Duration(milliseconds: 250), (Timer t) {
+        _timer = Timer.periodic(const Duration(milliseconds: 250), (Timer t) {
           addShape();
         });
       });
@@ -127,7 +127,7 @@ class _TutorialAnimalBuilderState extends State<TutorialAnimalBuilder> {
         }
 
         return AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           child: SvgPicture.string(
             svgData,
             height: 175,

@@ -173,21 +173,21 @@ Future<void> _scheduleNotificationForDay(
 }
 
 Future<void> printAllScheduledNotifications() async {
-  final List<PendingNotificationRequest> notifications =
-      await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+  // final List<PendingNotificationRequest> notifications =
+  //     await flutterLocalNotificationsPlugin.pendingNotificationRequests();
 
-  if (notifications.isEmpty) {
-    print('No scheduled notifications.');
-  } else {
-    print('Scheduled Notifications:');
-    for (final notification in notifications) {
-      print('ID: ${notification.id}');
-      print('Title: ${notification.title}');
-      print('Body: ${notification.body}');
-      print('Scheduled Date: ${notification.payload}');
-      print('---');
-    }
-  }
+  // if (notifications.isEmpty) {
+  //   print('No scheduled notifications.');
+  // } else {
+  //   print('Scheduled Notifications:');
+  //   for (final notification in notifications) {
+  //     print('ID: ${notification.id}');
+  //     print('Title: ${notification.title}');
+  //     print('Body: ${notification.body}');
+  //     print('Scheduled Date: ${notification.payload}');
+  //     print('---');
+  //   }
+  // }
 }
 
 Future<void> cancelAllNotifications() async {

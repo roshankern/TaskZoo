@@ -17,17 +17,17 @@ class _FlippingTaskCardState extends State<FlippingTaskCard> {
     return Padding(
       padding:
           EdgeInsets.symmetric(horizontal: Dimensions.of(context).insets.small),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "10 Pushups",
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
             ),
           ),
-          const SizedBox(
+          SizedBox(
             height: 8,
           ),
           Text(
@@ -53,7 +53,7 @@ class _FlippingTaskCardState extends State<FlippingTaskCard> {
         SvgPicture.asset("assets/custom_icons/clock.svg",
             color: Theme.of(context).iconTheme.color, semanticsLabel: 'Clock'),
         SizedBox(width: Dimensions.of(context).insets.smaller),
-        Text("15 Hours Left"),
+        const Text("15 Hours Left"),
       ],
     );
   }
@@ -101,7 +101,7 @@ class _FlippingTaskCardState extends State<FlippingTaskCard> {
     _controller = FlipCardController();
 
     // Initialize the timer to toggle the card every 3 seconds
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       _controller.toggleCard();
     });
   }
@@ -183,7 +183,7 @@ class _HoldingTaskCardState extends State<HoldingTaskCard>
         _pulseController.forward();
 
         // Add a delay to set isComplete to false
-        Future.delayed(Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 2), () {
           setState(() {
             isComplete = false;
           });
@@ -191,10 +191,10 @@ class _HoldingTaskCardState extends State<HoldingTaskCard>
       }
     });
 
-    Future.delayed(Duration(seconds: 1, milliseconds: 500), () {
+    Future.delayed(const Duration(seconds: 1, milliseconds: 500), () {
       _progressController.animateTo(1);
 
-      _timer = Timer.periodic(Duration(seconds: 6), (Timer t) {
+      _timer = Timer.periodic(const Duration(seconds: 6), (Timer t) {
         _progressController.animateTo(1);
       });
     });
@@ -212,17 +212,17 @@ class _HoldingTaskCardState extends State<HoldingTaskCard>
     return Padding(
       padding:
           EdgeInsets.symmetric(horizontal: Dimensions.of(context).insets.small),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "10 Pushups",
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
             ),
           ),
-          const SizedBox(
+          SizedBox(
             height: 8,
           ),
           Text(
@@ -248,7 +248,7 @@ class _HoldingTaskCardState extends State<HoldingTaskCard>
         SvgPicture.asset("assets/custom_icons/clock.svg",
             color: Theme.of(context).iconTheme.color, semanticsLabel: 'Clock'),
         SizedBox(width: Dimensions.of(context).insets.smaller),
-        Text("15 Hours Left"),
+        const Text("15 Hours Left"),
       ],
     );
   }
