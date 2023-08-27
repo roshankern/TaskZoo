@@ -11,28 +11,28 @@
             },
             "animals": [
                 {
+                    "name": "Rabbit",
+                    "svgPath": "assets/biomes_data/mountain/rabbit.svg"
+                },
+                {
                     "name": "Blue Bird",
                     "svgPath": "assets/biomes_data/mountain/blue_bird.svg"
-                },
-                {
-                    "name": "Falcon",
-                    "svgPath": "assets/biomes_data/mountain/falcon.svg"
-                },
-                {
-                    "name": "Wolf",
-                    "svgPath": "assets/biomes_data/mountain/wolf.svg"
                 },
                 {
                     "name": "Bear",
                     "svgPath": "assets/biomes_data/mountain/bear.svg"
                 },
                 {
-                    "name": "Rabbit",
-                    "svgPath": "assets/biomes_data/mountain/rabbit.svg"
+                    "name": "Wolf",
+                    "svgPath": "assets/biomes_data/mountain/wolf.svg"
                 },
                 {
                     "name": "Mountain Goat",
                     "svgPath": "assets/biomes_data/mountain/mountain_goat.svg"
+                },
+                {
+                    "name": "Falcon",
+                    "svgPath": "assets/biomes_data/mountain/falcon.svg"
                 }
             ]
         },
