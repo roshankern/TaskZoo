@@ -26,19 +26,20 @@ class AnimalBuilder extends StatefulWidget {
 
 class AnimalBuilderState extends State<AnimalBuilder> {
   int _numShapes = 0;
-  late String _svgStringData;
+  late Future<String> _svgStringDataFuture;
   late int _totalNumShapes;
 
   @override
   void initState() {
     super.initState();
-    initializeState(widget.svgPath);
+    _svgStringDataFuture = initializeState(widget.svgPath);
   }
 
-  Future<void> initializeState(String svgPath) async {
-    _svgStringData = await rootBundle.loadString(svgPath);
-    _totalNumShapes = countPathsInSvg(_svgStringData);
+  Future<String> initializeState(String svgPath) async {
+    String svgData = await rootBundle.loadString(svgPath);
+    _totalNumShapes = countPathsInSvg(svgData);
     _numShapes = await getShapesFromBox();
+    return svgData;
   }
 
   Future<int> getShapesFromBox() async {
@@ -122,7 +123,10 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     return '$rootElement\n$modifiedShapes\n</svg>';
   }
 
-  Future<ui.Image> getBuilderImage(String originalSvg, int numShapes) async {
+  Future<ui.Image> getBuilderImage(
+      Future<String> svgStringDataFuture, int numShapes) async {
+    // Wait for the Future<String> to complete
+    String originalSvg = await svgStringDataFuture;
     // get builder svg (only shapes that have been collected are colored)
     String builderSvgString = getBuilderSvg(originalSvg, numShapes);
 
@@ -140,7 +144,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<ui.Image>(
-      future: getBuilderImage(_svgStringData, _numShapes),
+      future: getBuilderImage(_svgStringDataFuture, _numShapes),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
