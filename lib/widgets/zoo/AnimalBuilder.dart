@@ -146,9 +146,7 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     return FutureBuilder<ui.Image>(
       future: getBuilderImage(_svgStringDataFuture, _numShapes),
       builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
+        if (snapshot.hasData) {
           final svgImageData = snapshot.data!;
 
           return GestureDetector(
@@ -169,6 +167,16 @@ class AnimalBuilderState extends State<AnimalBuilder> {
               ),
             ),
           );
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return Container(
+              padding: EdgeInsets.all(Dimensions.of(context).insets.smaller),
+              decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.circular(Dimensions.of(context).radii.medium),
+                color: widget.backgroundColor,
+              ));
         }
       },
     );
