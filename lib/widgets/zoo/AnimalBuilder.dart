@@ -25,6 +25,7 @@ class AnimalBuilder extends StatefulWidget {
 }
 
 class AnimalBuilderState extends State<AnimalBuilder> {
+  late Future<int> _numShapesFuture;
   int _numShapes = 0;
   late Future<String> _svgStringDataFuture;
   late int _totalNumShapes;
@@ -32,20 +33,21 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   @override
   void initState() {
     super.initState();
-    _svgStringDataFuture = initializeState(widget.svgPath);
+    _numShapesFuture = getNumShapes();
+    _svgStringDataFuture = getSvgString(widget.svgPath);
   }
 
-  Future<String> initializeState(String svgPath) async {
-    _numShapes = await getShapesFromBox();
+  Future<int> getNumShapes() async {
+    _numShapes =
+        await widget.service.getNumShapesFromAnimalPieces(widget.svgPath);
+    return _numShapes;
+  }
 
-    print(_numShapes);
+  Future<String> getSvgString(String svgPath) async {
     String svgData = await rootBundle.loadString(svgPath);
     _totalNumShapes = countPathsInSvg(svgData);
-    return svgData;
-  }
 
-  Future<int> getShapesFromBox() async {
-    return await widget.service.getNumShapesFromAnimalPieces(widget.svgPath);
+    return svgData;
   }
 
   Future<void> decrementTotalCollectedPieces() async {
@@ -126,11 +128,13 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   }
 
   Future<ui.Image> getBuilderImage(
-      Future<String> svgStringDataFuture, int numShapes) async {
-    // Wait for the Future<String> to complete
+      Future<String> svgStringDataFuture, Future<int> numShapesFuture) async {
+    // Wait for futures to complete
     String originalSvg = await svgStringDataFuture;
+    await numShapesFuture;
+
     // get builder svg (only shapes that have been collected are colored)
-    String builderSvgString = getBuilderSvg(originalSvg, numShapes);
+    String builderSvgString = getBuilderSvg(originalSvg, _numShapes);
 
     // get vector graphics version of builer svg
     PictureInfo builderPictureInfo =
@@ -145,9 +149,8 @@ class AnimalBuilderState extends State<AnimalBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    print(_numShapes);
     return FutureBuilder<ui.Image>(
-      future: getBuilderImage(_svgStringDataFuture, _numShapes),
+      future: getBuilderImage(_svgStringDataFuture, _numShapesFuture),
       builder: (context, snapshot) {
         Widget? animalBuilderContent;
 
