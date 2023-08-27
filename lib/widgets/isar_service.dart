@@ -158,6 +158,17 @@ class IsarService {
         ? allTasks
         : allTasks.where((task) => selectedTags.contains(task.tag)).toList();
     yield filteredTasks;
+
+    // Set up a watcher that yields new data every time something changes in the database
+    await for (var _
+        in isar.tasks.where().filter().scheduleEqualTo(schedule).watch()) {
+      allTasks =
+          await isar.tasks.where().filter().scheduleEqualTo(schedule).findAll();
+      filteredTasks = selectedTags.isEmpty
+          ? allTasks
+          : allTasks.where((task) => selectedTags.contains(task.tag)).toList();
+      yield filteredTasks;
+    }
   }
 
   Future<void> deleteTask(Task task) async {
