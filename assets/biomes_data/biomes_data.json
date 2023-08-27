@@ -1,42 +1,6 @@
 {
     "biomes": [
         {
-            "name": "arctic",
-            "primaryColor": "#CCE6FF",
-            "secondaryColor": "#E6F7FF",
-            "backgroundPath": "assets/biomes_data/arctic/arctic_background_midjourney.png",
-            "icon": {
-                "name": "Snowflake",
-                "svgPath": "assets/biomes_data/arctic/snowflake.svg"
-            },
-            "animals": [
-                {
-                    "name": "Polar Bear",
-                    "svgPath": "assets/biomes_data/arctic/polar_bear.svg"
-                },
-                {
-                    "name": "Penguin",
-                    "svgPath": "assets/biomes_data/arctic/penguin.svg"
-                },
-                {
-                    "name": "Snowy Owl",
-                    "svgPath": "assets/biomes_data/arctic/snowy_owl.svg"
-                },
-                {
-                    "name": "Reindeer",
-                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
-                },
-                {
-                    "name": "Walrus",
-                    "svgPath": "assets/biomes_data/arctic/walrus.svg"
-                },
-                {
-                    "name": "Arctic Fox",
-                    "svgPath": "assets/biomes_data/arctic/arctic_fox.svg"
-                }
-            ]
-        },
-        {
             "name": "mountain",
             "primaryColor": "#7AB331",
             "secondaryColor": "#A1CC40",
@@ -47,64 +11,28 @@
             },
             "animals": [
                 {
+                    "name": "Rabbit",
+                    "svgPath": "assets/biomes_data/mountain/rabbit.svg"
+                },
+                {
                     "name": "Blue Bird",
                     "svgPath": "assets/biomes_data/mountain/blue_bird.svg"
-                },
-                {
-                    "name": "Falcon",
-                    "svgPath": "assets/biomes_data/mountain/falcon.svg"
-                },
-                {
-                    "name": "Wolf",
-                    "svgPath": "assets/biomes_data/mountain/wolf.svg"
                 },
                 {
                     "name": "Bear",
                     "svgPath": "assets/biomes_data/mountain/bear.svg"
                 },
                 {
-                    "name": "Rabbit",
-                    "svgPath": "assets/biomes_data/mountain/rabbit.svg"
+                    "name": "Wolf",
+                    "svgPath": "assets/biomes_data/mountain/wolf.svg"
                 },
                 {
                     "name": "Mountain Goat",
                     "svgPath": "assets/biomes_data/mountain/mountain_goat.svg"
-                }
-            ]
-        },
-        {
-            "name": "ocean",
-            "primaryColor": "#00B0D8",
-            "secondaryColor": "#4DCADB",
-            "backgroundPath": "assets/biomes_data/ocean/ocean_background_midjourney.png",
-            "icon": {
-                "name": "Wave",
-                "svgPath": "assets/biomes_data/ocean/wave.svg"
-            },
-            "animals": [
-                {
-                    "name": "Dolphin",
-                    "svgPath": "assets/biomes_data/ocean/dolphin.svg"
                 },
                 {
-                    "name": "Octopus",
-                    "svgPath": "assets/biomes_data/ocean/octopus.svg"
-                },
-                {
-                    "name": "Seahorse",
-                    "svgPath": "assets/biomes_data/ocean/seahorse.svg"
-                },
-                {
-                    "name": "Sea Turtle",
-                    "svgPath": "assets/biomes_data/ocean/sea_turtle.svg"
-                },
-                {
-                    "name": "Shark",
-                    "svgPath": "assets/biomes_data/ocean/shark.svg"
-                },
-                {
-                    "name": "Crab",
-                    "svgPath": "assets/biomes_data/ocean/crab.svg"
+                    "name": "Falcon",
+                    "svgPath": "assets/biomes_data/mountain/falcon.svg"
                 }
             ]
         },
@@ -177,6 +105,78 @@
                 {
                     "name": "Crayfish",
                     "svgPath": "assets/biomes_data/swamp/crayfish.svg"
+                }
+            ]
+        },
+        {
+            "name": "ocean",
+            "primaryColor": "#00B0D8",
+            "secondaryColor": "#4DCADB",
+            "backgroundPath": "assets/biomes_data/ocean/ocean_background_midjourney.png",
+            "icon": {
+                "name": "Wave",
+                "svgPath": "assets/biomes_data/ocean/wave.svg"
+            },
+            "animals": [
+                {
+                    "name": "Dolphin",
+                    "svgPath": "assets/biomes_data/ocean/dolphin.svg"
+                },
+                {
+                    "name": "Octopus",
+                    "svgPath": "assets/biomes_data/ocean/octopus.svg"
+                },
+                {
+                    "name": "Seahorse",
+                    "svgPath": "assets/biomes_data/ocean/seahorse.svg"
+                },
+                {
+                    "name": "Sea Turtle",
+                    "svgPath": "assets/biomes_data/ocean/sea_turtle.svg"
+                },
+                {
+                    "name": "Shark",
+                    "svgPath": "assets/biomes_data/ocean/shark.svg"
+                },
+                {
+                    "name": "Crab",
+                    "svgPath": "assets/biomes_data/ocean/crab.svg"
+                }
+            ]
+        },
+        {
+            "name": "arctic",
+            "primaryColor": "#CCE6FF",
+            "secondaryColor": "#E6F7FF",
+            "backgroundPath": "assets/biomes_data/arctic/arctic_background_midjourney.png",
+            "icon": {
+                "name": "Snowflake",
+                "svgPath": "assets/biomes_data/arctic/snowflake.svg"
+            },
+            "animals": [
+                {
+                    "name": "Polar Bear",
+                    "svgPath": "assets/biomes_data/arctic/polar_bear.svg"
+                },
+                {
+                    "name": "Penguin",
+                    "svgPath": "assets/biomes_data/arctic/penguin.svg"
+                },
+                {
+                    "name": "Snowy Owl",
+                    "svgPath": "assets/biomes_data/arctic/snowy_owl.svg"
+                },
+                {
+                    "name": "Reindeer",
+                    "svgPath": "assets/biomes_data/arctic/reindeer.svg"
+                },
+                {
+                    "name": "Walrus",
+                    "svgPath": "assets/biomes_data/arctic/walrus.svg"
+                },
+                {
+                    "name": "Arctic Fox",
+                    "svgPath": "assets/biomes_data/arctic/arctic_fox.svg"
                 }
             ]
         }
