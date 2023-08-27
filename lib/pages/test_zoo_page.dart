@@ -36,7 +36,7 @@ class ZooBody extends StatelessWidget {
 
     PictureInfo pictureInfo =
         await vg.loadPicture(SvgStringLoader(svgStringData), null);
-    ui.Image image = await pictureInfo.picture.toImage(1500, 1500);
+    ui.Image image = await pictureInfo.picture.toImage(1024, 1024);
 
     return image;
   }
@@ -63,11 +63,14 @@ class ZooBody extends StatelessWidget {
               mainAxisSpacing: Dimensions.of(context).insets.medium,
             ),
             itemBuilder: (BuildContext context, int index) {
-              return RawImage(
-                // pass dart:ui.Image here
-                image: svgImageData,
-                width: 1000,
-                height: 1000,
+              return Container(
+                padding: EdgeInsets.all(10),
+                width: 300,
+                height: 300,
+                color: Colors.blue,
+                child: RawImage(
+                  image: svgImageData,
+                ),
               );
             },
           );
