@@ -36,9 +36,11 @@ class AnimalBuilderState extends State<AnimalBuilder> {
   }
 
   Future<String> initializeState(String svgPath) async {
+    _numShapes = await getShapesFromBox();
+
+    print(_numShapes);
     String svgData = await rootBundle.loadString(svgPath);
     _totalNumShapes = countPathsInSvg(svgData);
-    _numShapes = await getShapesFromBox();
     return svgData;
   }
 
@@ -143,41 +145,41 @@ class AnimalBuilderState extends State<AnimalBuilder> {
 
   @override
   Widget build(BuildContext context) {
+    print(_numShapes);
     return FutureBuilder<ui.Image>(
       future: getBuilderImage(_svgStringDataFuture, _numShapes),
       builder: (context, snapshot) {
+        Widget? animalBuilderContent;
+
         if (snapshot.hasData) {
           final svgImageData = snapshot.data!;
-
-          return GestureDetector(
-            onTap: addShape,
-            child: Container(
-              padding: EdgeInsets.all(Dimensions.of(context).insets.smaller),
-              decoration: BoxDecoration(
-                borderRadius:
-                    BorderRadius.circular(Dimensions.of(context).radii.medium),
-                color: widget.backgroundColor,
-              ),
-              child: AnimatedSwitcher(
-                duration: Duration(milliseconds: 300),
-                child: RawImage(
-                  image: svgImageData,
-                  key: ValueKey<int>(_numShapes),
-                ),
-              ),
-            ),
+          animalBuilderContent = RawImage(
+            key: ValueKey('loaded_$_numShapes'), // Composite key
+            image: svgImageData,
           );
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+          animalBuilderContent = Text('Error: ${snapshot.error}');
         } else {
-          return Container(
-              padding: EdgeInsets.all(Dimensions.of(context).insets.smaller),
-              decoration: BoxDecoration(
-                borderRadius:
-                    BorderRadius.circular(Dimensions.of(context).radii.medium),
-                color: widget.backgroundColor,
-              ));
+          animalBuilderContent = Container(
+            key: ValueKey('loading'), // Key for the loading state
+          );
         }
+
+        return GestureDetector(
+          onTap: addShape,
+          child: Container(
+            padding: EdgeInsets.all(Dimensions.of(context).insets.smaller),
+            decoration: BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(Dimensions.of(context).radii.medium),
+              color: widget.backgroundColor,
+            ),
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: animalBuilderContent,
+            ),
+          ),
+        );
       },
     );
   }
