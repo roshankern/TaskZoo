@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 
+import 'dart:ui' as ui;
+
 import 'package:taskzoo/widgets/isar_service.dart';
 import 'package:taskzoo/widgets/zoo/animalpieces.dart';
 
@@ -24,21 +26,18 @@ class AnimalBuilder extends StatefulWidget {
 
 class AnimalBuilderState extends State<AnimalBuilder> {
   int _numShapes = 0;
-  late Future<String> svgDataFuture;
-  int _totalNumShapes = 0;
-
-  Future<String> loadSvgData(String assetName) async {
-    return await rootBundle.loadString(assetName);
-  }
+  late String _svgStringData;
+  late int _totalNumShapes;
 
   @override
   void initState() {
     super.initState();
-    svgDataFuture = loadSvgData(widget.svgPath);
-    initializeState();
+    initializeState(widget.svgPath);
   }
 
-  Future<void> initializeState() async {
+  Future<void> initializeState(String svgPath) async {
+    _svgStringData = await rootBundle.loadString(svgPath);
+    _totalNumShapes = countPathsInSvg(_svgStringData);
     _numShapes = await getShapesFromBox();
   }
 
@@ -52,23 +51,16 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     int newTotalCollectedPieces = currentTotalCollectedPieces;
     if (currentTotalCollectedPieces > 0) {
       newTotalCollectedPieces = currentTotalCollectedPieces - 1;
-      //print("AnimalBuilder: decremented piece count -> $newTotalCollectedPieces");
-    } else {
-      //print("AnimalBuilder: Piece count 0 -> $currentTotalCollectedPieces");
     }
-    //print(widget.svgPath);
 
     widget.service
         .setPreference("totalCollectedPieces", newTotalCollectedPieces);
   }
 
   void addShape() async {
-    String svgData = await svgDataFuture;
-    int totalSVGCount = countPathsInSvg(svgData);
-
     int currentTotalCollectedPieces =
         await widget.service.getPreference("totalCollectedPieces");
-    if (currentTotalCollectedPieces > 0 && totalSVGCount > _numShapes) {
+    if (currentTotalCollectedPieces > 0 && _totalNumShapes > _numShapes) {
       setState(() {
         _numShapes += 20;
       });
@@ -84,6 +76,16 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     // Use the hashCode method to convert the SVG path into an integer ID
     int id = widget.svgPath.hashCode.abs();
     return id;
+  }
+
+  int countPathsInSvg(String svgData) {
+    // Define a regular expression that matches the path elements
+    final pathRegex = RegExp(r'<path[^>]*>', multiLine: true);
+
+    // Count the path elements
+    final numPaths = pathRegex.allMatches(svgData).length;
+
+    return numPaths;
   }
 
   String getBuilderSvg(String originalSvg, int numShapes) {
@@ -120,53 +122,50 @@ class AnimalBuilderState extends State<AnimalBuilder> {
     return '$rootElement\n$modifiedShapes\n</svg>';
   }
 
-  int countPathsInSvg(String svgData) {
-    // Define a regular expression that matches the path elements
-    final pathRegex = RegExp(r'<path[^>]*>', multiLine: true);
+  Future<ui.Image> getBuilderImage(String originalSvg, int numShapes) async {
+    // get builder svg (only shapes that have been collected are colored)
+    String builderSvgString = getBuilderSvg(originalSvg, numShapes);
 
-    // Count the path elements
-    final numPaths = pathRegex.allMatches(svgData).length;
+    // get vector graphics version of builer svg
+    PictureInfo builderPictureInfo =
+        await vg.loadPicture(SvgStringLoader(builderSvgString), null);
 
-    return numPaths;
+    // get image version of builder svg, 1024x1024 are dimensions of all animal svgs
+    ui.Image builderImage =
+        await builderPictureInfo.picture.toImage(1024, 1024);
+
+    return builderImage;
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: svgDataFuture,
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        // svg data starts with empty image (this wont change if no data is loaded)
-        String svgData =
-            '''<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>''';
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          // get svg string data based on svg file and number of desired shapes
-          svgData = snapshot.data!;
-          // find total number of shapes so we can tell user how close they are to being complete with this shape
-          _totalNumShapes = countPathsInSvg(svgData);
-          svgData = getBuilderSvg(svgData, _numShapes);
-        } else if (snapshot.hasError) {
+    return FutureBuilder<ui.Image>(
+      future: getBuilderImage(_svgStringData, _numShapes),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
-        }
+        } else {
+          final svgImageData = snapshot.data!;
 
-        return GestureDetector(
-          onTap: addShape,
-          child: Container(
-            padding: EdgeInsets.all(Dimensions.of(context).insets.smaller),
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(Dimensions.of(context).radii.medium),
-              color: widget.backgroundColor,
-            ),
-            child: AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              child: SvgPicture.string(
-                svgData,
-                key: ValueKey<int>(_numShapes),
+          return GestureDetector(
+            onTap: addShape,
+            child: Container(
+              padding: EdgeInsets.all(Dimensions.of(context).insets.smaller),
+              decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.circular(Dimensions.of(context).radii.medium),
+                color: widget.backgroundColor,
+              ),
+              child: AnimatedSwitcher(
+                duration: Duration(milliseconds: 300),
+                child: RawImage(
+                  image: svgImageData,
+                  key: ValueKey<int>(_numShapes),
+                ),
               ),
             ),
-          ),
-        );
+          );
+        }
       },
     );
   }
