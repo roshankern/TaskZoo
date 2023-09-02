@@ -34,6 +34,10 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
   late DateTime previousDate;
   late DateTime nextCompletionDate;
   late HashSet<DateTime> completedDates;
+  late bool isCompleted;
+  late int currentCycleCompletions;
+  late int timesPerMonth;
+
   final SoundPlayer player = SoundPlayer();
 
   late bool isFacingFront;
@@ -42,6 +46,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
   late AnimationController _progressController;
   late AnimationController _pulseController;
   late Animation<double> _borderWidth;
+  //bool increment = false;
 
   //Make modifications to previous date when storing data persistently
   @override
@@ -51,6 +56,9 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     nextCompletionDate = DateTime.parse(widget.task.nextCompletionDate);
     completedDates = HashSet<DateTime>.from(
         widget.task.completedDates.map((date) => DateTime.parse(date)));
+    isCompleted = widget.task.isCompleted;
+    currentCycleCompletions = widget.task.currentCycleCompletions;
+    timesPerMonth = widget.task.timesPerMonth;
 
     nextCompletionDate = calculateNextCompletionDate(
         determineFrequency(
@@ -87,7 +95,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
 
     _progressController.addListener(() {
       if (_progressController.value == 1.0) {
-        if (!widget.task.isCompleted && widget.task.isMeantForToday) {
+        if (!isCompleted && widget.task.isMeantForToday) {
           setState(() {
             String schedule = determineFrequency(
               widget.task.daysOfWeek,
@@ -97,14 +105,14 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
             );
 
             updatePiecesInformation();
-            widget.task.isCompleted = true;
+            isCompleted = true;
+            widget.task.isCompleted = isCompleted;
             hapticFeedback();
             completionSound();
-            addCompletionCountEntry();
             _streakAndStatsHandler(schedule);
+            addCompletionCountEntry();
           });
         }
-
         _pulseController.forward();
       }
     });
@@ -154,9 +162,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
 
     return GestureDetector(
         onLongPressStart: (details) {
-          if (!widget.task.isCompleted &&
-              widget.task.isMeantForToday &&
-              isFacingFront) {
+          if (!isCompleted && widget.task.isMeantForToday && isFacingFront) {
             _progressController.animateTo(1);
           }
         },
@@ -218,7 +224,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     }
 
     // if the task is completed the user gets a checkmark
-    if (widget.task.isCompleted) {
+    if (isCompleted) {
       return Center(
         child: SvgPicture.asset("assets/custom_icons/check.svg",
             color: Theme.of(context).iconTheme.color, semanticsLabel: 'Check'),
@@ -303,7 +309,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                     weekly: widget.task.weekly,
                     monthly: widget.task.monthly,
                     timesPerWeek: widget.task.timesPerWeek,
-                    timesPerMonth: widget.task.timesPerMonth,
+                    timesPerMonth: timesPerMonth,
                     enableNotifications: widget.task.notificationsEnabled,
                     notificationsDays: widget.task.notificationDays,
                     selectedTime:
@@ -318,8 +324,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                         widget.task.monthly = editedTaskData['monthly'];
                         widget.task.timesPerWeek =
                             editedTaskData['timesPerWeek'];
-                        widget.task.timesPerMonth =
-                            editedTaskData['timesPerMonth'];
+                        timesPerMonth = editedTaskData['timesPerMonth'];
                         widget.task.schedule = editedTaskData['schedule'];
                         widget.task.notificationDays =
                             editedTaskData['notificationsDays'];
@@ -413,7 +418,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
           completedDates.reduce((a, b) => a.isBefore(b) ? a : b);
       completedDates.remove(earliestDate);
       setState(() {
-        widget.task.isCompleted = false;
+        isCompleted = false;
       });
     }
   }
@@ -483,19 +488,18 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
   int _setCompletionStatus(String schedule) {
     int remainingCompletions = 0;
     if (schedule == "weekly") {
-      if (widget.task.currentCycleCompletions < widget.task.timesPerWeek) {
-        widget.task.isCompleted = false;
+      if (currentCycleCompletions < widget.task.timesPerWeek) {
+        isCompleted = false;
         remainingCompletions =
-            widget.task.timesPerWeek - widget.task.currentCycleCompletions;
+            widget.task.timesPerWeek - currentCycleCompletions;
         return remainingCompletions;
       } else {
         return 0;
       }
     } else if (schedule == "monthly") {
-      if (widget.task.currentCycleCompletions < widget.task.timesPerMonth) {
-        widget.task.isCompleted = false;
-        remainingCompletions =
-            widget.task.timesPerMonth - widget.task.currentCycleCompletions;
+      if (currentCycleCompletions < timesPerMonth) {
+        isCompleted = false;
+        remainingCompletions = timesPerMonth - currentCycleCompletions;
         return remainingCompletions;
       } else {
         return 0;
@@ -511,7 +515,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     DateTime today = DateTime(now.year, now.month, now.day, 0, 0, 0);
     if (schedule == "daily") {
       widget.task.isMeantForToday = true;
-      if (widget.task.isCompleted) {
+      if (isCompleted) {
         if (!completedDates.contains(today)) {
           completedDates.add(today);
           previousDate = today;
@@ -523,7 +527,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     } else if (schedule == "custom") {
       //Requires further testing
       widget.task.isMeantForToday = widget.task.daysOfWeek[now.weekday - 1];
-      if (widget.task.isCompleted && widget.task.isMeantForToday) {
+      if (isCompleted && widget.task.isMeantForToday) {
         if (!completedDates.contains(today)) {
           if (widget.task.isMeantForToday) {
             completedDates.add(today);
@@ -535,7 +539,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
         }
       }
     } else if (schedule == "biDaily") {
-      if (widget.task.isCompleted) {
+      if (isCompleted) {
         if (!completedDates.contains(today)) {
           completedDates.add(today);
           previousDate = today;
@@ -546,12 +550,11 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
       }
     } else if (schedule == "weekly") {
       widget.task.isMeantForToday = true;
-      if (widget.task.isCompleted) {
+      if (isCompleted) {
         if (!completedDates.contains(today)) {
-          _getCompletionCount(widget.task.last30DaysDates);
-          widget.task.currentCycleCompletions++;
+          currentCycleCompletions++;
           updateTaskSchema();
-          if (widget.task.currentCycleCompletions >= widget.task.timesPerWeek) {
+          if (currentCycleCompletions >= widget.task.timesPerWeek) {
             completedDates.add(today);
             previousDate = today;
             nextCompletionDate =
@@ -561,13 +564,12 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
         }
       }
     } else if (schedule == "monthly") {
-      if (widget.task.isCompleted) {
+      if (isCompleted) {
         if (!completedDates.contains(today)) {
-          widget.task.currentCycleCompletions++;
-          widget.service.saveTask(widget.task);
+          print("Incremented");
+          currentCycleCompletions++;
           updateTaskSchema();
-          if (widget.task.currentCycleCompletions >=
-              widget.task.timesPerMonth) {
+          if (currentCycleCompletions >= timesPerMonth) {
             completedDates.add(today);
             previousDate = today;
             nextCompletionDate =
@@ -581,10 +583,10 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
 
   void _completionResetHandler() {
     //NOTE: Potential Fix: Check if current date is before next completion date if so dont change
-    if (widget.task.isCompleted &&
+    if (isCompleted &&
         !(completedDates.contains(DateTime(DateTime.now().year,
             DateTime.now().month, DateTime.now().day, 0, 0, 0)))) {
-      widget.task.isCompleted = false;
+      isCompleted = false;
       updateTaskSchema();
     }
   }
@@ -663,6 +665,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
     widget.task.completedDates =
         completedDates.map((date) => date.toIso8601String()).toList();
+    widget.task.currentCycleCompletions = currentCycleCompletions;
 
     //saves Task to TaskSchema
     widget.service.saveTask(widget.task);
