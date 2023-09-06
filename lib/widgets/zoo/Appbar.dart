@@ -34,8 +34,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
         children: icons.map((currentBiomeIcon) {
           int iconIndex = icons.indexOf(currentBiomeIcon);
           return Container(
-            height: 35.0, // adjust as needed
-            width: 35.0, // adjust as needed
+            height: 40.0, // adjust as needed
+            width: 40.0, // adjust as needed
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Theme.of(context).cardColor,
@@ -43,7 +43,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 color: zooNotifier.currentBiome == iconIndex
                     ? Theme.of(context).indicatorColor
                     : Theme.of(context).scaffoldBackgroundColor,
-                width: Dimensions.of(context).borderWidths.medium, // adjust width as needed
+                width: Dimensions.of(context)
+                    .borderWidths
+                    .medium, // adjust width as needed
               ),
             ),
             child: FittedBox(
