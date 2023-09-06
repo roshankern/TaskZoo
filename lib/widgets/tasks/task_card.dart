@@ -60,6 +60,9 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     currentCycleCompletions = widget.task.currentCycleCompletions;
     timesPerMonth = widget.task.timesPerMonth;
 
+    scheduleNotifications(widget.task.notificationDays, widget.task.id,
+        widget.task.notificationTime, widget.task.title, widget.service);
+
     nextCompletionDate = calculateNextCompletionDate(
         determineFrequency(
           widget.task.daysOfWeek,
@@ -143,11 +146,6 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     );
 
     String monthlyOrWeekly = (schedule == "monthly") ? "month" : "week";
-
-    //Set notifications
-    scheduleNotifications(widget.task.notificationDays, widget.task.id,
-        widget.task.notificationTime, widget.task.title, widget.service);
-    //printAllScheduledNotifications();
 
     //Reset completion
     _completionResetHandler();
@@ -539,6 +537,11 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
         }
       }
     } else if (schedule == "biDaily") {
+      if (nextCompletionDate != today) {
+        widget.task.isMeantForToday = false;
+      } else {
+        widget.task.isMeantForToday = true;
+      }
       if (isCompleted) {
         if (!completedDates.contains(today)) {
           completedDates.add(today);

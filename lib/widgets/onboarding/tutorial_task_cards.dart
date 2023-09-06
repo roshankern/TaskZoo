@@ -159,6 +159,7 @@ class _HoldingTaskCardState extends State<HoldingTaskCard>
   @override
   void initState() {
     super.initState();
+    _timer = Timer(Duration.zero, () {});
     _progressController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,

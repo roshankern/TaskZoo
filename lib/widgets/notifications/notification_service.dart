@@ -59,6 +59,12 @@ Future<void> scheduleNotifications(
 
   // print('notificationTime: $notificationTime');
 
+  List<tz.TZDateTime> next7Days = List.generate(7, (int index) {
+    final nextDay = tz.TZDateTime.now(tz.local).add(Duration(days: index));
+    return tz.TZDateTime(tz.local, nextDay.year, nextDay.month, nextDay.day,
+        timeOfDay.hour, timeOfDay.minute);
+  });
+
   tz.TZDateTime tzNotificationTime =
       tz.TZDateTime.from(notificationTime, tz.local);
 
@@ -72,22 +78,17 @@ Future<void> scheduleNotifications(
   // Loop through the boolean list and schedule notifications for selected days
   for (int i = 0; i < daysToSchedule.length; i++) {
     if (daysToSchedule[i]) {
-      final scheduledDateTime = tz.TZDateTime(
-        tz.local,
-        notificationTime.year,
-        notificationTime.month,
-        notificationTime.day +
-            ((i - notificationTime.weekday + 8) %
-                7), // Calculate the next occurrence of the selected day of the week
-        timeOfDay.hour,
-        timeOfDay.minute,
-      );
+      final scheduledDateTime =
+          next7Days[(i - tz.TZDateTime.now(tz.local).weekday + 8) % 7];
+      print("Scheduled $taskName notification for: $scheduledDateTime");
 
       // Generate a unique key for the scheduled notification based on taskId and scheduled date
       final notificationKey = '$taskId-$scheduledDateTime';
 
+      bool isScheduled =
+          await isNotificationScheduled(notificationKey.hashCode.abs());
       // Check if there is already a scheduled notification with the same key
-      if (!scheduledNotifications.contains(notificationKey)) {
+      if (!scheduledNotifications.contains(notificationKey) && !isScheduled) {
         // If a notification with the same key doesn't exist, schedule the notification
         await _scheduleNotificationForDay(
             scheduledDateTime, notificationKey.hashCode.abs(), taskName);
@@ -101,6 +102,14 @@ Future<void> scheduleNotifications(
       }
     }
   }
+}
+
+Future<bool> isNotificationScheduled(int notificationId) async {
+  final List<PendingNotificationRequest> pendingNotificationRequests =
+      await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+
+  return pendingNotificationRequests
+      .any((notification) => notification.id == notificationId);
 }
 
 Future<void> deleteAllNotifications(int taskId, IsarService service) async {
@@ -143,6 +152,8 @@ Future<void> _scheduleNotificationForDay(
     ledOffMs: 500,
   );
 
+  print("Scheduler called for $scheduledDateTime");
+
   // iOS and macOS notification details (using DarwinNotificationDetails)
   const iOSPlatformChannelSpecifics = DarwinNotificationDetails();
 
@@ -156,38 +167,39 @@ Future<void> _scheduleNotificationForDay(
   final difference = scheduledDateTime.difference(DateTime.now());
 
   // Schedule the notification
-  await flutterLocalNotificationsPlugin.zonedSchedule(
-    taskId, // Use the taskId as the unique ID for the notification
-    'TaskZoo Reminder',
-    'Time to complete task: $taskName',
-    tz.TZDateTime.now(tz.local).add(difference),
-    platformChannelSpecifics,
-    uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
-    androidAllowWhileIdle: true,
-    matchDateTimeComponents: DateTimeComponents.time,
-  );
-
+  if (!scheduledDateTime.isBefore(DateTime.now())) {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      taskId, // Use the taskId as the unique ID for the notification
+      'TaskZoo Reminder',
+      'Time to complete task: $taskName',
+      tz.TZDateTime.now(tz.local).add(difference),
+      platformChannelSpecifics,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+      matchDateTimeComponents: null,
+    );
+  }
   // Print statement to show when the notification has been scheduled
   // print('Notification scheduled for taskId: $taskId, at: $scheduledDateTime');
 }
 
 Future<void> printAllScheduledNotifications() async {
-  // final List<PendingNotificationRequest> notifications =
-  //     await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+  final List<PendingNotificationRequest> notifications =
+      await flutterLocalNotificationsPlugin.pendingNotificationRequests();
 
-  // if (notifications.isEmpty) {
-  //   print('No scheduled notifications.');
-  // } else {
-  //   print('Scheduled Notifications:');
-  //   for (final notification in notifications) {
-  //     print('ID: ${notification.id}');
-  //     print('Title: ${notification.title}');
-  //     print('Body: ${notification.body}');
-  //     print('Scheduled Date: ${notification.payload}');
-  //     print('---');
-  //   }
-  // }
+  if (notifications.isEmpty) {
+    print('No scheduled notifications.');
+  } else {
+    print('Scheduled Notifications:');
+    for (final notification in notifications) {
+      print('ID: ${notification.id}');
+      print('Title: ${notification.title}');
+      print('Body: ${notification.body}');
+      print('Scheduled Date: ${notification.payload}');
+      print('---');
+    }
+  }
 }
 
 Future<void> cancelAllNotifications() async {

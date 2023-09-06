@@ -280,7 +280,9 @@ class _SettingsPageState extends State<SettingsPage> {
     cancelAllNotifications();
     //Delete all Animal Pieces
     widget.service.deleteAllAnimalPieces();
-    //Delete all Daily Completion Entries - data for stats card
+    //Delete All Notification Items in DB:
+    widget.service.deleteAllNotifications();
+    //Delete All Daily Completion Entries - data for stats card
     widget.service.deleteAllDailyCompletionEntries();
     //Set the total number of pieces to zero
     await widget.service.setPreference("totalCollectedPieces", 0);
