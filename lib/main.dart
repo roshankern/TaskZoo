@@ -228,7 +228,17 @@ class _MyHomePageState extends State<MyHomePage> {
               currentIndex: _navBarIndex.value,
               onTap: (index) {
                 if (index == 0 || index == 3) {
-                  // Navigation logic
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => index == 0
+                            ? StatsPage(service: widget.service)
+                            : SettingsPage(
+                                service: widget.service,
+                                themeNotifier: themeNotifier,
+                                hapticNotifier: hapticNotifier,
+                                soundNotifier: soundNotifier)),
+                  );
                 } else {
                   _pageController.animateToPage(index - 1,
                       duration: Duration(milliseconds: 750),
