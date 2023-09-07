@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -156,7 +157,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _navBarIndex = 1;
+  final ValueNotifier<int> _navBarIndex = ValueNotifier<int>(1);
+  ValueNotifier<double> _navBarHeight = ValueNotifier<double>(80.0);
   late PageController _pageController;
   late ThemeNotifier themeNotifier;
   late HapticNotifier hapticNotifier;
@@ -170,8 +172,12 @@ class _MyHomePageState extends State<MyHomePage> {
     widget.service.initalizeHapticSetting();
     widget.service.initalizeSoundSetting();
 
-    _pageController =
-        PageController(initialPage: _navBarIndex - 1); // Adjust the initialPage
+    _pageController = PageController(initialPage: _navBarIndex.value - 1);
+    _pageController.addListener(() {
+      double percentage = _pageController.page!;
+      _navBarHeight.value = (1 - percentage) * 80.0;
+    });
+
     themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     hapticNotifier = Provider.of<HapticNotifier>(context, listen: false);
     soundNotifier = Provider.of<SoundNotifer>(context, listen: false);
@@ -205,44 +211,57 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     ];
+
     return Scaffold(
-        body: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _navBarIndex = index + 1;
-            });
-          },
-          children: pages,
-        ),
-        bottomNavigationBar: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          height: _navBarIndex == 1
-              ? 84.0
-              : 0, // assuming 60.0 is the height of your nav bar
-          child: (_navBarIndex == 1)
-              ? CustomNavBar(
-                  currentIndex: _navBarIndex,
-                  onTap: (index) {
-                    if (index == 0 || index == 3) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => index == 0
-                                ? StatsPage(service: widget.service)
-                                : SettingsPage(
-                                    service: widget.service,
-                                    themeNotifier: themeNotifier,
-                                    hapticNotifier: hapticNotifier,
-                                    soundNotifier: soundNotifier)),
-                      );
-                    } else {
-                      _pageController.jumpToPage(index - 1);
-                    }
-                  },
-                )
-              : null,
-        ));
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          _navBarIndex.value = index + 1;
+        },
+        children: pages,
+      ),
+      bottomNavigationBar: ValueListenableBuilder<double>(
+        valueListenable: _navBarHeight,
+        builder: (context, value, child) {
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 10), // Smoother animation
+            height: value,
+            child: CustomNavBar(
+              currentIndex: _navBarIndex.value,
+              onTap: (index) {
+                if (index == 0) {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.leftToRight,
+                        child: StatsPage(service: widget.service),
+                        isIos: true,
+                        curve: Curves.ease),
+                  );
+                } else if (index == 3) {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: SettingsPage(
+                            service: widget.service,
+                            themeNotifier: themeNotifier,
+                            hapticNotifier: hapticNotifier,
+                            soundNotifier: soundNotifier),
+                        isIos: true,
+                        curve: Curves.ease),
+                  );
+                } else {
+                  _pageController.animateToPage(index - 1,
+                      duration: Duration(milliseconds: 750),
+                      curve: Curves.ease);
+                }
+              },
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> setThemeNotifier(ThemeNotifier themeNotifier) async {

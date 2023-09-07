@@ -58,6 +58,7 @@ dependencies:
   progress_border: ^0.1.2
   number_precision: ^2.0.2+1
   flutter_native_splash: ^2.3.2
+  page_transition: ^2.0.9
 
 dev_dependencies:
   flutter_test:
