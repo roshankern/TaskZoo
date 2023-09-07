@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -227,17 +228,27 @@ class _MyHomePageState extends State<MyHomePage> {
             child: CustomNavBar(
               currentIndex: _navBarIndex.value,
               onTap: (index) {
-                if (index == 0 || index == 3) {
+                if (index == 0) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => index == 0
-                            ? StatsPage(service: widget.service)
-                            : SettingsPage(
-                                service: widget.service,
-                                themeNotifier: themeNotifier,
-                                hapticNotifier: hapticNotifier,
-                                soundNotifier: soundNotifier)),
+                    PageTransition(
+                        type: PageTransitionType.leftToRight,
+                        child: StatsPage(service: widget.service),
+                        isIos: true,
+                        curve: Curves.ease),
+                  );
+                } else if (index == 3) {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: SettingsPage(
+                            service: widget.service,
+                            themeNotifier: themeNotifier,
+                            hapticNotifier: hapticNotifier,
+                            soundNotifier: soundNotifier),
+                        isIos: true,
+                        curve: Curves.ease),
                   );
                 } else {
                   _pageController.animateToPage(index - 1,
