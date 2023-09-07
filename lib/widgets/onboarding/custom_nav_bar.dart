@@ -139,6 +139,18 @@ class _CustomNavBarState extends State<CustomNavBar> {
                       padding: EdgeInsets.all(5),
                       constraints: BoxConstraints(),
                     ),
+                    IconButton(
+                      color: widget.currentIndex == 4
+                          ? Theme.of(context).indicatorColor
+                          : Theme.of(context).dividerColor,
+                      icon: const Icon(Icons.circle),
+                      onPressed: () {
+                        widget.onTap(4);
+                      },
+                      iconSize: widget.dotIconSize,
+                      padding: EdgeInsets.all(5),
+                      constraints: BoxConstraints(),
+                    ),
                   ],
                 ),
               ),

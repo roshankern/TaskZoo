@@ -240,6 +240,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         ]);
 
+    Widget onboarding_page_5 = OnboardingPage(
+        title: "Get Reminders",
+        topBackgroundColor: "#AC90E0",
+        animalSvgPath: "assets/onboarding/jellyfish.svg",
+        content: [
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "Allow notifications from TaskZoo so you can get helpful nudges in the future.",
+              style: TextStyle(fontSize: 17),
+            ),
+          ),
+          SizedBox(
+            height: Dimensions.of(context).insets.medium,
+          ),
+          Container(
+            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Container(
+              padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+              color: Theme.of(context).cardColor,
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    "assets/custom_icons/notifications.svg",
+                    color: Theme.of(context).iconTheme.color,
+                    semanticsLabel: 'Puzzle Piece',
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "You can choose when you get reminders for each task so you never forget your goals!",
+              style: TextStyle(fontSize: 17),
+            ),
+          ),
+        ]);
+
     return Scaffold(
       body: PageView(
         controller: _pageController,
@@ -252,7 +295,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           onboarding_page_1,
           onboarding_page_2,
           onboarding_page_3,
-          onboarding_page_4
+          onboarding_page_4,
+          onboarding_page_5
         ],
       ),
       bottomNavigationBar: CustomNavBar(
