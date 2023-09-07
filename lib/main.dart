@@ -193,7 +193,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("building main");
     themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     hapticNotifier = Provider.of<HapticNotifier>(context, listen: false);
     soundNotifier = Provider.of<SoundNotifer>(context, listen: false);
@@ -223,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
         valueListenable: _navBarHeight,
         builder: (context, value, child) {
           return AnimatedContainer(
-            duration: Duration(milliseconds: 100), // Smoother animation
+            duration: Duration(milliseconds: 10), // Smoother animation
             height: value,
             child: CustomNavBar(
               currentIndex: _navBarIndex.value,
@@ -231,7 +230,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (index == 0 || index == 3) {
                   // Navigation logic
                 } else {
-                  _pageController.jumpToPage(index - 1);
+                  _pageController.animateToPage(index - 1,
+                      duration: Duration(milliseconds: 750),
+                      curve: Curves.ease);
                 }
               },
             ),
