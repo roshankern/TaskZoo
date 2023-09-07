@@ -256,20 +256,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SizedBox(
             height: Dimensions.of(context).insets.medium,
           ),
-          Container(
-            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-            color: Theme.of(context).scaffoldBackgroundColor,
+          GestureDetector(
+            onTap: () {
+              print("ask noti perms");
+            },
             child: Container(
               padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-              color: Theme.of(context).cardColor,
-              child: Row(
-                children: [
-                  SvgPicture.asset(
-                    "assets/custom_icons/notifications.svg",
-                    color: Theme.of(context).iconTheme.color,
-                    semanticsLabel: 'Puzzle Piece',
-                  ),
-                ],
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: Container(
+                padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(
+                      Dimensions.of(context).radii.medium),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SvgPicture.asset(
+                      "assets/custom_icons/notifications.svg",
+                      color: Theme.of(context).iconTheme.color,
+                      semanticsLabel: 'Notifications',
+                    ),
+                    const Text(
+                      "Allow Notifications",
+                      style: TextStyle(fontSize: 17),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                    )
+                  ],
+                ),
               ),
             ),
           ),
