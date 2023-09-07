@@ -155,7 +155,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _navBarIndex = 1;
+  ValueNotifier<int> _navBarIndex = ValueNotifier<int>(1);
   late PageController _pageController;
   late ThemeNotifier themeNotifier;
   late HapticNotifier hapticNotifier;
@@ -169,8 +169,8 @@ class _MyHomePageState extends State<MyHomePage> {
     widget.service.initalizeHapticSetting();
     widget.service.initalizeSoundSetting();
 
-    _pageController =
-        PageController(initialPage: _navBarIndex - 1); // Adjust the initialPage
+    _pageController = PageController(
+        initialPage: _navBarIndex.value - 1); // Adjust the initialPage
     themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     hapticNotifier = Provider.of<HapticNotifier>(context, listen: false);
     soundNotifier = Provider.of<SoundNotifer>(context, listen: false);
@@ -188,6 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("building main");
     themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     hapticNotifier = Provider.of<HapticNotifier>(context, listen: false);
     soundNotifier = Provider.of<SoundNotifer>(context, listen: false);
@@ -204,44 +205,37 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     ];
+
     return Scaffold(
-        body: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _navBarIndex = index + 1;
-            });
-          },
-          children: pages,
-        ),
-        bottomNavigationBar: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          height: _navBarIndex == 1
-              ? 84.0
-              : 0, // assuming 60.0 is the height of your nav bar
-          child: (_navBarIndex == 1)
-              ? CustomNavBar(
-                  currentIndex: _navBarIndex,
-                  onTap: (index) {
-                    if (index == 0 || index == 3) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => index == 0
-                                ? StatsPage(service: widget.service)
-                                : SettingsPage(
-                                    service: widget.service,
-                                    themeNotifier: themeNotifier,
-                                    hapticNotifier: hapticNotifier,
-                                    soundNotifier: soundNotifier)),
-                      );
-                    } else {
-                      _pageController.jumpToPage(index - 1);
-                    }
-                  },
-                )
-              : null,
-        ));
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          _navBarIndex.value = index + 1;
+        },
+        children: pages,
+      ),
+      bottomNavigationBar: ValueListenableBuilder<int>(
+        valueListenable: _navBarIndex,
+        builder: (context, value, child) {
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            height: value == 1 ? 84.0 : 0,
+            child: (value == 1)
+                ? CustomNavBar(
+                    currentIndex: value,
+                    onTap: (index) {
+                      if (index == 0 || index == 3) {
+                        // Navigation logic
+                      } else {
+                        _pageController.jumpToPage(index - 1);
+                      }
+                    },
+                  )
+                : Container(),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> setThemeNotifier(ThemeNotifier themeNotifier) async {

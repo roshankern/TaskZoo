@@ -53,6 +53,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: CustomAppBar(
         onAddTaskPressed: _createTaskButton,
