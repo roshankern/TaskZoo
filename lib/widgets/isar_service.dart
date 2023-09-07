@@ -59,7 +59,9 @@ class IsarService {
   Future<void> saveAnimalPieces(AnimalPieces tuple) async {
     final isar = await db;
     //Return type int -> id of the inserted object
-    isar.writeTxnSync<int>(() => isar.animalPieces.putSync(tuple));
+    await isar.writeTxn<void>(() async {
+      await isar.animalPieces.put(tuple);
+    });
   }
 
   //TASK INFO
@@ -248,6 +250,36 @@ class IsarService {
     }
   }
 
+  Future<void> validateDailyCompletionEntry() async {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+
+    final isar = await db;
+    int encodedDate = encodeDate(today);
+
+    DailyCompletionEntry? existingEntry = await isar.dailyCompletionEntrys
+        .where()
+        .idEqualTo(encodedDate)
+        .findFirst();
+
+    if (existingEntry != null) {
+      // Entry already exists, increment the completion count
+      double percent = await getCompletionPercentage();
+      existingEntry.completionPercent = percent;
+      await saveDailyCompletionEntry(existingEntry);
+    } else {
+      // Entry doesn't exist, create a new one with completionCount as 1
+      double percent = await getCompletionPercentage();
+      int startingCount = 0;
+      DailyCompletionEntry newEntry = DailyCompletionEntry(
+          id: encodedDate,
+          date: today.toIso8601String(),
+          completionCount: startingCount,
+          completionPercent: percent);
+      await saveDailyCompletionEntry(newEntry);
+    }
+  }
+
   Stream<List<int>> getCompletionCountsLast30Days() async* {
     final isar = await db;
     DateTime today = DateTime.now();
@@ -287,7 +319,8 @@ class IsarService {
   Future<double> getCompletionPercentage() async {
     List<Task> allTasks = await getAllTasks().first;
     int completedTaskCount = allTasks.where((task) => task.isCompleted).length;
-    double completionPercent = completedTaskCount / allTasks.length;
+    double completionPercent =
+        allTasks.isEmpty ? 0 : completedTaskCount / allTasks.length;
     return completionPercent;
   }
 
@@ -397,8 +430,10 @@ class IsarService {
       ActiveNotifications notification) async {
     final isar = await db;
     //Return type int -> id of the inserted object
-    isar.writeTxnSync<int>(
-        () => isar.activeNotifications.putSync(notification));
+    await isar.writeTxn(() async {
+      await isar.activeNotifications
+          .put(notification); // deletes based off of id
+    });
   }
 
   Future<void> deleteActiveNotificationsForTaskEntry(int taskID) async {
@@ -428,7 +463,9 @@ class IsarService {
   Future<void> savePersonalPreferences(TaskzooPreferences preference) async {
     final isar = await db;
     //Return type int -> id of the inserted object
-    isar.writeTxnSync<int>(() => isar.taskzooPreferences.putSync(preference));
+    await isar.writeTxn<void>(() async {
+      await isar.taskzooPreferences.put(preference);
+    });
   }
 
   Future<void> initalizeTotalCollectedPieces() async {
@@ -442,8 +479,10 @@ class IsarService {
     // If the entry doesn't exist, add a new entry with the ID and value of 0
     if (existingPreference == null) {
       final newPreference = TaskzooPreferences(taskid: id, value: 0);
-      isar.writeTxnSync<int>(
-          () => isar.taskzooPreferences.putSync(newPreference));
+
+      await isar.writeTxn<void>(() async {
+        await isar.taskzooPreferences.put(newPreference);
+      });
     }
   }
 
@@ -479,10 +518,14 @@ class IsarService {
 
     await for (var prefs in preferencesStream) {
       // When the stream emits new data, update the totalTaskCount and completedTaskCount
-      yield prefs
-          .where((setting) => setting.taskid == preference.hashCode.abs())
-          .first
-          .value;
+      var filteredPrefs =
+          prefs.where((setting) => setting.taskid == preference.hashCode.abs());
+
+      if (filteredPrefs.isNotEmpty) {
+        yield filteredPrefs.first.value;
+      } else {
+        yield 0;
+      }
     }
   }
 
@@ -497,8 +540,9 @@ class IsarService {
     // If the entry doesn't exist, add a new entry with the ID and value of 0
     if (existingPreference == null) {
       final newPreference = TaskzooPreferences(taskid: id, value: 0);
-      isar.writeTxnSync<int>(
-          () => isar.taskzooPreferences.putSync(newPreference));
+      await isar.writeTxn<void>(() async {
+        await isar.taskzooPreferences.put(newPreference);
+      });
     }
   }
 
@@ -513,8 +557,10 @@ class IsarService {
     // If the entry doesn't exist, add a new entry with the ID and value of 0
     if (existingPreference == null) {
       final newPreference = TaskzooPreferences(taskid: id, value: 1);
-      isar.writeTxnSync<int>(
-          () => isar.taskzooPreferences.putSync(newPreference));
+
+      await isar.writeTxn<void>(() async {
+        await isar.taskzooPreferences.put(newPreference);
+      });
     }
   }
 
@@ -529,8 +575,9 @@ class IsarService {
     // If the entry doesn't exist, add a new entry with the ID and value of 0
     if (existingPreference == null) {
       final newPreference = TaskzooPreferences(taskid: id, value: 1);
-      isar.writeTxnSync<int>(
-          () => isar.taskzooPreferences.putSync(newPreference));
+      await isar.writeTxn<void>(() async {
+        await isar.taskzooPreferences.put(newPreference);
+      });
     }
   }
 
@@ -576,6 +623,24 @@ class IsarService {
       // Delete each object in the collection
       for (var animal in allTasks) {
         await animals.delete(animal.id);
+      }
+    });
+  }
+
+  Future<void> deleteAllNotifications() async {
+    final isar = await db;
+
+    final notifications =
+        isar.activeNotifications; // Assuming you have a 'tasks' collection
+
+    // Open a write transaction
+    await isar.writeTxn(() async {
+      // Query for all objects of the type you want to delete
+      final allNotifications = await notifications.where().findAll();
+
+      // Delete each object in the collection
+      for (var notif in allNotifications) {
+        await notifications.delete(notif.taskid);
       }
     });
   }

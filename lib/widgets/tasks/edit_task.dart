@@ -109,9 +109,9 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
                   expansionCallback: (int index, bool isExpanded) {
                     setState(() {
                       if (index == 0) {
-                        _isOptionsExpanded = !isExpanded;
+                        _isOptionsExpanded = isExpanded;
                       } else if (index == 1) {
-                        _isNotificationsExpanded = !isExpanded;
+                        _isNotificationsExpanded = isExpanded;
                       }
                     });
                   },

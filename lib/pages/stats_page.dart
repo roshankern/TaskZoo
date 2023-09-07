@@ -7,9 +7,20 @@ import 'package:taskzoo/widgets/stats/current_productivity_card.dart';
 import 'package:taskzoo/widgets/stats/daily_percent_completed_card.dart';
 import 'package:taskzoo/widgets/stats/month_total_tasks_completed_card.dart';
 
-class StatsPage extends StatelessWidget {
+class StatsPage extends StatefulWidget {
   final IsarService service;
   const StatsPage({Key? key, required this.service}) : super(key: key);
+
+  @override
+  State<StatsPage> createState() => _StatsPageState();
+}
+
+class _StatsPageState extends State<StatsPage> {
+  @override
+  void initState() {
+    super.initState();
+    widget.service.validateDailyCompletionEntry();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +34,7 @@ class StatsPage extends StatelessWidget {
                 height: Dimensions.of(context).insets.medium,
               ),
               StreamBuilder<double>(
-                stream: service.percentTasksCompleted(),
+                stream: widget.service.percentTasksCompleted(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -47,7 +58,7 @@ class StatsPage extends StatelessWidget {
                 height: Dimensions.of(context).insets.medium,
               ),
               StreamBuilder<Map<String, double>>(
-                stream: service.getCompletionPercentForPast7Days(),
+                stream: widget.service.getCompletionPercentForPast7Days(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -70,7 +81,7 @@ class StatsPage extends StatelessWidget {
                 height: Dimensions.of(context).insets.medium,
               ),
               StreamBuilder<List<int>>(
-                stream: service.getCompletionCountsLast30Days(),
+                stream: widget.service.getCompletionCountsLast30Days(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -106,7 +117,4 @@ class StatsPage extends StatelessWidget {
       ),
     );
   }
-  //Create Data for daily productivity
-
-  //Create Data for overall productivity
 }
