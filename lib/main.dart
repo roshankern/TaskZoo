@@ -155,7 +155,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  ValueNotifier<int> _navBarIndex = ValueNotifier<int>(1);
+  final ValueNotifier<int> _navBarIndex = ValueNotifier<int>(1);
+  ValueNotifier<double> _navBarHeight = ValueNotifier<double>(80.0);
   late PageController _pageController;
   late ThemeNotifier themeNotifier;
   late HapticNotifier hapticNotifier;
@@ -169,8 +170,12 @@ class _MyHomePageState extends State<MyHomePage> {
     widget.service.initalizeHapticSetting();
     widget.service.initalizeSoundSetting();
 
-    _pageController = PageController(
-        initialPage: _navBarIndex.value - 1); // Adjust the initialPage
+    _pageController = PageController(initialPage: _navBarIndex.value - 1);
+    _pageController.addListener(() {
+      double percentage = _pageController.page!;
+      _navBarHeight.value = (1 - percentage) * 80.0;
+    });
+
     themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     hapticNotifier = Provider.of<HapticNotifier>(context, listen: false);
     soundNotifier = Provider.of<SoundNotifer>(context, listen: false);
@@ -214,24 +219,22 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         children: pages,
       ),
-      bottomNavigationBar: ValueListenableBuilder<int>(
-        valueListenable: _navBarIndex,
+      bottomNavigationBar: ValueListenableBuilder<double>(
+        valueListenable: _navBarHeight,
         builder: (context, value, child) {
           return AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            height: value == 1 ? 84.0 : 0,
-            child: (value == 1)
-                ? CustomNavBar(
-                    currentIndex: value,
-                    onTap: (index) {
-                      if (index == 0 || index == 3) {
-                        // Navigation logic
-                      } else {
-                        _pageController.jumpToPage(index - 1);
-                      }
-                    },
-                  )
-                : Container(),
+            duration: Duration(milliseconds: 100), // Smoother animation
+            height: value,
+            child: CustomNavBar(
+              currentIndex: _navBarIndex.value,
+              onTap: (index) {
+                if (index == 0 || index == 3) {
+                  // Navigation logic
+                } else {
+                  _pageController.jumpToPage(index - 1);
+                }
+              },
+            ),
           );
         },
       ),
