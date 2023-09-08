@@ -31,6 +31,8 @@ class _CustomNavBarState extends State<CustomNavBar> {
       MaterialPageRoute(
           builder: (context) => MyHomePage(title: 'TaskZoo Task Page')),
     );
+
+    print("ask for noti permission");
   }
 
   @override
@@ -77,6 +79,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                           onOnboardingComplete(context);
                         } else {
                           Navigator.pop(context);
+                          print("ask for noti permission");
                         }
                       }
                     },
