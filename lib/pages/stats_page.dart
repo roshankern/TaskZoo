@@ -41,8 +41,8 @@ class _StatsPageState extends State<StatsPage> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else {
-                    double percentage = snapshot.data ?? 0.0;
-                    percentage = 60.0;
+                    double percentage =
+                        snapshot.data ?? 0.0; // Default to 0 if data is null
                     return Expanded(
                       child: CurrentProductivityCard(
                         currentProductivity: percentage / 100,
@@ -66,15 +66,6 @@ class _StatsPageState extends State<StatsPage> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else {
                     Map<String, double> completionData = snapshot.data ?? {};
-                    completionData = {
-                      'Monday': 0.7,
-                      'Tuesday': 0.2,
-                      'Wednesday': 0.5,
-                      'Thursday': 0.9,
-                      'Friday': 0.4,
-                      'Saturday': 0.1,
-                      'Sunday': 0.8,
-                    };
                     //Test to see if the null case needs to considered.
                     // print(completionData);
                     return Expanded(
@@ -98,38 +89,6 @@ class _StatsPageState extends State<StatsPage> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else {
                     List<int> completionCounts = snapshot.data ?? [0];
-                    completionCounts = [
-                      10,
-                      11,
-                      12,
-                      14,
-                      13,
-                      15,
-                      16,
-                      17,
-                      18,
-                      12,
-                      19,
-                      16,
-                      14,
-                      15,
-                      17,
-                      18,
-                      20,
-                      19,
-                      11,
-                      13,
-                      18,
-                      0,
-                      17,
-                      14,
-                      16,
-                      18,
-                      19,
-                      20,
-                      16,
-                      18
-                    ];
                     if (completionCounts.isEmpty) {
                       completionCounts = [0];
                     }
