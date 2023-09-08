@@ -32,27 +32,6 @@ void main() async {
   printKey();
 
   tz.initializeTimeZones();
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  //     FlutterLocalNotificationsPlugin();
-
-  // const AndroidInitializationSettings initializationSettingsAndroid =
-  //     AndroidInitializationSettings(
-  //         'app_icon'); // Replace 'app_icon' with the app's icon name also make sure to add the icon to android/app/src/main/res/drawable
-
-  // final DarwinInitializationSettings initializationSettingsIOS =
-  //     DarwinInitializationSettings(
-  //   requestAlertPermission: true,
-  //   requestBadgePermission: true,
-  //   requestSoundPermission: true,
-  //   onDidReceiveLocalNotification: (id, title, body, payload) async {},
-  // );
-
-  // final InitializationSettings initializationSettings = InitializationSettings(
-  //   android: initializationSettingsAndroid,
-  //   iOS: initializationSettingsIOS,
-  // );
-
-  // await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   runApp(
     MultiProvider(
