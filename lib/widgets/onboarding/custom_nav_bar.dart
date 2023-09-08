@@ -3,6 +3,9 @@ import 'package:dimensions_theme/dimensions_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskzoo/main.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+
 class CustomNavBar extends StatefulWidget {
   // icon sizes
   final double dotIconSize = 10;
@@ -22,11 +25,34 @@ class CustomNavBar extends StatefulWidget {
 }
 
 class _CustomNavBarState extends State<CustomNavBar> {
-  void askForNotiPerms() {
-    print("ask for notis permission");
+  void askForNotiPerms() async {
+    tz.initializeTimeZones();
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings(
+            'app_icon'); // Replace 'app_icon' with the app's icon name also make sure to add the icon to android/app/src/main/res/drawable
+
+    final DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      onDidReceiveLocalNotification: (id, title, body, payload) async {},
+    );
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   void onOnboardingComplete(BuildContext context) async {
+    askForNotiPerms();
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('is_first_time', false);
 
@@ -35,8 +61,6 @@ class _CustomNavBarState extends State<CustomNavBar> {
       MaterialPageRoute(
           builder: (context) => MyHomePage(title: 'TaskZoo Task Page')),
     );
-
-    askForNotiPerms();
   }
 
   @override

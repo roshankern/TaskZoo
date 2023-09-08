@@ -75,6 +75,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     widget.task.completionCount30days =
         _getCompletionCount(widget.task.last30DaysDates);
 
+    updateTaskSchema();
+
     _controller = FlipCardController();
     isFacingFront = true;
 
@@ -443,13 +445,29 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
   String _getTimeUntilNextCompletionDate() {
     final now = DateTime.now();
     final difference = nextCompletionDate.difference(now);
+
     // print(
     //     "${widget.task.title}: Now - ${now}, NextCompletionDate - ${nextCompletionDate}, Difference - ${difference}");
     updateTaskSchema();
 
+    String schedule = determineFrequency(
+      widget.task.daysOfWeek,
+      widget.task.biDaily,
+      widget.task.weekly,
+      widget.task.monthly,
+    );
+
     final days = difference.inDays;
     final hours = difference.inHours % 24;
     final minutes = difference.inMinutes % 60;
+
+    if (schedule == "biDaily") {
+      //Handle BiDaily Case
+      //New Addition
+      if (hours > 24) {
+        return "${hours - 24} hours left";
+      }
+    }
 
     if (days > 2) {
       return "$days days left";
@@ -537,10 +555,11 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
         }
       }
     } else if (schedule == "biDaily") {
-      if (nextCompletionDate != today) {
-        widget.task.isMeantForToday = false;
-      } else {
+      int daysDifference = nextCompletionDate.difference(today).inDays;
+      if (daysDifference % 2 == 0) {
         widget.task.isMeantForToday = true;
+      } else {
+        widget.task.isMeantForToday = false;
       }
       if (isCompleted) {
         if (!completedDates.contains(today)) {
