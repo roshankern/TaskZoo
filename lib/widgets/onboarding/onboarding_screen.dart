@@ -253,9 +253,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               style: TextStyle(fontSize: 17),
             ),
           ),
-          SizedBox(
-            height: Dimensions.of(context).insets.medium,
-          ),
           GestureDetector(
             onTap: () {
               print("ask noti perms");

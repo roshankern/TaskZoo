@@ -70,7 +70,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (widget.currentIndex < 3) {
+                      if (widget.currentIndex < 4) {
                         widget.onTap(widget.currentIndex + 1);
                       } else {
                         if (widget.isFirstTime) {
