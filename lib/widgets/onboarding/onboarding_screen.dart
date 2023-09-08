@@ -8,6 +8,7 @@ import 'package:taskzoo/widgets/onboarding/incrementing_item.dart';
 import 'package:taskzoo/widgets/onboarding/onboarding_page.dart';
 import 'package:taskzoo/widgets/onboarding/tutorial_task_cards.dart';
 import 'package:taskzoo/widgets/onboarding/tutorial_animal_builder.dart';
+import 'package:taskzoo/widgets/onboarding/allow_notis_card.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final bool isFirstTime;
@@ -253,39 +254,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               style: TextStyle(fontSize: 17),
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              print("ask noti perms");
-            },
-            child: Container(
-              padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-              color: Theme.of(context).scaffoldBackgroundColor,
-              child: Container(
-                padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(
-                      Dimensions.of(context).radii.medium),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SvgPicture.asset(
-                      "assets/custom_icons/notifications.svg",
-                      color: Theme.of(context).iconTheme.color,
-                      semanticsLabel: 'Notifications',
-                    ),
-                    const Text(
-                      "Allow Notifications",
-                      style: TextStyle(fontSize: 17),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                    )
-                  ],
-                ),
-              ),
-            ),
+          Container(
+            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: AllowNotisCard(),
           ),
           Padding(
             padding: EdgeInsets.symmetric(
