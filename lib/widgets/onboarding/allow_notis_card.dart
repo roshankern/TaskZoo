@@ -7,9 +7,43 @@ class AllowNotisCard extends StatefulWidget {
   _AllowNotisCardState createState() => _AllowNotisCardState();
 }
 
-class _AllowNotisCardState extends State<AllowNotisCard> {
+class _AllowNotisCardState extends State<AllowNotisCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _borderAnimation;
+  double currentBorderWidth = 1.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: Duration(seconds: 2),
+      vsync: this,
+    );
+
+    _borderAnimation = Tween<double>(begin: 1.0, end: 3.0).animate(_controller)
+      ..addListener(() {
+        setState(() {
+          currentBorderWidth = _borderAnimation.value;
+        });
+      });
+
+    _controller.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void askForNotiPerms() {
     print("ask for notis permission");
+    _controller.stop();
+    setState(() {
+      currentBorderWidth = 1.0;
+    });
   }
 
   @override
@@ -24,6 +58,10 @@ class _AllowNotisCardState extends State<AllowNotisCard> {
           color: Theme.of(context).cardColor,
           borderRadius:
               BorderRadius.circular(Dimensions.of(context).radii.medium),
+          border: Border.all(
+            color: Theme.of(context).indicatorColor,
+            width: currentBorderWidth,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
