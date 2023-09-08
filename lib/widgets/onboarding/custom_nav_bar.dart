@@ -22,6 +22,10 @@ class CustomNavBar extends StatefulWidget {
 }
 
 class _CustomNavBarState extends State<CustomNavBar> {
+  void askForNotiPerms() {
+    print("ask for notis permission");
+  }
+
   void onOnboardingComplete(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('is_first_time', false);
@@ -32,7 +36,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
           builder: (context) => MyHomePage(title: 'TaskZoo Task Page')),
     );
 
-    print("ask for noti permission");
+    askForNotiPerms();
   }
 
   @override
@@ -57,6 +61,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                         onOnboardingComplete(context);
                       } else {
                         Navigator.pop(context);
+                        askForNotiPerms();
                       }
                     },
                     child: Padding(
@@ -79,7 +84,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                           onOnboardingComplete(context);
                         } else {
                           Navigator.pop(context);
-                          print("ask for noti permission");
+                          askForNotiPerms();
                         }
                       }
                     },

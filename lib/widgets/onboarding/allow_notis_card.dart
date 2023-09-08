@@ -8,11 +8,15 @@ class AllowNotisCard extends StatefulWidget {
 }
 
 class _AllowNotisCardState extends State<AllowNotisCard> {
+  void askForNotiPerms() {
+    print("ask for notis permission");
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print("ask for noti permission");
+        askForNotiPerms();
       },
       child: Container(
         padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
