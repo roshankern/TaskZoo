@@ -50,31 +50,6 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(children: [
             SettingsOptionWithIcon(
               leftIconPath: "assets/custom_icons/help.svg",
-              optionText: 'App Icon',
-              rightActionIcon: Icons.expand_less,
-              onActionTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top:
-                          Radius.circular(Dimensions.of(context).radii.largest),
-                    ),
-                  ),
-                  isScrollControlled: true,
-                  builder: (BuildContext context) {
-                    return AppIconModal(
-                        iconsDataPath: 'assets/icons_data/icons_data.json');
-                  },
-                );
-              },
-            ),
-            Container(
-              height: 1.0,
-              color: Theme.of(context).dividerColor,
-            ),
-            SettingsOptionWithIcon(
-              leftIconPath: "assets/custom_icons/help.svg",
               optionText: 'Help',
               rightActionIcon: Icons.expand_less,
               onActionTap: () {

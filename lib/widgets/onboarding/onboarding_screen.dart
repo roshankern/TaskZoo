@@ -8,6 +8,7 @@ import 'package:taskzoo/widgets/onboarding/incrementing_item.dart';
 import 'package:taskzoo/widgets/onboarding/onboarding_page.dart';
 import 'package:taskzoo/widgets/onboarding/tutorial_task_cards.dart';
 import 'package:taskzoo/widgets/onboarding/tutorial_animal_builder.dart';
+import 'package:taskzoo/widgets/onboarding/allow_notis_card.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final bool isFirstTime;
@@ -47,7 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.of(context).insets.medium),
             child: const Text(
-              "Create tasks for goals that you want to achieve and filter by tags to keep everything organized.",
+              "Create tasks for your goals, and use filters to stay organized.",
               style: TextStyle(fontSize: 20),
             ),
           ),
@@ -70,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.of(context).insets.medium),
             child: const Text(
-              "Use daily, weekly, and monthly tasks to encourage productivity over different time periods.",
+              "Boost productivity with daily, weekly, and monthly tasks.",
               style: TextStyle(fontSize: 20),
             ),
           ),
@@ -154,8 +155,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.of(context).insets.medium),
             child: const Text(
-              "Hold down a task card to mark it as complete, or tap the task card to modify/delete the task.",
-              style: TextStyle(fontSize: 17),
+              "Hold a task to mark it as complete, tap to edit or delete.",
+              style: TextStyle(fontSize: 20),
             ),
           ),
           SizedBox(
@@ -184,11 +185,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         topBackgroundColor: "#85FF91",
         animalSvgPath: "assets/onboarding/parrot.svg",
         content: [
-          Padding(
+          Container(
             padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.of(context).insets.medium),
+            width: double.infinity,
             child: const Text(
-              "Get rewarded with pieces every time you complete a task!",
+              "Earn pieces for completing tasks!",
               style: TextStyle(fontSize: 20),
             ),
           ),
@@ -206,11 +208,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               IncrementingDigitWidget(widget._themeNotifier),
             ],
           ),
-          Padding(
+          Container(
             padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.of(context).insets.medium),
+            width: double.infinity,
             child: const Text(
-              "The amount of pieces you receive depends on how big a task you complete.",
+              "Tasks from larger timelines earn more pieces.",
               style: TextStyle(fontSize: 20),
             ),
           ),
@@ -221,20 +224,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         topBackgroundColor: "#FFEDA8",
         animalSvgPath: "assets/onboarding/lion.svg",
         content: [
-          Padding(
+          Container(
             padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.of(context).insets.medium),
+            width: double.infinity,
             child: const Text(
-              "Tapping an animal that is incomplete will use pieces to build that animal.",
+              "Tap an animal to use collected pieces.",
               style: TextStyle(fontSize: 20),
             ),
           ),
           TutorialAnimalBuilder(svgPath: "assets/onboarding/rat.svg"),
+          Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            width: double.infinity,
+            child: const Text(
+              "Completed animals join your zoo!",
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ]);
+
+    Widget onboarding_page_5 = OnboardingPage(
+        title: "Get Reminders",
+        topBackgroundColor: "#AC90E0",
+        animalSvgPath: "assets/onboarding/jellyfish.svg",
+        content: [
           Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.of(context).insets.medium),
             child: const Text(
-              "Once an animal is complete, it becomes part of your zoo!",
+              "Allow TaskZoo notifications for helpful future nudges.",
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(Dimensions.of(context).insets.medium),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: AllowNotisCard(),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.of(context).insets.medium),
+            child: const Text(
+              "Set reminders for each task to never forget your goals!",
               style: TextStyle(fontSize: 20),
             ),
           ),
@@ -252,7 +285,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           onboarding_page_1,
           onboarding_page_2,
           onboarding_page_3,
-          onboarding_page_4
+          onboarding_page_4,
+          onboarding_page_5
         ],
       ),
       bottomNavigationBar: CustomNavBar(

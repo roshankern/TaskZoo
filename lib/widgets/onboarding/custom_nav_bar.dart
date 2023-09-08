@@ -22,6 +22,10 @@ class CustomNavBar extends StatefulWidget {
 }
 
 class _CustomNavBarState extends State<CustomNavBar> {
+  void askForNotiPerms() {
+    print("ask for notis permission");
+  }
+
   void onOnboardingComplete(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('is_first_time', false);
@@ -31,6 +35,8 @@ class _CustomNavBarState extends State<CustomNavBar> {
       MaterialPageRoute(
           builder: (context) => MyHomePage(title: 'TaskZoo Task Page')),
     );
+
+    askForNotiPerms();
   }
 
   @override
@@ -55,6 +61,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                         onOnboardingComplete(context);
                       } else {
                         Navigator.pop(context);
+                        askForNotiPerms();
                       }
                     },
                     child: Padding(
@@ -70,13 +77,14 @@ class _CustomNavBarState extends State<CustomNavBar> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (widget.currentIndex < 3) {
+                      if (widget.currentIndex < 4) {
                         widget.onTap(widget.currentIndex + 1);
                       } else {
                         if (widget.isFirstTime) {
                           onOnboardingComplete(context);
                         } else {
                           Navigator.pop(context);
+                          askForNotiPerms();
                         }
                       }
                     },
@@ -134,6 +142,18 @@ class _CustomNavBarState extends State<CustomNavBar> {
                       icon: const Icon(Icons.circle),
                       onPressed: () {
                         widget.onTap(3);
+                      },
+                      iconSize: widget.dotIconSize,
+                      padding: EdgeInsets.all(5),
+                      constraints: BoxConstraints(),
+                    ),
+                    IconButton(
+                      color: widget.currentIndex == 4
+                          ? Theme.of(context).indicatorColor
+                          : Theme.of(context).dividerColor,
+                      icon: const Icon(Icons.circle),
+                      onPressed: () {
+                        widget.onTap(4);
                       },
                       iconSize: widget.dotIconSize,
                       padding: EdgeInsets.all(5),
