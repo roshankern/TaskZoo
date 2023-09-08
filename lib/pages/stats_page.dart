@@ -120,7 +120,7 @@ class _StatsPageState extends State<StatsPage> {
                       11,
                       13,
                       18,
-                      15,
+                      0,
                       17,
                       14,
                       16,
