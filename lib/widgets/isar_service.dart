@@ -201,8 +201,10 @@ class IsarService {
     // Listen to the stream of tasks
     await for (var tasks in tasksStream) {
       // When the stream emits new data, update the totalTaskCount and completedTaskCount
-      totalTaskCount += tasks.where((task) => task.isMeantForToday).length;
-      completedTaskCount += tasks.where((task) => task.isCompleted).length;
+      totalTaskCount += tasks.length;
+      completedTaskCount += tasks
+          .where((task) => task.isCompleted && task.isMeantForToday)
+          .length;
 
       // Calculate the percentage and yield it
       if (totalTaskCount == 0) {
@@ -318,12 +320,11 @@ class IsarService {
 
   Future<double> getCompletionPercentage() async {
     List<Task> allTasks = await getAllTasks().first;
-    int completedTaskCount = allTasks.where((task) => task.isCompleted).length;
-    int totalTasksNotMeantForToday =
-        allTasks.where((task) => !task.isMeantForToday).length;
-    double completionPercent = allTasks.isEmpty
-        ? 0
-        : completedTaskCount / (allTasks.length - totalTasksNotMeantForToday);
+    int completedTaskCount = allTasks
+        .where((task) => task.isCompleted && task.isMeantForToday)
+        .length;
+    double completionPercent =
+        allTasks.isEmpty ? 0 : completedTaskCount / allTasks.length;
     return completionPercent;
   }
 
