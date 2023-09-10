@@ -687,6 +687,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
     widget.task.completedDates =
         completedDates.map((date) => date.toIso8601String()).toList();
+    widget.task.isCompleted = isCompleted;
     widget.task.currentCycleCompletions = currentCycleCompletions;
 
     //saves Task to TaskSchema

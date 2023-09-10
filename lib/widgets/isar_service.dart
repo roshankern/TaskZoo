@@ -201,8 +201,8 @@ class IsarService {
     // Listen to the stream of tasks
     await for (var tasks in tasksStream) {
       // When the stream emits new data, update the totalTaskCount and completedTaskCount
-      totalTaskCount += tasks.length;
-      completedTaskCount += tasks
+      totalTaskCount = tasks.length;
+      completedTaskCount = tasks
           .where((task) => task.isCompleted && task.isMeantForToday)
           .length;
 
