@@ -461,10 +461,17 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     final hours = difference.inHours % 24;
     final minutes = difference.inMinutes % 60;
 
+    // print(
+    //     "${widget.task.title}: ${widget.task.nextCompletionDate}: $difference");
+
     if (schedule == "biDaily") {
       //Handle BiDaily Case
       //New Addition
       if (hours > 24) {
+        if (hours - 24 == 0) {
+          print(hours);
+          return "$minutes min left";
+        }
         return "${hours - 24} hours left";
       }
     }
@@ -539,6 +546,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
               calculateNextCompletionDate(schedule, previousDate);
           updateTaskSchema();
         }
+      } else if (nextCompletionDate.isBefore(now)) {
+        nextCompletionDate = calculateNextCompletionDate(schedule, today);
       }
     } else if (schedule == "custom") {
       //Requires further testing
@@ -553,6 +562,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
             updateTaskSchema();
           }
         }
+      } else if ((nextCompletionDate.difference(now).inHours) > 24) {
+        nextCompletionDate = calculateNextCompletionDate(schedule, today);
       }
     } else if (schedule == "biDaily") {
       int daysDifference = nextCompletionDate.difference(today).inDays;
@@ -569,6 +580,9 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
               calculateNextCompletionDate(schedule, previousDate);
           updateTaskSchema();
         }
+      } else if (nextCompletionDate.isBefore(now) &&
+          widget.task.isMeantForToday) {
+        nextCompletionDate = calculateNextCompletionDate(schedule, today);
       }
     } else if (schedule == "weekly") {
       widget.task.isMeantForToday = true;
@@ -632,7 +646,6 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
               .add(const Duration(hours: 23, minutes: 59));
           return nextValidDate;
         }
-
         // Find the next true day of the week
         int count = 0;
         for (int i = nextValidDay; i < 7; i++) {
