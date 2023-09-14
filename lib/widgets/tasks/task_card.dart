@@ -468,10 +468,6 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
       //Handle BiDaily Case
       //New Addition
       if (hours > 24) {
-        if (hours - 24 == 0) {
-          print(hours);
-          return "$minutes min left";
-        }
         return "${hours - 24} hours left";
       }
     }
@@ -483,7 +479,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     } else if (hours > 0) {
       return "$hours hours left";
     } else {
-      return "$minutes min left";
+      return "Under 1 hour left";
     }
   }
 
