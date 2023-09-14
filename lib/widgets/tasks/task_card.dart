@@ -461,6 +461,9 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     final hours = difference.inHours % 24;
     final minutes = difference.inMinutes % 60;
 
+    // print(
+    //     "${widget.task.title}: ${widget.task.nextCompletionDate}: $difference");
+
     if (schedule == "biDaily") {
       //Handle BiDaily Case
       //New Addition
@@ -476,7 +479,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     } else if (hours > 0) {
       return "$hours hours left";
     } else {
-      return "$minutes min left";
+      return "Under 1 hour left";
     }
   }
 
@@ -539,6 +542,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
               calculateNextCompletionDate(schedule, previousDate);
           updateTaskSchema();
         }
+      } else if (nextCompletionDate.isBefore(now)) {
+        nextCompletionDate = calculateNextCompletionDate(schedule, today);
       }
     } else if (schedule == "custom") {
       //Requires further testing
@@ -553,6 +558,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
             updateTaskSchema();
           }
         }
+      } else if ((nextCompletionDate.difference(now).inHours) > 24) {
+        nextCompletionDate = calculateNextCompletionDate(schedule, today);
       }
     } else if (schedule == "biDaily") {
       int daysDifference = nextCompletionDate.difference(today).inDays;
@@ -569,6 +576,9 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
               calculateNextCompletionDate(schedule, previousDate);
           updateTaskSchema();
         }
+      } else if (nextCompletionDate.isBefore(now) &&
+          widget.task.isMeantForToday) {
+        nextCompletionDate = calculateNextCompletionDate(schedule, today);
       }
     } else if (schedule == "weekly") {
       widget.task.isMeantForToday = true;
@@ -632,7 +642,6 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
               .add(const Duration(hours: 23, minutes: 59));
           return nextValidDate;
         }
-
         // Find the next true day of the week
         int count = 0;
         for (int i = nextValidDay; i < 7; i++) {
@@ -687,6 +696,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     widget.task.nextCompletionDate = nextCompletionDate.toIso8601String();
     widget.task.completedDates =
         completedDates.map((date) => date.toIso8601String()).toList();
+    widget.task.isCompleted = isCompleted;
     widget.task.currentCycleCompletions = currentCycleCompletions;
 
     //saves Task to TaskSchema

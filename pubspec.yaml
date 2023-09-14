@@ -72,7 +72,27 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   isar_generator: ^3.1.0+1
+  flutter_launcher_icons: ^0.13.1
 
+flutter_launcher_icons:
+  android: "appstore"
+  ios: true
+  image_path: "assets/app_icon/appstore.png"
+  image_path_ios: "assets/app_icon/appstore.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: "assets/app_icon/appstore.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/app_icon/appstore.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/app_icon/appstore.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -98,6 +118,7 @@ flutter:
     - assets/custom_icons/
     - assets/splash_screen/
     - assets/TaskCompletion.wav
+    - assets/app_icon/appstore.png
 
 flutter_native_splash:
   background_image: "assets/splash_screen/background_gradient.png"
