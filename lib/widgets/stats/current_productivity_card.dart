@@ -37,7 +37,8 @@ class CurrentProductivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(Dimensions.of(context).insets.medium, 0, Dimensions.of(context).insets.medium, 0),
+      padding: EdgeInsets.fromLTRB(Dimensions.of(context).insets.medium, 0,
+          Dimensions.of(context).insets.medium, 0),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           double circularProgressDiameter = constraints.maxHeight -
@@ -46,7 +47,8 @@ class CurrentProductivityCard extends StatelessWidget {
           return Container(
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(Dimensions.of(context).radii.medium),
+              borderRadius:
+                  BorderRadius.circular(Dimensions.of(context).radii.medium),
               color: Theme.of(context).cardColor,
             ),
             child: Column(
@@ -89,6 +91,7 @@ class CurrentProductivityCard extends StatelessWidget {
                           value: currentProductivity,
                           strokeWidth: circularProgressStroke,
                           color: Theme.of(context).indicatorColor,
+                          animationDuration: Duration(milliseconds: 800),
                         ),
                       ),
                       Column(
@@ -103,8 +106,9 @@ class CurrentProductivityCard extends StatelessWidget {
                           ),
                           Text(
                             'Current \nProductivity',
-                            style:
-                                TextStyle(fontSize: 16, color: Theme.of(context).dividerColor),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Theme.of(context).dividerColor),
                             textAlign: TextAlign.center,
                           ),
                         ],

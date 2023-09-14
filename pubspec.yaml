@@ -121,7 +121,7 @@ flutter:
     - assets/app_icon/appstore.png
 
 flutter_native_splash:
-  color: "#222b22"
-  image: "assets/splash_screen/icon.png"
+  background_image: "assets/splash_screen/background_gradient.png"
+  image: "assets/splash_screen/app_icon_transparent.png"
   android: true
   ios: true
