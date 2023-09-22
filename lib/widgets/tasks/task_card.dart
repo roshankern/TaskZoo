@@ -465,17 +465,14 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     //     "${widget.task.title}: ${widget.task.nextCompletionDate}: $difference");
 
     if (schedule == "biDaily") {
-      //Handle BiDaily Case
-      //New Addition
       if (hours > 24) {
         return "${hours - 24} hours left";
+      } else {
+        return "$hours hours left";
       }
     }
-
-    if (days > 2) {
+    if (days >= 1) {
       return "$days days left";
-    } else if (days < 2 && days >= 1) {
-      return "$hours hours left";
     } else if (hours > 0) {
       return "$hours hours left";
     } else {
@@ -580,6 +577,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
           widget.task.isMeantForToday) {
         nextCompletionDate = calculateNextCompletionDate(schedule, today);
       }
+      // print(nextCompletionDate);
     } else if (schedule == "weekly") {
       widget.task.isMeantForToday = true;
       if (isCompleted) {
@@ -593,14 +591,14 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                 calculateNextCompletionDate(schedule, previousDate);
             updateTaskSchema();
           }
-        } else if (nextCompletionDate.isBefore(now)) {
-          nextCompletionDate = calculateNextCompletionDate(schedule, today);
         }
+      } else if (nextCompletionDate.isBefore(now)) {
+        nextCompletionDate = calculateNextCompletionDate(schedule, today);
       }
     } else if (schedule == "monthly") {
       if (isCompleted) {
         if (!completedDates.contains(today)) {
-          print("Incremented");
+          // print("Incremented");
           currentCycleCompletions++;
           updateTaskSchema();
           if (currentCycleCompletions >= timesPerMonth) {
