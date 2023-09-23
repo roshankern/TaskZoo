@@ -296,8 +296,7 @@ Future initAudioService() async {
   //audio_session DUCK OTHERS CONFIGURATION
   await session.configure(const AudioSessionConfiguration(
     avAudioSessionCategory: AVAudioSessionCategory.playback,
-    avAudioSessionCategoryOptions:
-        AVAudioSessionCategoryOptions.interruptSpokenAudioAndMixWithOthers,
+    avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
     avAudioSessionMode: AVAudioSessionMode.defaultMode,
     avAudioSessionRouteSharingPolicy:
         AVAudioSessionRouteSharingPolicy.defaultPolicy,
