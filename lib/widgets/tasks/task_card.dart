@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
+import 'package:audio_service/audio_service.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -37,8 +40,6 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
   late bool isCompleted;
   late int currentCycleCompletions;
   late int timesPerMonth;
-
-  final SoundPlayer player = SoundPlayer();
 
   late bool isFacingFront;
   late FlipCardController _controller;
@@ -768,16 +769,24 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
         .getPreference("hapticFeedback")
         .then((value) => value != 0);
     if (hapticFeedbackEnabled) {
-      HapticFeedback.mediumImpact();
+      HapticFeedback.heavyImpact();
     }
   }
 
-  Future<void> completionSound() async {
+  void completionSound() async {
     bool soundEnabled =
         await widget.service.getPreference("sound").then((value) => value != 0);
     if (soundEnabled) {
-      player.playSound();
+      // SoundPlayer soundPlayer = SoundPlayer();
+      // soundPlayer.playSound();
+      AudioPlayerService audioPlayerService = AudioPlayerService();
+      audioPlayerService.play();
     }
+  }
+
+  Future<void> configureAudioSession() async {
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration.speech());
   }
 
   void addCompletionCountEntry() {

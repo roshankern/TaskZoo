@@ -1,24 +1,41 @@
-import 'package:flutter/services.dart';
-import 'package:soundpool/soundpool.dart';
+import 'dart:async';
 
-class SoundPlayer {
-  Soundpool? _pool;
-  int? _soundId;
+import 'package:audio_service/audio_service.dart';
+import 'package:just_audio/just_audio.dart';
 
-  SoundPlayer() {
-    _init();
+class AudioPlayerService extends BaseAudioHandler {
+  final _player = AudioPlayer();
+
+  AudioPlayerService() {
+    _player.setAsset("assets/TaskCompletion.wav");
   }
 
-  Future<void> _init() async {
-    _pool = Soundpool(streamType: StreamType.notification);
-    var asset = await rootBundle.load("assets/TaskCompletion.wav");
-    _soundId = await _pool!.load(asset);
+  @override
+  Future<void> play() async {
+    await _player.play();
+    await super.play();
   }
 
-  Future<void> playSound() async {
-    if (_soundId == null || _pool == null) {
-      throw "Sound not loaded";
-    }
-    _pool!.play(_soundId!);
+  @override
+  Future<void> pause() async {
+    await _player.pause();
+    await super.pause();
+  }
+
+  @override
+  Future<void> stop() async {
+    await _player.stop();
+    await super.stop();
+  }
+
+  @override
+  Future<void> seek(Duration position) async {
+    await _player.seek(position);
+    await super.seek(position);
+  }
+
+  @override
+  Future<void> onTaskRemoved() async {
+    await stop();
   }
 }

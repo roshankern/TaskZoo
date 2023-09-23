@@ -59,6 +59,10 @@ dependencies:
   number_precision: ^2.0.2+1
   flutter_native_splash: ^2.3.2
   page_transition: ^2.0.9
+  audioplayers: ^5.1.0
+  just_audio: ^0.9.35
+  audio_service: ^0.18.0
+  audio_session: ^0.1.6+1
 
 dev_dependencies:
   flutter_test:

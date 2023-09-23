@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
@@ -22,6 +23,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:taskzoo/widgets/onboarding/onboarding_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
+import 'package:audio_service/audio_service.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:audio_service/audio_service.dart';
+import 'package:taskzoo/widgets/tasks/sound_player.dart';
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -32,6 +38,8 @@ void main() async {
   printKey();
 
   tz.initializeTimeZones();
+
+  await initAudioService();
 
   runApp(
     MultiProvider(
@@ -280,4 +288,36 @@ void printKey() {
   print("hapticFeedback: ${"hapticFeedback".hashCode.abs()}");
   print("totalCollectedPieces: ${"totalCollectedPieces".hashCode.abs()}");
   print("sound: ${"sound".hashCode.abs()}");
+}
+
+Future initAudioService() async {
+  //audio_session INSTANCE
+  final session = await AudioSession.instance;
+  //audio_session DUCK OTHERS CONFIGURATION
+  await session.configure(const AudioSessionConfiguration(
+    avAudioSessionCategory: AVAudioSessionCategory.playback,
+    avAudioSessionCategoryOptions:
+        AVAudioSessionCategoryOptions.interruptSpokenAudioAndMixWithOthers,
+    avAudioSessionMode: AVAudioSessionMode.defaultMode,
+    avAudioSessionRouteSharingPolicy:
+        AVAudioSessionRouteSharingPolicy.defaultPolicy,
+    avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+    androidAudioAttributes: AndroidAudioAttributes(
+      contentType: AndroidAudioContentType.music,
+      flags: AndroidAudioFlags.none,
+      usage: AndroidAudioUsage.media,
+    ),
+    androidAudioFocusGainType: AndroidAudioFocusGainType.gainTransientMayDuck,
+    androidWillPauseWhenDucked: true,
+  ));
+  //INITIALIZE audio_service
+  return await AudioService.init(
+    builder: () => AudioPlayerService(),
+    config: const AudioServiceConfig(
+      androidNotificationChannelId: 'com.GW.TaskZoo.audio',
+      androidNotificationChannelName: 'Completion',
+      androidNotificationOngoing: true,
+      androidStopForegroundOnPause: true,
+    ),
+  );
 }
