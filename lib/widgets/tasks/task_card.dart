@@ -659,8 +659,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
       case 'weekly':
         final currentDate = DateTime.now();
         final currentDay = currentDate.weekday;
-        final daysUntilNextDay =
-            (7 - (currentDay - getDayOfWeek(startOfWeek))) % 7;
+        int daysUntilNextDay = (7 + getDayOfWeek(startOfWeek) - currentDay) % 7;
+        if (daysUntilNextDay == 0) daysUntilNextDay = 7;
         final nextDay = currentDate.add(Duration(days: daysUntilNextDay));
         final nextDayAtMidnight =
             DateTime(nextDay.year, nextDay.month, nextDay.day, 0, 0, 0);

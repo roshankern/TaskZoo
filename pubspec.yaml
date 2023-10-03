@@ -1,5 +1,5 @@
 name: taskzoo
-description: A new Flutter project.
+description: Transform your productivity with TaskZoo! Tackle tasks and watch your accomplishments come to life in the form of vibrant, low poly art animals. Every completed task earns you pieces to create and customize your digital zoo. Stay organized, feel motivated, and enjoy a unique visual reward system designed to keep you on track. Embark on a journey where productivity intertwines with the beauty of nature, exclusively with TaskZoo.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -52,7 +52,6 @@ dependencies:
   uuid: ^3.0.4
   timezone: ^0.9.2
   flutter_native_timezone: ^2.0.0
-  soundpool: ^2.3.0
   flip_card: ^0.7.0
   animated_text_kit: ^4.2.2
   progress_border: ^0.1.2
