@@ -115,6 +115,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
             widget.task.isCompleted = isCompleted;
             hapticFeedback();
             completionSound();
+            currentCycleCompletions += 1;
             _streakAndStatsHandler(schedule);
             addCompletionCountEntry();
           });
@@ -516,7 +517,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     } else if (schedule == "monthly") {
       if (currentCycleCompletions < timesPerMonth) {
         isCompleted = false;
-        remainingCompletions = timesPerMonth - currentCycleCompletions;
+        remainingCompletions =
+            widget.task.timesPerMonth - currentCycleCompletions;
         return remainingCompletions;
       } else {
         return 0;
@@ -580,38 +582,50 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
       }
       // print(nextCompletionDate);
     } else if (schedule == "weekly") {
+      print("here {$nextCompletionDate} {$currentCycleCompletions}");
+
       widget.task.isMeantForToday = true;
+      // print("currentCycleCompletions: $currentCycleCompletions");
+      // print("timesPerWeek: ${widget.task.timesPerWeek}");
+      if (currentCycleCompletions >= widget.task.timesPerWeek) {
+        isCompleted = true;
+      }
       if (isCompleted) {
         if (!completedDates.contains(today)) {
-          currentCycleCompletions++;
           updateTaskSchema();
           if (currentCycleCompletions >= widget.task.timesPerWeek) {
             completedDates.add(today);
             previousDate = today;
-            nextCompletionDate =
-                calculateNextCompletionDate(schedule, previousDate);
+            // nextCompletionDate =
+            //     calculateNextCompletionDate(schedule, previousDate);
             updateTaskSchema();
           }
         }
       } else if (nextCompletionDate.isBefore(now)) {
         nextCompletionDate = calculateNextCompletionDate(schedule, today);
+        // updateTaskSchema();
       }
     } else if (schedule == "monthly") {
+      if (currentCycleCompletions >= widget.task.timesPerMonth) {
+        isCompleted = true;
+      }
       if (isCompleted) {
+        // print(widget.task.title);
+        // print(nextCompletionDate);
+        // print(currentCycleCompletions);
         if (!completedDates.contains(today)) {
-          // print("Incremented");
-          currentCycleCompletions++;
           updateTaskSchema();
           if (currentCycleCompletions >= timesPerMonth) {
             completedDates.add(today);
             previousDate = today;
-            nextCompletionDate =
-                calculateNextCompletionDate(schedule, previousDate);
+            // nextCompletionDate =
+            //     calculateNextCompletionDate(schedule, previousDate);
             updateTaskSchema();
           }
         }
       } else if (nextCompletionDate.isBefore(now)) {
         nextCompletionDate = calculateNextCompletionDate(schedule, today);
+        // currentCycleCompletions = 0;
       }
     }
   }
@@ -657,6 +671,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
         }
         return nextValidDate;
       case 'weekly':
+        DateTime now = DateTime.now();
         final currentDate = DateTime.now();
         final currentDay = currentDate.weekday;
         int daysUntilNextDay = (7 + getDayOfWeek(startOfWeek) - currentDay) % 7;
@@ -664,14 +679,41 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
         final nextDay = currentDate.add(Duration(days: daysUntilNextDay));
         final nextDayAtMidnight =
             DateTime(nextDay.year, nextDay.month, nextDay.day, 0, 0, 0);
+
+        if (nextCompletionDate.isBefore(now)) {
+          // print(widget.task.title);
+          // print(nextCompletionDate);
+          // print(currentCycleCompletions);
+          currentCycleCompletions = 0;
+          // print("Triggering for " + widget.task.title);
+          nextCompletionDate = nextDayAtMidnight;
+          // print(widget.task.title);
+          // print(nextCompletionDate);
+          // print(currentCycleCompletions);
+          updateTaskSchema();
+        }
         return nextDayAtMidnight;
 
       case 'monthly':
+        DateTime now = DateTime.now();
         if (previousCompletionDate.month == 12) {
           nextValidDate = DateTime(previousCompletionDate.year + 1, 1, 1);
         } else {
           nextValidDate = DateTime(
               previousCompletionDate.year, previousCompletionDate.month + 1, 1);
+        }
+
+        if (nextCompletionDate.isBefore(now)) {
+          // print(widget.task.title);
+          // print(nextCompletionDate);
+          // print(currentCycleCompletions);
+          currentCycleCompletions = 0;
+          // print("Triggering for " + widget.task.title);
+          nextCompletionDate = nextValidDate;
+          // print(widget.task.title);
+          // print(nextCompletionDate);
+          // print(currentCycleCompletions);
+          updateTaskSchema();
         }
         return nextValidDate;
       case 'biDaily':
