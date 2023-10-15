@@ -141,7 +141,17 @@ void _showInfoDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return InformationBlurb();
+      return Stack(
+        alignment: Alignment.bottomCenter,
+        children: <Widget>[
+          Positioned(
+            bottom: 10,
+            left: 10,
+            right: 10,
+            child: InformationBlurb(),
+          ),
+        ],
+      );
     },
   );
 }
@@ -150,10 +160,13 @@ class InformationBlurb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.circular(Dimensions.of(context).radii.medium)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(5.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize:
               MainAxisSize.min, // Ensures that the card fits the content
           children: [
@@ -170,11 +183,18 @@ class InformationBlurb extends StatelessWidget {
               'Current Productivity',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16.0), // Spacer
-            Text(
-              'Current productivity is the daily completed tasks/total tasks',
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
+            SizedBox(height: Dimensions.of(context).insets.medium),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: Dimensions.of(context).insets.medium),
+              child: Text(
+                'Current productivity is the daily completed tasks/total tasks',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: Dimensions.of(context).insets.large,
             ),
           ],
         ),
