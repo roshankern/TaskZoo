@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:curved_progress_bar/curved_progress_bar.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
+import 'package:flutter_svg/svg.dart';
 
 class Circle extends CustomPainter {
   final double outlineStrokeWidth;
@@ -20,6 +21,24 @@ class Circle extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+void _showInfoModal(BuildContext context) {
+  showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          padding: EdgeInsets.all(32.0),
+          child: Text(
+            'Current \nProductivity',
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).indicatorColor,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        );
+      });
 }
 
 class CurrentProductivityCard extends StatelessWidget {
@@ -97,6 +116,9 @@ class CurrentProductivityCard extends StatelessWidget {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          SizedBox(
+                            height: 15,
+                          ),
                           Text(
                             '${(currentProductivity * 100).toStringAsFixed(0)}%',
                             style: TextStyle(
@@ -110,6 +132,14 @@ class CurrentProductivityCard extends StatelessWidget {
                                 fontSize: 16,
                                 color: Theme.of(context).dividerColor),
                             textAlign: TextAlign.center,
+                          ),
+                          IconButton(
+                            color: Theme.of(context).indicatorColor,
+                            icon: SvgPicture.asset(
+                                "assets/custom_icons/info.svg",
+                                color: Theme.of(context).iconTheme.color,
+                                semanticsLabel: 'Settings'),
+                            onPressed: () => _showInfoModal(context),
                           ),
                         ],
                       ),
