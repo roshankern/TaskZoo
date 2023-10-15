@@ -23,24 +23,6 @@ class Circle extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-void _showInfoModal(BuildContext context) {
-  showModalBottomSheet(
-      context: context,
-      builder: (BuildContext bc) {
-        return Container(
-          padding: EdgeInsets.all(32.0),
-          child: Text(
-            'Current \nProductivity',
-            style: TextStyle(
-              fontSize: 16,
-              color: Theme.of(context).indicatorColor,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        );
-      });
-}
-
 class CurrentProductivityCard extends StatelessWidget {
   final double currentProductivity;
   final double circularProgressStroke;
@@ -139,7 +121,7 @@ class CurrentProductivityCard extends StatelessWidget {
                                 "assets/custom_icons/info.svg",
                                 color: Theme.of(context).iconTheme.color,
                                 semanticsLabel: 'Settings'),
-                            onPressed: () => _showInfoModal(context),
+                            onPressed: () => _showInfoDialog(context),
                           ),
                         ],
                       ),
@@ -150,6 +132,52 @@ class CurrentProductivityCard extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+void _showInfoDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return InformationBlurb();
+    },
+  );
+}
+
+class InformationBlurb extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize:
+              MainAxisSize.min, // Ensures that the card fits the content
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  Navigator.pop(context); // Pops the info blurb
+                },
+              ),
+            ),
+            Text(
+              'Current Productivity',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16.0), // Spacer
+            Text(
+              'Current productivity is the daily completed tasks/total tasks',
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
