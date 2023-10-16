@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:curved_progress_bar/curved_progress_bar.dart';
 import 'package:dimensions_theme/dimensions_theme.dart';
+import 'package:flutter_svg/svg.dart';
 
 class Circle extends CustomPainter {
   final double outlineStrokeWidth;
@@ -97,6 +98,9 @@ class CurrentProductivityCard extends StatelessWidget {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          SizedBox(
+                            height: 15,
+                          ),
                           Text(
                             '${(currentProductivity * 100).toStringAsFixed(0)}%',
                             style: TextStyle(
@@ -111,6 +115,14 @@ class CurrentProductivityCard extends StatelessWidget {
                                 color: Theme.of(context).dividerColor),
                             textAlign: TextAlign.center,
                           ),
+                          IconButton(
+                            color: Theme.of(context).indicatorColor,
+                            icon: SvgPicture.asset(
+                                "assets/custom_icons/info.svg",
+                                color: Theme.of(context).iconTheme.color,
+                                semanticsLabel: 'Settings'),
+                            onPressed: () => _showInfoDialog(context),
+                          ),
                         ],
                       ),
                     ],
@@ -120,6 +132,72 @@ class CurrentProductivityCard extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+void _showInfoDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Stack(
+        alignment: Alignment.bottomCenter,
+        children: <Widget>[
+          Positioned(
+            bottom: 10,
+            left: 10,
+            right: 10,
+            child: InformationBlurb(),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+class InformationBlurb extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.circular(Dimensions.of(context).radii.medium)),
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize:
+              MainAxisSize.min, // Ensures that the card fits the content
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  Navigator.pop(context); // Pops the info blurb
+                },
+              ),
+            ),
+            Text(
+              'Current Productivity',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: Dimensions.of(context).insets.medium),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: Dimensions.of(context).insets.medium),
+              child: Text(
+                'This metric reflects the percent of tasks currently marked as completed.',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: Dimensions.of(context).insets.large,
+            ),
+          ],
+        ),
       ),
     );
   }
