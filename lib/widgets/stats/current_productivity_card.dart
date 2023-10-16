@@ -188,7 +188,7 @@ class InformationBlurb extends StatelessWidget {
               padding: EdgeInsets.symmetric(
                   horizontal: Dimensions.of(context).insets.medium),
               child: Text(
-                'Current productivity is the daily completed tasks/total tasks',
+                'This metric reflects the percent of tasks currently marked as completed.',
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
